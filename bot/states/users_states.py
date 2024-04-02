@@ -16,7 +16,7 @@ class RegUser(StatesGroup):
     tg_user_id = State()
 
 
-@router.message(F.text =='Регистрация') 
+@router.message(F.text == 'Регистрация') 
 async def testing_user(message: Message, state: FSMContext, session: AsyncSession):
     user_id = message.from_user.id
     if await user_check_before_reg(tg_user_id=user_id,session=session):
