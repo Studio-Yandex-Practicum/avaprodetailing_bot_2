@@ -1,7 +1,7 @@
 from aiogram.types import (
-    ReplyKeyboardMarkup, # крепится под полем ввода
-    KeyboardButton, # Кнопки для верхней клавиатуры
-    InlineKeyboardMarkup, # Крепится под сообщениями
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    InlineKeyboardMarkup,
     InlineKeyboardButton,
     WebAppInfo
 )
@@ -13,7 +13,8 @@ reg_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Регистрация',
-                web_app=WebAppInfo(url='https://vc.ru/u/2092914-codecash/775509-urok-11-veb-prilozhenie-v-telegram-bote')
+                #web_app=WebAppInfo(url='')
+                
             ),
         ],
         
