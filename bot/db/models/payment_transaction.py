@@ -1,20 +1,48 @@
 from datetime import datetime
-from sqlalchemy import CheckConstraint, Column, DateTime, Float, ForeignKey, Integer, String
 
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column, relationship, validates
+
+from bot.core.constatnts import PAYMENT_STATE
 from bot.db.models.base import Base
+from bot.db.models.users import User
 
 
-class PaymentTransaction(Base):
-    __tablename__ = "payments_transaction"
+class Payment(Base):
+    __tablename__ = "payment"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    amount = Column(Float, CheckConstraint("amount >= 0"), nullable=False, default=0)
-    bonus_amount = Column(Integer, ForeignKey("bonus.id"), CheckConstraint("bonus_amount >= 0"))
-    payment_method = Column(String(10), nullable=False, default="Оплата наличными")
-    payment_status = Column(String(10), nullable=False, default="Ожидание")
-    reciept = Column(String(255))
-    created_at = Column(DateTime, default=datetime.now())
+    id: Mapped[int] = mapped_column(primary_key=True)
+    payment_type_online: Mapped[bool] = mapped_column(default=False)
+    payment_state: Mapped[str]
 
-    def __repr__(self):
-        return f"{self.payment_method} | {self.payment_status} | {self.amount}"
+    @validates("payment_state")
+    def validate_payment_state(self, payment_state):
+        if payment_state not in PAYMENT_STATE:
+            raise ValueError("Некорректный статус платежа.")
+        self.payment_state = payment_state
+
+
+class Visit(Base):
+    __tablename__ = "visit"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    visit_day: Mapped[datetime]
+    business_unit_id: Mapped[int] = mapped_column(ForeignKey("business_unit.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    admin_user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    admin_user = relationship("User",
+                              foreign_keys=[admin_user_id],
+                              viewonly=True,
+                              primaryjoin="and(Visit.admin_user_id == User.id, User.role == 'admin')")
+    car_number: Mapped[str] = mapped_column(ForeignKey("car.car_number"))
+    service_id: Mapped[int] = mapped_column(ForeignKey("service.id"))
+    visit_summ: Mapped[int]
+    payment_id: Mapped[int] = mapped_column(ForeignKey("payment.id"))
+    visit_bonuspayment: Mapped[bool] = mapped_column(default=False)
+
+    @validates("visit_summ")
+    def validate_positive_visit_summ(self, visit_summ) -> int:
+        if visit_summ < 0:
+            raise ValueError("Сумма платежа не может быть отрицательной.")
+        return visit_summ
