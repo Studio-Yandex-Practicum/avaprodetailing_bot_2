@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import String, Date, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.models.base import Base
 from core.constants import MAX_LENGHT
@@ -8,41 +8,39 @@ from core.constants import MAX_LENGHT
 class BonusesBatch(Base):
     __tablename__ = "bonuses_batch"
 
-    bonuses_batch_id = Column(Integer, primary_key=True)
-    user_id_client = Column(Integer, ForeignKey("client.user_id"))
-    user_id_admin = Column(Integer, ForeignKey("admin.user_id"))
-    bonus_case_id = Column(Integer, ForeignKey("bonus_case.bonus_case_id"))
-    bonus_time_id = Column(Integer, ForeignKey("bonus_time.bonus_time_id"))
-    bonuses_batch_summ = Column(Integer)
-    bonuses_batch_start = Column(Date)
-    bonuses_batch_activity = Column(Boolean)
-
-    client = relationship("Client", foreign_keys=[user_id_client])
-    admin = relationship("Admin", foreign_keys=[user_id_admin])
-    bonus_case = relationship("BonusCase")
-    bonus_time = relationship("BonusTime")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("id.user_id"))
+    admin_id: Mapped[int] = mapped_column(ForeignKey("admin.user_id"))
+    admin: Mapped["Admin"] = relationship(foreign_keys=[admin_id], back_populates="bonuses_batches")
+    case_id: Mapped[int] = mapped_column(ForeignKey("case.case_id"))
+    case: Mapped["BonusCase"] = relationship(back_populates="bonuses_batches")
+    summ: Mapped[int]
+    bonuses_start: Mapped[Date]
+    time_id: Mapped[int] = mapped_column(ForeignKey("time.time_id"))
+    time: Mapped["BonusTime"] = relationship(back_populates="bonuses_batches")
+    bonuses_activity: Mapped[bool]
 
     def __repr__(self):
-        return f'Клиент {self.user_id_client}, Колличество {self.bonuses_batch_start}'
+        return f'Клиент {self.user_id}, Колличество {self.bonuses_summ}'
 
 
 class BonusCase(Base):
     __tablename__ = "bonus_case"
 
-    bonus_case_id = Column(Integer, primary_key=True)
-    bonus_case_name = Column(String(MAX_LENGHT))
-    bonus_case_type = Column(String)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    bonus_name: Mapped[str] = mapped_column(String(MAX_LENGHT))
+    bonus_type: Mapped[str]
 
     def __repr__(self):
-        return f'Название {self.bonus_case_name}, Тип {self.bonus_case_type}'
+        return f'Название {self.bonus_name}, Тип {self.bonus_type}'
 
 
 class BonusTime(Base):
     __tablename__ = "bonus_time"
 
-    bonus_time_id = Column(Integer, primary_key=True)
-    bonus_time_day = Column(Date)
-    bonus_time_duration = Column(Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    bonus_time_day: Mapped[Date]
+    bonus_time_duration: Mapped[int]
 
     def __repr__(self):
         return f'Дата выдачи бонуса {self.bonus_time_day}, Длительность {self.bonus_time_duration}'
@@ -51,18 +49,16 @@ class BonusTime(Base):
 class BonusPayment(Base):
     __tablename__ = "bonus_payment"
 
-    bonus_payment_id = Column(Integer, primary_key=True)
-    user_id_client = Column(Integer, ForeignKey("client.user_id"))
-    user_id_admin = Column(Integer, ForeignKey("admin.user_id"))
-    bonuses_batch_id = Column(Integer, ForeignKey("bonuses_batch.bonuses_batch_id"))
-    bonus_case_id = Column(Integer, ForeignKey("bonus_case.bonus_case_id"))
-    bonuses_payment_summ = Column(Integer)
-    bonuses_payment_date = Column(Date)
-
-    client = relationship("Client", foreign_keys=[user_id_client])
-    admin = relationship("Admin", foreign_keys=[user_id_admin])
-    bonuses_batch = relationship("BonusesBatch")
-    bonus_case = relationship("BonusCase")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("id.user_id"))
+    admin_id: Mapped[int] = mapped_column(ForeignKey("adminr.user_id"))
+    admin: Mapped["Admin"] = relationship(foreign_keys=[admin_id], back_populates="bonus_payments")
+    batch_id: Mapped[int] = mapped_column(ForeignKey("batch.batch_id"))
+    batch: Mapped["BonusesBatch"] = relationship(back_populates="bonus_payments")
+    case_id: Mapped[int] = mapped_column(ForeignKey("case.case_id"))
+    case: Mapped["BonusCase"] = relationship(back_populates="bonus_payments")
+    summ: Mapped[int]
+    date: Mapped[Date]
 
     def __repr__(self):
-        return f'Клиент {self.user_id_client}, Списание {self.bonuses_payment_summ}'
+        return f'Клиент {self.user_id_}, Списание {self.summ}'
