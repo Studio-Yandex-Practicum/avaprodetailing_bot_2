@@ -7,6 +7,7 @@ from db.models import User
 
 
 class UsersCRUD:
+    
     async def create(
         self,
         obj_in,

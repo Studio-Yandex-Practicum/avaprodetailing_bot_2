@@ -5,8 +5,8 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.validators import user_check_before_reg
-from .keyboard_test import reg_kb, fsm_kb
+from utils.validators import user_check_before_reg
+from keyboards.users_keyboards import reg_kb, fsm_kb
 
 router = Router(name=__name__)
 

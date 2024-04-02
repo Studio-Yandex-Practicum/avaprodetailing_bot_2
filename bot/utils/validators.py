@@ -6,7 +6,7 @@ async def user_check_before_reg(
     session: AsyncSession,
 ):
     #user = await users_crud.?????????
-    
+    user= False
     if user:
         return False
     return True
