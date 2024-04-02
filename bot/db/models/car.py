@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, CheckConstraint
+from sqlalchemy import Column, String
 
 from bot.db.models.base import Base
 
