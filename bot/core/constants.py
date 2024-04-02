@@ -1,0 +1,2 @@
+MAX_LENGHT = 50
+ZERO = 0
