@@ -1,19 +1,13 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, CheckConstraint
 
+from bot.db.models.base import Base
 
-'''class PreBase:
-
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
-
-    id = Column(Integer, primary_key=True)
-
-Base = declarative_base(cls=PreBase)
-'''
-# Подразумевается, что такой Base в другом файле будет
 
 class Car(Base):
+    __tablename__ = "car"
     brand = Column(String, nullable=False)
     model = Column(String, nullable=False)
-    number = Column(String, unique=True, nullable=False)
+    number = Column(String(6), unique=True)
+
+    def __repr__(self):
+        return f"Брэнд-{self.brand}, Модель-{self.model}, Номер-{self.number}"
