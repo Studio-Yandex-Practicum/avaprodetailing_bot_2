@@ -15,32 +15,32 @@ class BonusesBatch(Base):
     case_id: Mapped[int] = mapped_column(ForeignKey("case.case_id"))
     case: Mapped["BonusCase"] = relationship(back_populates="bonuses_batches")
     summ: Mapped[int]
-    bonuses_start: Mapped[Date]
+    start: Mapped[Date]
     time_id: Mapped[int] = mapped_column(ForeignKey("time.time_id"))
     time: Mapped["BonusTime"] = relationship(back_populates="bonuses_batches")
-    bonuses_activity: Mapped[bool]
+    activity: Mapped[bool]
 
     def __repr__(self):
-        return f'Клиент {self.user_id}, Колличество {self.bonuses_summ}'
+        return f'Клиент {self.user_id}, Колличество {self.summ}'
 
 
 class BonusCase(Base):
     __tablename__ = "bonus_case"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    bonus_name: Mapped[str] = mapped_column(String(MAX_LENGHT))
-    bonus_type: Mapped[str]
+    name: Mapped[str] = mapped_column(String(MAX_LENGHT))
+    type: Mapped[str]
 
     def __repr__(self):
-        return f'Название {self.bonus_name}, Тип {self.bonus_type}'
+        return f'Название {self.name}, Тип {self.type}'
 
 
 class BonusTime(Base):
     __tablename__ = "bonus_time"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    bonus_time_day: Mapped[Date]
-    bonus_time_duration: Mapped[int]
+    day: Mapped[Date]
+    duration: Mapped[int]
 
     def __repr__(self):
         return f'Дата выдачи бонуса {self.bonus_time_day}, Длительность {self.bonus_time_duration}'
