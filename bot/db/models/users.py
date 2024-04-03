@@ -21,7 +21,7 @@ class User(Base):
     car: Mapped[int] = mapped_column(ForeignKey('car.id'))
     tg_user_id: Mapped[int]
     role: Mapped[str] = mapped_column(default=USER_ROLE['user'])
-    is_active: Mapped[Boolean] = mapped_column(default=True)
+    is_active: Mapped[bool] = mapped_column(default=True)
     # email
     
     def __repr__(self) -> str:

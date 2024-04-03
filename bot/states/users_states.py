@@ -45,6 +45,14 @@ async def reg_birth_date(msg: Message, state:FSMContext):
     await msg.answer('Спасибо за регистрацию!')
     await state.clear()
     data['tg_user_id'] = msg.from_user.id
-    print(data)
+    await msg.answer(
+        f'Вы зарегестрировались с такими данными:\n'
+        f'ФИО: {data["fio"]}\n'
+        f'Дата рождения: {data["birth_date"]}\n'
+        f'Номер телефона: {data["phone_number"]}'
+    )
     return data
+
+
+
     
