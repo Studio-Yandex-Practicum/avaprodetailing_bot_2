@@ -1,18 +1,12 @@
 from datetime import datetime
-from enum import Enum
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column, relationship, validates
 
+from bot.core.enums import PaymentStateEnum
 from bot.db.models.base import Base
 from bot.db.models.users import User
-
-
-class PaymentStateEnum(str, Enum):
-    WAITING = "Ожидание"
-    PAID = "Оплачено"
-    NOT_PAID = "Не оплачено"
 
 
 class Payment(Base):
