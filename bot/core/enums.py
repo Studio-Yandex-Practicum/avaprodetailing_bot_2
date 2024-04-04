@@ -1,6 +1,14 @@
 from enum import Enum
 
 
+
+class UserRole(str, Enum):
+    """Роль пользователя"""
+    
+    USER = 'Пользователь'
+    ADMIN = 'Администратор'
+    SUPERADMIN = 'Суперадмин'
+
 class PaymentStateEnum(str, Enum):
     """Статус оплаты"""
     
