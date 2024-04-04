@@ -1,25 +1,25 @@
 from enum import Enum
 
 
-
 class UserRole(str, Enum):
     """Роль пользователя"""
-    
+
     USER = 'Пользователь'
     ADMIN = 'Администратор'
     SUPERADMIN = 'Суперадмин'
 
-class PaymentStateEnum(str, Enum):
+
+class PaymentState(str, Enum):
     """Статус оплаты"""
-    
+
     WAITING = "Ожидание"
     PAID = "Оплачено"
     NOT_PAID = "Не оплачено"
 
 
-class CarBodyTypes(str, Enum):
+class CarBodyType(str, Enum):
     """Типы кузовов"""
-    
+
     SEDAN = 'Седан'
     COUPE = 'Купе'
     HATCHBACK = 'Хэтчбек'

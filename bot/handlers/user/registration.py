@@ -3,18 +3,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from states.user_states import RegUser
-from utils.validators import user_check_before_reg
+from bot.states.user_states import RegUser
 
 router = Router(name=__name__)
 
 
 @router.message(F.text == 'Регистрация') 
 async def testing_user(message: Message, state: FSMContext, session: AsyncSession):
-    user_id = message.from_user.id
-    if await user_check_before_reg(tg_user_id=user_id,session=session):
-        await state.set_state(RegUser.fio)
-        await message.answer('Введите ФИО в формате Иванов Иван Иванович')
+    await state.set_state(RegUser.fio)
+    await message.answer('Введите ФИО в формате Иванов Иван Иванович')
 
 
 @router.message(RegUser.fio)
@@ -28,7 +25,7 @@ async def reg_fio(msg: Message, state:FSMContext):
 async def reg_birth_date(msg: Message, state:FSMContext):
     await state.update_data(birth_date=msg.text)
     await state.set_state(RegUser.phone_number)
-    await msg.answer('Введите контакт')
+    await msg.answer('Введите номер телефона')
 
 
 @router.message(RegUser.phone_number)
