@@ -1,12 +1,10 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
+from keyboards.users_keyboards import fsm_kb, reg_kb
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from utils.validators import user_check_before_reg
-from keyboards.users_keyboards import reg_kb, fsm_kb
 
 router = Router(name=__name__)
 

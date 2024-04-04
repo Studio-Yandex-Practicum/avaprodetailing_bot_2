@@ -1,7 +1,3 @@
-MAX_LENGHT_NAME_SURNAME = 32
+MAX_LENGHT_NAME_SURNAME = 120
 DEFAULT_BALANCE = 0
-USER_ROLE = {
-    'user': 'user',
-    'admin': 'admin',
-    'superadmin': 'superadmin'
-}
+PHONE_MAX_LENGTH = 20

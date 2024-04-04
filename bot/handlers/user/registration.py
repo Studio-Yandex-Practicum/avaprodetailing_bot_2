@@ -1,9 +1,8 @@
-
-from aiogram.types import Message
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from aiogram import Router, F
 from utils.validators import user_check_before_reg
 
 router = Router(name=__name__)
