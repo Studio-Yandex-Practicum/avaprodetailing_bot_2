@@ -1,0 +1,1 @@
+CAR_FIELD_LEN = 20
