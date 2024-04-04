@@ -6,17 +6,15 @@ from sqlalchemy.orm import mapped_column
 
 from bot.db.models.base import Base
 from bot.core.enums import CarBodyTypes
-from bot.core.constants import (CAR_BRAND_FIELD_LEN,
-                                CAR_MODEL_FIELD_LEN,
-                                CAR_NUMBER_FIELD_LEN)
+from bot.core.constants import (CAR_FIELD_LEN)
 
 
 class Car(Base):
     '''Модель автомобиля'''
     __tablename__ = "car"
-    brand: Mapped[str] = mapped_column(String(CAR_BRAND_FIELD_LEN), nullable=False)
-    model: Mapped[str] = mapped_column(String(CAR_MODEL_FIELD_LEN), nullable=False)
-    number: Mapped[str] = mapped_column(String(CAR_NUMBER_FIELD_LEN), unique=True)
+    brand: Mapped[str] = mapped_column(String(CAR_FIELD_LEN), nullable=False)
+    model: Mapped[str] = mapped_column(String(CAR_FIELD_LEN), nullable=False)
+    number: Mapped[str] = mapped_column(String(CAR_FIELD_LEN), unique=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     carbodytype: Mapped[Optional[CarBodyTypes]] = mapped_column()
 
