@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from bot.db.models.bonus_model import Base, BonusCase, BonusesBatch, BonusPayment, BonusTime
+from bot.db.models import Base
 
 load_dotenv('.env')
 

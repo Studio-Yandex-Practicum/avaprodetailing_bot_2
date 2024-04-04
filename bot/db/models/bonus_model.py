@@ -1,9 +1,9 @@
-from datetime import datetime
-from sqlalchemy import Date, ForeignKey, String
+from datetime import datetime, date
+from sqlalchemy import Date, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.db.models.base import Base
-from bot.core.constants import DEFAULT_STRING_SIZE
+from bot.core.constants import DEFAULT_STRING_SIZE  
 
 
 class BonusesBatch(Base):
@@ -41,7 +41,7 @@ class BonusTime(Base):
     __tablename__ = "bonus_time"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    day: Mapped[datetime] = mapped_column(default=datetime.now().date())
+    day: Mapped[date] = mapped_column(server_default=func.now())
     duration: Mapped[int]
 
     def __repr__(self):
@@ -61,7 +61,7 @@ class BonusPayment(Base):
     case_id: Mapped[int] = mapped_column(ForeignKey("case.case_id"))
     case: Mapped["BonusCase"] = relationship(foreign_keys=[case_id], back_populates="bonus_payments")
     summ: Mapped[int]
-    date: Mapped[datetime]
+    date: Mapped[datetime] = mapped_column(default=datetime.now().date())
 
     def __repr__(self):
         return f'Клиент {self.user_id}, Списание {self.summ}'
