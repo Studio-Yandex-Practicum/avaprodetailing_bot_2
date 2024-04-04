@@ -1,28 +1,24 @@
-import enum
+from typing import Optional
 
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 from bot.db.models.base import Base
-
-
-class CarBodyTypes(str, enum.Enum):
-    '''Типы кузовов (надо сделать нормальный список т.к.
-        я в кузовах не разбираюсь)'''
-    type1 = "Тип 1"
-    type2 = "Тип 2"
-    type3 = "Тип 3"
+from bot.core.enums import CarBodyTypes
+from bot.core.constants import (CAR_BRAND_FIELD_LEN,
+                                CAR_MODEL_FIELD_LEN,
+                                CAR_NUMBER_FIELD_LEN)
 
 
 class Car(Base):
-    '''Car model'''
+    '''Модель автомобиля'''
     __tablename__ = "car"
-    brand: Mapped[str] = mapped_column(String(20), nullable=False)
-    model: Mapped[str] = mapped_column(String(20), nullable=False)
-    number: Mapped[str] = mapped_column(String(20), unique=True)
+    brand: Mapped[str] = mapped_column(String(CAR_BRAND_FIELD_LEN), nullable=False)
+    model: Mapped[str] = mapped_column(String(CAR_MODEL_FIELD_LEN), nullable=False)
+    number: Mapped[str] = mapped_column(String(CAR_NUMBER_FIELD_LEN), unique=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    value: Mapped[CarBodyTypes] = mapped_column(default=CarBodyTypes.type1)
+    carbodytype: Mapped[Optional[CarBodyTypes]] = mapped_column()
 
     def __repr__(self):
         return f"Брэнд-{self.brand}, Модель-{self.model}, Номер-{self.number}"
