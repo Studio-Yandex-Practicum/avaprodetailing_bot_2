@@ -1,6 +1,7 @@
 from aiogram import Router
 
-from . import start
+from . import start, registration
+
 
 user_router = Router(name=__name__)
-user_router.include_routers(start.router)
+user_router.include_routers(start.router, registration.router)
