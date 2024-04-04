@@ -1,23 +1,19 @@
 from datetime import date
-from enum import Enum
 
-from core.constants import MAX_LENGHT_NAME_SURNAME, PHONE_MAX_LENGTH
-from db.models.base import Base
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
+from core.constants import MAX_LENGHT_NAME_SURNAME, PHONE_MAX_LENGTH
+from core.enums import UserRole
+from db.models.base import Base
 
-class UserRole(Enum):
-    USER = 'Пользователь'
-    ADMIN = 'Администратор'
-    SUPERADMIN = 'Суперадмин'
 
 class User(Base):
     __tablename__ = 'users'
     
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    is_activity: Mapped[bool] = mapped_column(default=True)
+    is_active: Mapped[bool] = mapped_column(default=True)
     user_agreement: Mapped[bool] = mapped_column(default=False)
     role: Mapped[str] = mapped_column(default=UserRole.USER.value)
     

@@ -1,18 +1,12 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from states.user_states import RegUser
 from utils.validators import user_check_before_reg
 
 router = Router(name=__name__)
-
-class RegUser(StatesGroup):
-    fio = State()
-    
-    birth_date = State()
-    phone_number = State()
-    tg_user_id = State()
 
 
 @router.message(F.text == 'Регистрация') 
