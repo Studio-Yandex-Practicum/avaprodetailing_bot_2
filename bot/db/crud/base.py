@@ -26,19 +26,18 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             session: AsyncSession,
             obj_id: int,
     ) -> Optional[ModelType]:
-        db_obj = await session.execute(
+        db_obj = await session.scalars(
             select(self.model).where(
                 self.model.id == obj_id
-            )
-        )
-        return db_obj.scalars().first()
+            )).first()
+        return db_obj
 
     async def get_multi(
             self,
             session: AsyncSession,
     ) -> List[ModelType]:
-        db_objs = await session.execute(select(self.model))
-        return db_objs.scalars().all()
+        db_objs = await session.scalars(select(self.model)).all()
+        return db_objs
 
     async def create(
             self,
