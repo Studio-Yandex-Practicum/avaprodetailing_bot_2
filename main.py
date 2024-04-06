@@ -4,10 +4,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from db.connector import setup_get_pool
-from middlewares.db import DbSessionMiddleware
-from core.config import settings
-from handlers.routers import main_router
+from bot.core.config import settings
+from bot.db.connector import setup_get_pool
+from bot.handlers.routers import main_router
+from bot.middlewares.db import DbSessionMiddleware
 
 
 def set_middlewares(dp: Dispatcher, session_pool: async_sessionmaker) -> None:
