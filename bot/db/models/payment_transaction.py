@@ -1,11 +1,10 @@
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, func
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column, relationship, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from bot.core.enums import PaymentState
-from .base import Base
+from bot.db.models.base import Base
 
 
 class Payment(Base):
