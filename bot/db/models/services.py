@@ -1,18 +1,26 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, Optional, mapped_column, relationship
+
+from core.constants import DEFAULT_STRING_SIZE, MAX_STRING_SIZE
 from db.models.base import Base
-from core.constants import MAX_LENGHT, MAX_LENGHT_N
-from sqlalchemy.orm import mapped_column, Mapped, validates
-from sqlalchemy import ForeignKey
+
 
 class ServiceUnit(Base):
 
-    __tablename__ = 'serviceunit'
+    __tablename__ = 'service_unit'
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    businesss_unit_id: Mapped[int] = mapped_column(ForeignKey('businesss_unit_id'))
-    service_id:Mapped[int] = mapped_column(ForeignKey('service_id'))
-    service_unit_activity: Mapped[bool]
+    business_unit_id: Mapped[int] = mapped_column(
+        ForeignKey('business_unit.id'))
+    business_unit: Mapped['Service'] = relationship(
+        foreign_keys=[business_unit_id], back_populates='service_unit'
+    )
+    service_id: Mapped[int] = mapped_column(ForeignKey('service.id'))
+    service: Mapped['Service'] = relationship(
+        foreign_keys=[service_id], back_populates='service_unit'
+    )
+    is_active: Mapped[bool] = mapped_column(default=True)
 
 
 class Service(Base):
@@ -21,32 +29,19 @@ class Service(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    service_categroy_id: Mapped[int] = mapped_column(ForeignKey('service_category_id'))
-    service_activity: Mapped[bool]
-    service_note: Mapped[str] = mapped_column(String(MAX_LENGHT_N))
+    category_id: Mapped[int] = mapped_column(ForeignKey('category.id'))
+    category: Mapped['ServiceCategory'] = relationship(
+        foreign_keys=[category_id], back_populates='service'
+    )
+    is_active: Mapped[bool]
+    note: Mapped[Optional[str]] = mapped_column(String(MAX_STRING_SIZE))
 
 
 class ServiceCategory(Base):
 
-    __tablename__ = 'servicecategory'
+    __tablename__ = 'service_category'
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    category: Mapped[str] = mapped_column(String(MAX_LENGHT))
-    service_category_activity: Mapped[bool]
-    service_category_name: Mapped[str] = mapped_column(String(MAX_LENGHT))
-    description: Mapped[str] = mapped_column(String(MAX_LENGHT))
-    price: Mapped[int] = mapped_column(Integer, default=0)
-    duration: Mapped[int]
-
-    @validates('price')
-    def price_summ_on_services(self, price) -> int:
-        if price==0:
-            return('Уточните стоимость у администратора.')
-        return price
-
-    @validates('price')
-    def validate_positive_visit_summ(self, price) -> int:
-        if price < 0:
-            raise ValueError("Сумма платежа не может быть отрицательной.")
-        return price
+    is_active: Mapped[bool] = mapped_column(default=True)
+    name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
