@@ -1,27 +1,29 @@
+from typing import Optional
+
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column, relationship
 
-from bot.core.constants import (MAX_LENGHT_NAME_SURNAME,
+from bot.core.constants import (DEFAULT_STRING_SIZE,
                                 MAX_LENGHT_NOTE)
 from bot.db.models.base import Base
+from bot.db.models.users import User
 
 
 class BusinessUnit(Base):
     __tablename__ = "business_unit"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(MAX_LENGHT_NAME_SURNAME))
+    name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     address: Mapped[str] = mapped_column(String(MAX_LENGHT_NOTE))
-    note: Mapped[str] = mapped_column(String(MAX_LENGHT_NOTE),
-                                      nullable=True)
+    note: Mapped[Optional[str]] = mapped_column(String(MAX_LENGHT_NOTE))
     is_active: Mapped[bool]
     admin_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    admin_user = relationship(
+    admin_user: Optional[User] = relationship(
         "User",
         foreign_keys=[admin_user_id],
         viewonly=True,
-        primaryjoin="and(Visit.admin_user_id == User.id, User.role == 'admin')"
+        primaryjoin="and(BusinessUnit.admin_user_id == User.id, User.role == 'ADMIN')"
     )
 
     def __repr__(self) -> str:
