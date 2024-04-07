@@ -38,7 +38,7 @@ class UserCRUD:
             middle_name = obj_in['fio'].split(' ')[2],
             birth_date = dt.strptime(obj_in['birth_date'],'%d.%m.%Y').date(),
             tg_user_id = obj_in['tg_user_id'],
-        )
+        ) # получение данных из стейтов
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)

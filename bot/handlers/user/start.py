@@ -3,7 +3,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.keyboards.users_keyboards import fsm_kb
+from bot.keyboards.users_keyboards import fsm_kb, reg_kb
 from bot.utils.validators import check_user_from_db
 
 router = Router(name=__name__)
@@ -16,6 +16,8 @@ async def test(message: Message, session: AsyncSession):
     if await check_user_from_db(tg_id=tg_id,session=session):
         await message.answer(
             'Для использования бота необходима регистрация',
-            reply_markup=fsm_kb
+            reply_markup=reg_kb, 
         )
+        
+    
 

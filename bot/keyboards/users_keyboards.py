@@ -7,6 +7,9 @@ reg_kb = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text='Регистрация',
                 #web_app=WebAppInfo(url='')
+                callback_data='Registration',
+                
+                
                 
             ),
         ],
