@@ -1,8 +1,9 @@
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, Optional, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import Optional
 
-from core.constants import DEFAULT_STRING_SIZE, MAX_STRING_SIZE
-from db.models.base import Base
+from bot.core.constants import DEFAULT_STRING_SIZE, MAX_STRING_SIZE
+from .base import Base
 
 
 class ServiceUnit(Base):
