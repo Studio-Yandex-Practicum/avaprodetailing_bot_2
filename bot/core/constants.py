@@ -1,9 +1,6 @@
 DEFAULT_STRING_SIZE = 120
 DEFAULT_BALANCE = 0
 SHORT_STRING_SIZE = 20
-<<<<<<< HEAD
 MAX_STRING_SIZE = 255
-=======
->>>>>>> origin/develop
 
 DEFAULT_USER_ROLE = 'Пользователь'

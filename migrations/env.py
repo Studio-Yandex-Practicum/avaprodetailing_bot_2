@@ -8,11 +8,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-<<<<<<< HEAD
 from bot.db.models.base import Base
-=======
-from bot.db.models import Base
->>>>>>> origin/develop
 
 load_dotenv('.env')
 
