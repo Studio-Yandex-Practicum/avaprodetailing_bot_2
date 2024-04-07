@@ -1,5 +1,5 @@
 from datetime import date
-
+from typing import Optional
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -25,9 +25,9 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     middle_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     birth_date: Mapped[date]
-    note: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
+    note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE), default='')
 
-    tg_user_id: Mapped[int]
+    tg_user_id: Mapped[Optional[int]]
 
     def __repr__(self) -> str:
         return (f'User(id={self.id}, name={self.middle_name} '

@@ -3,15 +3,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.db.crud.users_crud import user_crud
 from bot.states.user_states import RegUser
+from bot.utils.validators import check_user_from_db
 
 router = Router(name=__name__)
 
 
 @router.message(F.text == 'Регистрация') 
 async def testing_user(message: Message, state: FSMContext, session: AsyncSession):
-    await state.set_state(RegUser.fio)
-    await message.answer('Введите ФИО в формате Иванов Иван Иванович')
+    tg_id = message.from_user.id
+    if await check_user_from_db(tg_id=tg_id, session=session):
+        await state.set_state(RegUser.fio)
+        await message.answer('Введите ФИО в формате Иванов Иван Иванович')
+    else:
+        await message.answer('Регистрация невозможна, Вы уже зарегестрированы')
 
 
 @router.message(RegUser.fio)
@@ -29,7 +35,11 @@ async def reg_birth_date(msg: Message, state:FSMContext):
 
 
 @router.message(RegUser.phone_number)
-async def reg_birth_date(msg: Message, state:FSMContext):
+async def reg_birth_date(
+    msg: Message,
+    state:FSMContext,
+    session: AsyncSession
+):
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
     await msg.answer('Спасибо за регистрацию!')
@@ -41,7 +51,8 @@ async def reg_birth_date(msg: Message, state:FSMContext):
         f'Дата рождения: {data["birth_date"]}\n'
         f'Номер телефона: {data["phone_number"]}'
     )
-    return data
+    user = await user_crud.create(obj_in=data,session=session)
+    await msg.answer('Теперь Вам доступны все функции бота')
 
 
 
