@@ -1,7 +1,6 @@
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
-from 
 from bot.core.constants import DEFAULT_STRING_SIZE, MAX_STRING_SIZE
 from .base import Base
 
