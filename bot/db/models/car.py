@@ -1,12 +1,11 @@
 from typing import Optional
 
-from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import Base
-from bot.core.enums import CarBodyType
 from bot.core.constants import SHORT_STRING_SIZE
+from bot.core.enums import CarBodyType
+from bot.db.models.base import Base
 
 
 class Car(Base):

@@ -3,12 +3,10 @@ from typing import Optional
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from bot.core.constants import (
-    DEFAULT_STRING_SIZE, SHORT_STRING_SIZE,
-    DEFAULT_USER_ROLE,
-)
+from bot.core.constants import (DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
+                                SHORT_STRING_SIZE)
 from bot.core.enums import UserRole
-from .base import Base
+from bot.db.models.base import Base
 
 
 class User(Base):
@@ -19,7 +17,6 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(default=True)
     user_agreement: Mapped[bool] = mapped_column(default=False)
     role: Mapped[UserRole] = mapped_column(default=DEFAULT_USER_ROLE)
-
     phone_number: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
     last_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     first_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
