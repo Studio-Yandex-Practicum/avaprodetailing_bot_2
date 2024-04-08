@@ -8,6 +8,12 @@ class UserRole(str, Enum):
     ADMIN = 'Администратор'
     SUPERADMIN = 'Суперадмин'
 
+class BonusType(str, Enum):
+    """Тип операции над бонусами."""
+
+    ACCRUAL = 'Начисление'
+    WRITE_OFF = 'Списание'
+
 
 class PaymentState(str, Enum):
     """Статус оплаты"""

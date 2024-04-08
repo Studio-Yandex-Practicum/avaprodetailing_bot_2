@@ -1,28 +1,26 @@
 from typing import Optional
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column, relationship
 
-from bot.core.constants import (DEFAULT_STRING_SIZE, MAX_LENGHT_NOTE)
+from bot.core.constants import (DEFAULT_STRING_SIZE, LONG_STRING_SIZE)
 from bot.db.models.base import Base
 from bot.db.models.users import User
 
 
 class BusinessUnit(Base):
-    __tablename__ = "business_unit"
+    __tablename__ = 'business_units'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
-    address: Mapped[str] = mapped_column(String(MAX_LENGHT_NOTE))
-    note: Mapped[Optional[str]] = mapped_column(String(MAX_LENGHT_NOTE))
+    address: Mapped[str] = mapped_column(String(LONG_STRING_SIZE))
+    note: Mapped[Optional[str]] = mapped_column(String(LONG_STRING_SIZE))
     is_active: Mapped[bool]
-    admin_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    admin_user: Mapped[Optional[User]] = relationship(
-        foreign_keys=[admin_user_id],
-        viewonly=True,
-        primaryjoin="and(BusinessUnit.admin_user_id == User.id, User.role == 'ADMIN')"
+    admin_users: Mapped[set['User']] = relationship(
+        back_populates='business_unit',
+        primaryjoin="and_(BusinessUnit.id == User.business_unit_id, User.role == 'ADMIN')",
     )
 
     def __repr__(self) -> str:
-        return f"BusinessUnit(id={self.id}, name={self.name}, address={self.address})"
+        return f'BusinessUnit(id={self.id}, name={self.name}, address={self.address})'
