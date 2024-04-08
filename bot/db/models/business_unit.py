@@ -1,10 +1,9 @@
 from typing import Optional
 
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from bot.core.constants import (DEFAULT_STRING_SIZE, LONG_STRING_SIZE)
+from bot.core.constants import DEFAULT_STRING_SIZE, LONG_STRING_SIZE
 from bot.db.models.base import Base
 from bot.db.models.users import User
 
