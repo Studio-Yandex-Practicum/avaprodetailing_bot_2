@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from bot.core.constants import DEFAULT_STRING_SIZE, MAX_STRING_SIZE
 from .base import Base
+from .business_unit import BusinessUnit
 
 
 class ServiceUnit(Base):
@@ -13,7 +14,7 @@ class ServiceUnit(Base):
 
     business_unit_id: Mapped[int] = mapped_column(
         ForeignKey('business_unit.id'))
-    business_unit: Mapped['Service'] = relationship(
+    business_unit: Mapped['BusinessUnit'] = relationship(
         foreign_keys=[business_unit_id], back_populates='service_unit'
     )
     service_id: Mapped[int] = mapped_column(ForeignKey('service.id'))
@@ -29,11 +30,11 @@ class Service(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    category_id: Mapped[int] = mapped_column(ForeignKey('category.id'))
+    category_id: Mapped[int] = mapped_column(ForeignKey('service_category.id'))
     category: Mapped['ServiceCategory'] = relationship(
         foreign_keys=[category_id], back_populates='service'
     )
-    is_active: Mapped[bool]
+    is_active: Mapped[bool] = mapped_column(default=True)
     note: Mapped[Optional[str]] = mapped_column(String(MAX_STRING_SIZE))
 
 
