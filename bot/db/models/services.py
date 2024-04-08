@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from bot.core.constants import DEFAULT_STRING_SIZE, MAX_STRING_SIZE
 from .base import Base
-from .business_unit import BusinessUnit
+from models.business_unit import BusinessUnit
 
 
 class ServiceUnit(Base):
