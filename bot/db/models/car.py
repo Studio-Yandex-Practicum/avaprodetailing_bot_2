@@ -1,22 +1,25 @@
 from typing import Optional
 
-from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from bot.core.constants import SHORT_STRING_SIZE
+from bot.core.enums import CarBodyType
 from bot.db.models.base import Base
-from bot.core.enums import CarBodyTypes
-from bot.core.constants import (CAR_FIELD_LEN)
 
 
 class Car(Base):
     '''Модель автомобиля'''
-    __tablename__ = "car"
-    brand: Mapped[str] = mapped_column(String(CAR_FIELD_LEN), nullable=False)
-    model: Mapped[str] = mapped_column(String(CAR_FIELD_LEN), nullable=False)
-    number: Mapped[str] = mapped_column(String(CAR_FIELD_LEN), unique=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    carbodytype: Mapped[Optional[CarBodyTypes]] = mapped_column()
+
+    __tablename__ = 'cars'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    brand: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
+    model: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
+    number: Mapped[Optional[str]] = mapped_column(
+        String(SHORT_STRING_SIZE), unique=True
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    car_body_type: Mapped[Optional[CarBodyType]]
 
     def __repr__(self):
-        return f"Брэнд-{self.brand}, Модель-{self.model}, Номер-{self.number}"
+        return f'Car(brand={self.brand!r}, model={self.model!r}, number={self.number!r})'
