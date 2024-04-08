@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from bot.db.models.base import Base
-from bot.db.models.user import User
+from bot.db.models.users import User
 
 ModelType = TypeVar('ModelType', bound=Base)
 
