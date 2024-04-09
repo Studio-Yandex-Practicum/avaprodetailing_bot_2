@@ -14,6 +14,7 @@ from bot.utils.validators import (validate_reg_birth_date, validate_reg_fio,
 router = Router(name=__name__)
 
 
+
 @router.callback_query(F.data == 'Registration')
 async def testing_user(
     callback: CallbackQuery,
@@ -22,6 +23,7 @@ async def testing_user(
 ):
     await state.clear()
     await callback.message.delete()
+
     await state.set_state(RegUser.fio)
     await callback.message.answer(
         STATE_FIO
