@@ -1,11 +1,10 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           KeyboardButton, ReplyKeyboardMarkup, WebAppInfo)
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
 
 reg_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Зарегестрироваться',
+                text='Зарегистрироваться',
                 #web_app=WebAppInfo(url='')
                 callback_data='Registration',
             ),
@@ -30,12 +29,44 @@ agree_refuse_kb = InlineKeyboardMarkup(
     ]
 )
 
-fsm_kb = ReplyKeyboardMarkup(
-    keyboard=[
+profile_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
         [
-            KeyboardButton(
-                text='Регистрация',
+            InlineKeyboardButton(
+                text='Профиль',
+                callback_data='profile',
+            ),
+            InlineKeyboardButton(
+                text='Каталог услуг',
+                callback_data='service_catalog',
             ),
         ],
-    ],
+        [
+            InlineKeyboardButton(
+                text='Автомобили',
+                callback_data='cars',
+            ),
+            InlineKeyboardButton(
+                text='Отчеты',
+                callback_data='Reports',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Предъявить QR код',
+                callback_data='qr_code',
+            )
+        ]
+    ]
+)
+
+add_car_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Внести информацию по автомобилю',
+                callback_data='add_car',
+            )
+        ],
+    ]
 )
