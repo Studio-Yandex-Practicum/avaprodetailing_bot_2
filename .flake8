@@ -1,0 +1,12 @@
+[flake8]
+ignore = (
+    E501, E265, F811, PT001, DJ05, D100, D105, D104, W504, W292, D101, W605,
+    D103, D102, D107, D400
+
+)
+max-line-length = 79
+
+max-complexity = 10
+exclude = 
+   tests
+   alembic/versions/*.py

@@ -13,11 +13,8 @@ router = Router(name=__name__)
 async def test(message: Message, session: AsyncSession):
     tg_id = message.from_user.id
     await message.answer('Привет')
-    if await check_user_from_db(tg_id=tg_id,session=session):
+    if await check_user_from_db(tg_id=tg_id, session=session):
         await message.answer(
             'Для использования бота необходима регистрация',
-            reply_markup=reg_kb, 
+            reply_markup=reg_kb,
         )
-        
-    
-
