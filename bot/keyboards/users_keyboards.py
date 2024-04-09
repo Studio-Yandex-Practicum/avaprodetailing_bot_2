@@ -56,7 +56,18 @@ profile_kb = InlineKeyboardMarkup(
                 text='Предъявить QR код',
                 callback_data='qr_code',
             )
-        ]
+        ],
+    ]
+)
+
+back_menu_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Вернуться в меню',
+                callback_data='menu',
+            )
+        ],
     ]
 )
 
