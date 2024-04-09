@@ -53,7 +53,7 @@ def upgrade() -> None:
     sa.Column('birth_date', sa.Date(), nullable=False),
     sa.Column('note', sa.String(length=120), nullable=True),
     sa.Column('tg_user_id', sa.Integer(), nullable=False),
-    sa.Column('business_unit_id', sa.Integer(), nullable=False),
+    sa.Column('business_unit_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['business_unit_id'], ['business_units.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

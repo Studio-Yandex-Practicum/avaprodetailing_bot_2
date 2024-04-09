@@ -27,15 +27,15 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     middle_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     birth_date: Mapped[date]
-    note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE), nullable=True)
+    note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE),nullable=True)
 
-    tg_user_id: Mapped[Optional[int]]
+    tg_user_id: Mapped[Optional[int]] = mapped_column(nullable=True)
 
     cars: Mapped[set['Car']] = relationship()
-    business_unit_id: Mapped[int] = mapped_column(
-        ForeignKey('business_units.id')
+    business_unit_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey('business_units.id'), nullable=True
     )
-    business_unit: Mapped['BusinessUnit'] = relationship(
+    business_unit: Mapped[Optional['BusinessUnit']] = relationship(
         back_populates='admin_users'
     )
     visits: Mapped[set['Visit']] = relationship(
@@ -52,10 +52,9 @@ class User(Base):
                 f'{self.first_name} {self.last_name}, role={self.role})')
 
     @classmethod
-    async def create(
+    async def create_user_obj(
         self,
         obj_in,
-        session: AsyncSession,
     ):
         last_name, first_name, middle_name = [x for x in obj_in['fio'].split(' ')]
         db_obj = User(
@@ -66,7 +65,4 @@ class User(Base):
             birth_date=dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date(),
             tg_user_id=obj_in['tg_user_id'],
         )  # получение данных из стейтов
-        session.add(db_obj)
-        await session.commit()
-        await session.refresh(db_obj)
-        return cast(User, db_obj)
+        return db_obj

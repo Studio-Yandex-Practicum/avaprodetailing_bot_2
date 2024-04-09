@@ -19,6 +19,18 @@ class UserCRUD:
                 select(User).where(User.tg_user_id == user_id)
             ),
         )
+    
+    async def create(
+        self,
+        obj_in,
+        session: AsyncSession,
+        user: Optional[User] = None
+    ) -> User:
+        db_obj = await User.create_user_obj(obj_in=obj_in)
+        session.add(db_obj)
+        await session.commit()
+        await session.refresh(db_obj)
+        return cast(User, db_obj)
 
 
 user_crud = UserCRUD()
