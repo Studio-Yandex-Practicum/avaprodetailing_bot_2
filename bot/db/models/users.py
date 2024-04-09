@@ -1,8 +1,8 @@
 from datetime import date
 from typing import Optional
 
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from bot.core.constants import (DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
                                 SHORT_STRING_SIZE)
@@ -25,22 +25,6 @@ class User(Base):
     birth_date: Mapped[date]
     note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE))
     tg_user_id: Mapped[int]
-
-    cars: Mapped[set['Car']] = relationship()
-    business_unit_id: Mapped[int] = mapped_column(
-        ForeignKey('business_units.id')
-    )
-    business_unit: Mapped['BusinessUnit'] = relationship(
-        back_populates='admin_users'
-    )
-    visits: Mapped[set['Visit']] = relationship(
-        back_populates='user',
-        primaryjoin='User.id == Visit.user_id'
-    )
-    bonuses: Mapped[set['Bonus']] = relationship(
-        back_populates='user',
-        primaryjoin='User.id == Bonus.user_id'  # FIXME: если не будет админов
-    )
 
     def __repr__(self) -> str:
         return (f'User(id={self.id}, name={self.middle_name} '
