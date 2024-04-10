@@ -33,7 +33,10 @@ async def validate_reg_birth_date(msg: str):
     match = re.match(check, msg)
     if match is not None and len(msg) < MAX_LENGTH_BIRTH_DATE:
         birth_date = datetime.strptime(msg, '%d.%m.%Y').date()
-        if current_date > birth_date:
+        if (
+            (current_date > birth_date) and 
+            (birth_date.year in range(current_date.year-100,current_date.year-16))
+        ):
             return True
         return False
     return False
