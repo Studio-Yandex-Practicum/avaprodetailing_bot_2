@@ -14,12 +14,13 @@ from datetime import datetime
 
 router = Router(name=__name__)
 
-
+# Допилить!
 @router.callback_query(F.data == 'profile')
 async def get_profile(
     callback: CallbackQuery,
     session: AsyncSession,
 ):
+    
     await callback.message.delete()
     tg_id = callback.from_user.id
     db_obj = await user_crud.get(user_id=tg_id, session=session)
@@ -30,6 +31,7 @@ async def get_profile(
         f'Отчество: {db_obj.middle_name}\n'
         f'Дата рождения: {birth_date}\n'
         f'Номер телефона: {db_obj.phone_number}\n'
+        f'Бонусы: {"Пока пусто"}\n'
         f'Автомобили: {"Пока пусто, допилить"}\n',
         reply_markup=back_menu_kb
     )
