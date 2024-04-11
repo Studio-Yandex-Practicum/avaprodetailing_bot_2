@@ -24,10 +24,10 @@ class User(Base):
     middle_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     birth_date: Mapped[date]
     note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE))
-    tg_user_id: Mapped[int]
+    tg_user_id: Mapped[Optional[int]]
 
     cars: Mapped[set['Car']] = relationship()
-    business_unit_id: Mapped[int] = mapped_column(
+    business_unit_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('business_units.id')
     )
     business_unit: Mapped['BusinessUnit'] = relationship(

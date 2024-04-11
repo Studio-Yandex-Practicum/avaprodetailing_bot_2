@@ -5,6 +5,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from bot.core.config import settings
+from bot.core.test_base import test_base
 from bot.db.connector import setup_get_pool
 from bot.handlers.routers import main_router
 from bot.middlewares.db import DbSessionMiddleware
