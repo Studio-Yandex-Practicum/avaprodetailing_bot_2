@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -19,6 +19,9 @@ class BusinessUnit(Base):
     admin_users: Mapped[set['User']] = relationship(
         back_populates='business_unit',
         primaryjoin="and_(BusinessUnit.id == User.business_unit_id, User.role == 'ADMIN')",
+    )
+    services: Mapped[List['Service']] = relationship(
+        secondary='service_unit', back_populates='business_units'
     )
 
     def __repr__(self) -> str:
