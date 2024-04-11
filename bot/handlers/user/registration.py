@@ -8,8 +8,8 @@ from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
 from bot.db.models.users import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
-from bot.utils.validators import (validate_reg_birth_date, validate_reg_fio,
-                                  validate_reg_phone_number)
+from bot.utils.validators import (validate_birth_date, validate_fio,
+                                  validate_phone_number)
 
 router = Router(name=__name__)
 
@@ -37,12 +37,12 @@ async def reg_fio(msg: Message, state: FSMContext):
         chat_id=msg.from_user.id,
         message_id=msg.message_id - 1
     )
-    if await validate_reg_fio(msg=msg.text):
-        await state.update_data(fio=msg.text)
-        await state.set_state(RegUser.birth_date)
-        await msg.answer(STATE_BIRTH_DATE)
-    else:
+    if not await validate_fio(msg=msg.text):
         await msg.answer(STATE_FIO)
+        return
+    await state.update_data(fio=msg.text)
+    await state.set_state(RegUser.birth_date)
+    await msg.answer(STATE_BIRTH_DATE)
     await msg.delete()
 
 
@@ -52,12 +52,12 @@ async def reg_birth_date(msg: Message, state: FSMContext):
         chat_id=msg.from_user.id,
         message_id=msg.message_id - 1
     )
-    if await validate_reg_birth_date(msg=msg.text):
-        await state.update_data(birth_date=msg.text)
-        await state.set_state(RegUser.phone_number)
-        await msg.answer(STATE_PHONE_NUMBER)
-    else:
+    if not await validate_birth_date(msg=msg.text):
         await msg.answer(STATE_BIRTH_DATE)
+        return
+    await state.update_data(birth_date=msg.text)
+    await state.set_state(RegUser.phone_number)
+    await msg.answer(STATE_PHONE_NUMBER)
     await msg.delete()
 
 
@@ -71,20 +71,20 @@ async def reg_birth_date(
         chat_id=msg.from_user.id,
         message_id=msg.message_id - 1
     )
-    if await validate_reg_phone_number(msg=msg.text):
-        await state.update_data(phone_number=msg.text)
-        data = await state.get_data()
-        await msg.answer(
-            f'Вы зарегестрировались с такими данными:\n'
-            f'ФИО: {data["fio"]}\n'
-            f'Дата рождения: {data["birth_date"]}\n'
-            f'Номер телефона: {data["phone_number"]}\n'
-            'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
-            'согласие на использование данных.',
-            reply_markup=agree_refuse_kb
-        )
-    else:
+    if not await validate_phone_number(msg=msg.text):
         await msg.answer(STATE_PHONE_NUMBER)
+        return
+    await state.update_data(phone_number=msg.text)
+    data = await state.get_data()
+    await msg.answer(
+        f'Вы зарегестрировались с такими данными:\n'
+        f'ФИО: {data["fio"]}\n'
+        f'Дата рождения: {data["birth_date"]}\n'
+        f'Номер телефона: {data["phone_number"]}\n'
+        'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
+        'согласие на использование данных.',
+        reply_markup=agree_refuse_kb
+    )
     await msg.delete()
 
 

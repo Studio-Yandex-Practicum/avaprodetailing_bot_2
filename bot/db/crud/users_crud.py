@@ -10,13 +10,13 @@ class UserCRUD:
 
     async def get(
         self,
-        user_id: int,
+        tg_user_id: int,
         session: AsyncSession,
     ) -> Optional[User]:
         return cast(
             Optional[User],
             await session.scalar(
-                select(User).where(User.tg_user_id == user_id)
+                select(User).where(User.tg_user_id == tg_user_id)
             ),
         )
     
@@ -26,7 +26,7 @@ class UserCRUD:
         session: AsyncSession,
         user: Optional[User] = None
     ) -> User:
-        db_obj = await User.create_user_obj(obj_in=obj_in)
+        db_obj = await User.data_to_model(obj_in=obj_in)
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)

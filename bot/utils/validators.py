@@ -8,19 +8,19 @@ from bot.db.crud.users_crud import user_crud
 from bot.core.enums import UserRole
 
 
-async def check_user_from_db(
+async def check_user_exists(
     tg_id: int,
     session: AsyncSession,
 ) -> None:
     user = await user_crud.get(
-        user_id=tg_id, session=session
+        tg_user_id=tg_id, session=session
     )
     if user is not None:
         return False
     return True
 
 
-async def check_admin(
+async def check_user_is_admin(
     tg_id: int,
     session: AsyncSession,
 ) -> None:
@@ -32,7 +32,7 @@ async def check_admin(
     return False
 
 
-async def validate_reg_fio(msg: str):
+async def validate_fio(msg: str):
     check = '^[А-ЯЁ]([а-я]*)\s[А-ЯЁ]([а-я]*)\s[А-ЯЁ]([а-я]*)'
     match = re.match(check, msg)
     if match is not None:
@@ -40,7 +40,7 @@ async def validate_reg_fio(msg: str):
     return False
 
 
-async def validate_reg_birth_date(msg: str):
+async def validate_birth_date(msg: str):
     check = '^(([1][0-9])|([2][0-9])|([3][0-1])|([1-9]))\.(([0][1-9])|([1][1-2])|[1-9])\.[1-2]([0-9]..)'
     current_date = date.today()
     match = re.match(check, msg)
@@ -55,7 +55,7 @@ async def validate_reg_birth_date(msg: str):
     return False
 
 
-async def validate_reg_phone_number(msg: str):
+async def validate_phone_number(msg: str):
     check = '\+([0-9]*)'
     match = re.match(check, msg)
     if match is not None:

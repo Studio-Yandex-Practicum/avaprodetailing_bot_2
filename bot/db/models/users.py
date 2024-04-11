@@ -52,11 +52,11 @@ class User(Base):
                 f'{self.first_name} {self.last_name}, role={self.role})')
 
     @classmethod
-    async def create_user_obj(
+    async def data_to_model(
         self,
         obj_in,
     ):
-        last_name, first_name, middle_name = [x for x in obj_in['fio'].split(' ')]
+        last_name, first_name, middle_name = [x for x in obj_in['fio'].split()]
         db_obj = User(
             phone_number=obj_in['phone_number'],
             last_name=last_name,
