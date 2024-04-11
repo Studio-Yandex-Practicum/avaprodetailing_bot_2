@@ -1,47 +1,30 @@
-from datetime import datetime as dt
 import sqlite3
 from datetime import date
+from datetime import datetime as dt
+
 from sqlalchemy import null
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from bot.core.enums import BonusType, UserRole
 from bot.db.models.bonus import Bonus, BonusCase
 from bot.db.models.business_unit import BusinessUnit
 from bot.db.models.car import Car
 from bot.db.models.services import Service, ServiceCategory, ServiceUnit
 from bot.db.models.users import User
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from faker import Faker, providers
 
-USERS = (
-    (
-        (1,1,UserRole.USER,'+7977577','Козлов','Максим','Юрьевич',null,null,null,null),
-    )  
-)
-
-BONUS = (
-    
-)
-
-BUSINES_UNIT = (
-    
-)
-
-CAR = (
-    
-)
-
-PAYMENT = (
-    
-)
-
+fake = Faker('ru_RU')
 
 
 async def test_base(session: AsyncSession,):
+    last_name, first_name, middle_name = [x for x in fake.name().split(' ')]
     db_obj =  User(
-            phone_number='+79',
-            last_name='last_name',
-            first_name='first_name',
-            middle_name='middle_name',
-            birth_date=dt.strptime('16.05.1997', '%d.%m.%Y').date(),
+            phone_number=fake.phone_number(),
+            last_name=last_name,
+            first_name=first_name,
+            middle_name=middle_name,
+            birth_date=dt.strptime(fake.date(), '%Y-%m-%d').date(),
 
         )
     session.add(db_obj)
