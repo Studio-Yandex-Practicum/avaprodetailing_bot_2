@@ -12,7 +12,7 @@ router = Router(name=__name__)
 @router.message(CommandStart())
 async def test(message: Message, session: AsyncSession):
     await message.answer('Привет')
-    # ОБЯЗАТЕЛЬНО СНЕСТИ!!!!!!!!!
+    # FIXME
     await test_base(session=session)
     await message.answer(
         'Для использования бота необходима регистрация',

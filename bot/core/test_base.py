@@ -18,91 +18,68 @@ fake = Faker('ru_RU')
 
 
 async def test_base(session: AsyncSession,):
-    last_name, first_name, middle_name = [x for x in fake.name().split(' ')]
-    db_obj =  User(
+    last_name, first_name, middle_name = [x for x in fake.name().split()]
+
+    user_obj =  User(
             phone_number=fake.phone_number(),
             last_name=last_name,
             first_name=first_name,
             middle_name=middle_name,
             birth_date=dt.strptime(fake.date(), '%Y-%m-%d').date(),
-
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
     
     
-    db_obj =  Bonus(
+    bonus_obj =  Bonus(
             used_amount=11,
             full_amount=11,
             start_date=dt.now(),
             is_active=1,
             user_id=1,
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
     
     
-    db_obj =  BusinessUnit(
+    unit_obj =  BusinessUnit(
             name='unit',
-            address='алтушка',
+            address=fake.address(),
             is_active=1,
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
     
     
-    db_obj =  BonusCase(
+    bonuscase_obj =  BonusCase(
             name='BonusCase',
             type=BonusType.ACCRUAL,
-
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
     
     
-    db_obj =  Car(
+    car_obj =  Car(
             brand='brand',
             model='model',
             user_id=1
-
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
     
     
-    db_obj =  ServiceCategory(
+    service_cat_obj =  ServiceCategory(
             name='name',
             is_active=1
-
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
+
     
-    
-        
-    db_obj =  Service(
+    servcie_obj =  Service(
             category_id=1,
             is_active=1
-
         )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
     
     
-    db_obj =  ServiceUnit(
+    ser_unit_obj =  ServiceUnit(
             business_unit_id=1,
             service_id=1,
-
-
         )
-    session.add(db_obj)
+
+
+    add_obj = [
+        user_obj, bonus_obj, unit_obj, bonuscase_obj, car_obj, service_cat_obj,
+        servcie_obj, ser_unit_obj
+        ]
+    session.add_all(add_obj)
     await session.commit()
-    await session.refresh(db_obj)
 
