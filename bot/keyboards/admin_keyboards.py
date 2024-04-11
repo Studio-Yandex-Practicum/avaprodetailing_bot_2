@@ -42,14 +42,22 @@ super_admin_main_menu = InlineKeyboardMarkup(
     ]
 )
 
-
+# Доработать, тесты
 admin_main_menu = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Регистрация пользователя',
-                callback_data='business_unit'
+                text='Найти клиента',
+                callback_data='search_client'
             ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Регистрация пользователя',
+                callback_data='reg_client'
+            ),
+        ],
+        [
             InlineKeyboardButton(
                 text='Каталог услуг',
                 callback_data='service_catalog',

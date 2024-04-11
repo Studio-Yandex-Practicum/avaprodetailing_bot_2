@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import MAX_LENGTH_BIRTH_DATE
 from bot.db.crud.users_crud import user_crud
+from bot.core.enums import UserRole
 
 
 async def check_user_from_db(
@@ -17,6 +18,18 @@ async def check_user_from_db(
     if user is not None:
         return False
     return True
+
+
+async def check_admin(
+    tg_id: int,
+    session: AsyncSession,
+) -> None:
+    user = await user_crud.get(
+        user_id=tg_id, session=session
+    )
+    if user.role is UserRole.ADMIN:
+        return True
+    return False
 
 
 async def validate_reg_fio(msg: str):
@@ -48,3 +61,6 @@ async def validate_reg_phone_number(msg: str):
     if match is not None:
         return True
     return False
+
+
+

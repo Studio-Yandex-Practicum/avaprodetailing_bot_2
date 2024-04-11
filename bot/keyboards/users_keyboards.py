@@ -47,7 +47,7 @@ profile_kb = InlineKeyboardMarkup(
                 callback_data='cars',
             ),
             InlineKeyboardButton(
-                text='Отчеты',
+                text='История',
                 callback_data='Reports',
             )
         ],

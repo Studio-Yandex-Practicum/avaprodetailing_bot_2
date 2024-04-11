@@ -32,7 +32,9 @@ async def get_profile(
         f'Дата рождения: {birth_date}\n'
         f'Номер телефона: {db_obj.phone_number}\n'
         f'Бонусы: {"Пока пусто"}\n'
-        f'Автомобили: {"Пока пусто, допилить"}\n',
+        f'Автомобили: {"Пока пусто, допилить"}\n'
+        f'\n'
+        f'Для внесения изменений в информацию - обратитесь к администратору.',
         reply_markup=back_menu_kb
     )
     
@@ -47,3 +49,5 @@ async def main_user_menu(
         PROFILE_MESSAGE_WITH_INLINE,
         reply_markup=profile_kb
     )
+
+
