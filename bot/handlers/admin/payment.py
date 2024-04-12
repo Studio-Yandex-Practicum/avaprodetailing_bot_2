@@ -1,7 +1,6 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-import qrcode
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.keyboards.payment_keyboards import payment_and_bonus_menu_kb, qr_keyboard
