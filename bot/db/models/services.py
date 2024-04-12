@@ -9,8 +9,6 @@ class ServiceUnit(Base):
 
     __tablename__ = 'service_unit'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-
     business_unit_id: Mapped[int] = mapped_column(
         ForeignKey('business_units.id'), primary_key=True)
     service_id: Mapped[int] = mapped_column(ForeignKey('service.id'),
