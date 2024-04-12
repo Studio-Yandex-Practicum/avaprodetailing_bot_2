@@ -2,5 +2,5 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class PaymentProcess(StatesGroup):
-    amount = State()
-    payment_type = State()
+    enter_payment = State()
+    scan_qr_code = State()
