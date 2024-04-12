@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from bot.core.constants import SHORT_STRING_SIZE
 from bot.core.enums import CarBodyType
@@ -22,4 +22,5 @@ class Car(Base):
     car_body_type: Mapped[Optional[CarBodyType]]
 
     def __repr__(self):
-        return f'Car(brand={self.brand!r}, model={self.model!r}, number={self.number!r})'
+        return (f'Car(brand={self.brand!r},'
+                f' model={self.model!r}, number={self.number!r})')

@@ -24,7 +24,7 @@ async def reg_fio(msg: Message, state: FSMContext):
 
 
 @router.message(RegUser.birth_date)
-async def reg_birth_date(msg: Message, state: FSMContext):
+async def reg_phone_number(msg: Message, state: FSMContext):
     await state.update_data(birth_date=msg.text)
     await state.set_state(RegUser.phone_number)
     await msg.answer('Введите номер телефона')

@@ -8,6 +8,7 @@ class UserRole(str, Enum):
     ADMIN = 'Администратор'
     SUPERADMIN = 'Суперадмин'
 
+
 class BonusType(str, Enum):
     """Тип операции над бонусами."""
 

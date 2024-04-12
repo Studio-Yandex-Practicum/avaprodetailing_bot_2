@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.core.test_base import test_base
 
+from bot.core.test_base import test_base
 from bot.keyboards.users_keyboards import fsm_kb
 
 router = Router(name=__name__)
@@ -18,4 +18,3 @@ async def test(message: Message, session: AsyncSession):
         'Для использования бота необходима регистрация',
         reply_markup=fsm_kb
     )
-

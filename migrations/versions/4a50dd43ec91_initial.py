@@ -1,8 +1,8 @@
-"""empty message
+"""initial
 
-Revision ID: 3747a81368ed
-Revises: b2f44254e30a
-Create Date: 2024-04-11 16:02:17.918684
+Revision ID: 4a50dd43ec91
+Revises: 
+Create Date: 2024-04-12 15:41:17.733195
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3747a81368ed'
-down_revision: Union[str, None] = 'b2f44254e30a'
+revision: str = '4a50dd43ec91'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -41,18 +41,18 @@ def upgrade() -> None:
     sa.Column('payment_state', sa.Enum('WAITING', 'PAID', 'NOT_PAID', name='paymentstate'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('service_category',
+    op.create_table('service_categories',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('service',
+    op.create_table('services',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('note', sa.String(length=255), nullable=True),
-    sa.ForeignKeyConstraint(['category_id'], ['service_category.id'], ),
+    sa.ForeignKeyConstraint(['category_id'], ['service_categories.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -99,7 +99,7 @@ def upgrade() -> None:
     sa.Column('service_id', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['business_unit_id'], ['business_units.id'], ),
-    sa.ForeignKeyConstraint(['service_id'], ['service.id'], ),
+    sa.ForeignKeyConstraint(['service_id'], ['services.id'], ),
     sa.PrimaryKeyConstraint('business_unit_id', 'service_id')
     )
     op.create_table('visits',
@@ -111,11 +111,13 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('admin_user_id', sa.Integer(), nullable=False),
     sa.Column('car_id', sa.Integer(), nullable=False),
+    sa.Column('service_id', sa.Integer(), nullable=True),
     sa.Column('payment_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['admin_user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['business_unit_id'], ['business_units.id'], ),
     sa.ForeignKeyConstraint(['car_id'], ['cars.id'], ),
     sa.ForeignKeyConstraint(['payment_id'], ['payments.id'], ),
+    sa.ForeignKeyConstraint(['service_id'], ['services.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -129,8 +131,8 @@ def downgrade() -> None:
     op.drop_table('cars')
     op.drop_table('bonuses')
     op.drop_table('users')
-    op.drop_table('service')
-    op.drop_table('service_category')
+    op.drop_table('services')
+    op.drop_table('service_categories')
     op.drop_table('payments')
     op.drop_table('business_units')
     op.drop_table('bonus_cases')
