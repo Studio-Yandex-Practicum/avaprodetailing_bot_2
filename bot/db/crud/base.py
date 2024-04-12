@@ -1,18 +1,15 @@
-from typing import Generic, List, Optional, Type, TypeVar
+from typing import Generic, List, Optional, Type, TypeVar, cast
 
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from bot.db.models.base import Base
-from bot.db.models.user import User
+# from bot.db.models.users import User
 
 ModelType = TypeVar('ModelType', bound=Base)
-CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
-UpdateSchemaType = TypeVar('UpdateSchemaType', bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+class CRUDBase(Generic[ModelType]):
 
     def __init__(
             self,
@@ -25,11 +22,31 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             session: AsyncSession,
             obj_id: int,
     ) -> Optional[ModelType]:
-        db_obj = await session.scalars(
+        '''db_obj = await session.scalars(
             select(self.model).where(
                 self.model.id == obj_id
             )).first()
-        return db_obj
+        return db_obj'''
+        return cast(
+            Optional[self.model],
+            await session.scalars(
+                select(self.model).where(self.model.id == obj_id)
+            ).first(),
+        )
+
+    async def get_by_attribute(
+            self,
+            session: AsyncSession,
+            attr_name: str,
+            attr_value
+    ) -> Optional[ModelType]:
+        return cast(
+            Optional[self.model],
+            await session.scalars(
+                select(self.model).where(
+                    getattr(self.model, attr_name) == attr_value)
+            ).first(),
+        )
 
     async def get_multi(
             self,
@@ -42,12 +59,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             self,
             obj_in,
             session: AsyncSession,
-            user: Optional[User] = None
+            # user: Optional[User] = None
     ):
         obj_in_data = obj_in.dict()
-        if user is not None:
-            obj_in_data['user_id'] = user.id
         db_obj = self.model(**obj_in_data)
+        #  await session.merge(db_obj)
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
@@ -59,12 +75,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             obj_in,
             session: AsyncSession,
     ):
-        obj_data = db_obj.__dict__.iteritems()
+        obj_data = db_obj.__dict__.items()
         update_data = obj_in.dict(exclude_unset=True)
 
         for field in obj_data:
             if field[0] in update_data:
                 setattr(db_obj, field[0], field[1])
+        # await session.merge(db_obj)
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
