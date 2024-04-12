@@ -66,7 +66,6 @@ class CRUDBase(Generic[ModelType]):
         #  await session.merge(db_obj)
         session.add(db_obj)
         await session.commit()
-        await session.refresh(db_obj)
         return db_obj
 
     async def update(
@@ -84,7 +83,6 @@ class CRUDBase(Generic[ModelType]):
         # await session.merge(db_obj)
         session.add(db_obj)
         await session.commit()
-        await session.refresh(db_obj)
         return db_obj
 
     async def remove(
