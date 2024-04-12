@@ -16,6 +16,17 @@ router = Router(name=__name__)
 
 
 
+reg_message = (
+    f'Вы зарегестрировались с такими данными:\n'
+    f'ФИО: {{}}\n'
+    f'Дата рождения: {{}}\n'
+    f'Номер телефона: {{}}\n'
+    f'\n'
+    'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
+    'согласие на использование данных.'
+)
+
+
 @router.callback_query(F.data == 'Registration')
 async def testing_user(
     callback: CallbackQuery,
@@ -63,7 +74,7 @@ async def reg_birth_date(msg: Message, state: FSMContext):
 
 
 @router.message(RegUser.phone_number)
-async def reg_birth_date(
+async def reg_phone_number(
     msg: Message,
     state: FSMContext,
     session: AsyncSession
@@ -78,12 +89,7 @@ async def reg_birth_date(
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
     await msg.answer(
-        f'Вы зарегестрировались с такими данными:\n'
-        f'ФИО: {data["fio"]}\n'
-        f'Дата рождения: {data["birth_date"]}\n'
-        f'Номер телефона: {data["phone_number"]}\n'
-        'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
-        'согласие на использование данных.',
+        reg_message.format(data["fio"], data["birth_date"], data["phone_number"]),
         reply_markup=agree_refuse_kb
     )
     await msg.delete()
@@ -101,7 +107,6 @@ async def registrate_agree(
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
     await users_crud.update(db_obj=await User.data_to_model(obj_in=data),session=session,obj_in=data)
-    #(obj_in=data, session=session)
     await callback.message.answer(
         THX_REG,
         reply_markup=add_car_kb

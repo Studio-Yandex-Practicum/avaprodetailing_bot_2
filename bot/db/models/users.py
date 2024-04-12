@@ -53,11 +53,11 @@ class User(Base):
 
     @classmethod
     async def data_to_model(
-        self,
+        cls,
         obj_in,
     ):
         last_name, first_name, middle_name = [x for x in obj_in['fio'].split()]
-        db_obj = User(
+        db_obj = cls(
             phone_number=obj_in['phone_number'],
             last_name=last_name,
             first_name=first_name,

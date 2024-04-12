@@ -76,7 +76,7 @@ add_car_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Внести информацию по автомобилю',
+                text='Добавить автомобиль',
                 callback_data='add_car',
             )
         ],

@@ -57,9 +57,8 @@ async def validate_birth_date(msg: str):
 async def validate_phone_number(msg: str):
     check = '\+([0-9]*)'
     match = re.match(check, msg)
-    if match is not None:
-        return True
-    return False
+    return match is not None
+
 
 
 
