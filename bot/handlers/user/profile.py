@@ -15,16 +15,16 @@ from bot.db.crud.users import users_crud
 router = Router(name=__name__)
 
 profile_message = (
-    f'Фамилия:{{}}\n'
-    f'Имя:{{}}\n'
-    f'Отчество: {{}}\n'
-    f'Дата рождения: {{}}\n'
-    f'Номер телефона: {{}}\n'
-    f'Бонусы: {"Пока пусто"}\n'
-    f'Автомобили: {"Пока пусто, допилить"}\n'
-    f'\n'
-    f'Для внесения изменений в информацию - обратитесь к администратору.'
-    )
+    'Фамилия:{last_name}\n'
+    'Имя:{first_name}\n'
+    'Отчество: {middle_name}\n'
+    'Дата рождения: {birth_date}\n'
+    'Номер телефона: {phone_number}\n'
+    'Бонусы: {bonus}\n'
+    'Автомобили: {cars}\n'
+    '\n'
+    'Для внесения изменений в информацию - обратитесь к администратору.'
+)
 
 
 # FIXME
@@ -39,7 +39,15 @@ async def get_profile(
     db_obj = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
     birth_date = datetime.strftime(db_obj.birth_date,'%d.%m.%Y')
     await callback.message.answer(
-        profile_message.format(db_obj.last_name,db_obj.first_name,db_obj.middle_name,birth_date,db_obj.phone_number),
+        profile_message.format(
+            last_name=db_obj.last_name,
+            first_name=db_obj.first_name,
+            middle_name=db_obj.middle_name,
+            birth_date=birth_date,
+            phone_number=db_obj.phone_number,
+            bonus=1,
+            cars=2,
+        ),
         reply_markup=back_menu_kb
     )
     

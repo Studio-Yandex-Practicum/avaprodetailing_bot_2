@@ -26,12 +26,10 @@ async def test(message: Message, session: AsyncSession):
             reply_markup=reg_kb,
         )
     elif await check_user_is_admin(tg_id=tg_id, session=session):
-
         await message.answer(
                 WELCOME_ADMIN_MESSAGE,
                 reply_markup=admin_main_menu,
             )
-    
     else:
         await message.answer(
             PROFILE_MESSAGE_WITH_INLINE,

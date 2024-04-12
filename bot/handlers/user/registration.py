@@ -17,11 +17,11 @@ router = Router(name=__name__)
 
 
 reg_message = (
-    f'Вы зарегестрировались с такими данными:\n'
-    f'ФИО: {{}}\n'
-    f'Дата рождения: {{}}\n'
-    f'Номер телефона: {{}}\n'
-    f'\n'
+    'Вы зарегестрировались с такими данными:\n'
+    'ФИО: {fio}\n'
+    'Дата рождения: {birth_date}\n'
+    'Номер телефона: {phone_number}\n'
+    '\n'
     'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
     'согласие на использование данных.'
 )
@@ -89,7 +89,11 @@ async def reg_phone_number(
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
     await msg.answer(
-        reg_message.format(data["fio"], data["birth_date"], data["phone_number"]),
+        reg_message.format(
+            fio=data["fio"], 
+            birth_date=data["birth_date"], 
+            phone_number=data["phone_number"]
+        ),
         reply_markup=agree_refuse_kb
     )
     await msg.delete()
@@ -106,7 +110,7 @@ async def registrate_agree(
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
-    await users_crud.update(db_obj=await User.data_to_model(obj_in=data),session=session,obj_in=data)
+    await users_crud.create(obj_in=data, session=session)
     await callback.message.answer(
         THX_REG,
         reply_markup=add_car_kb
