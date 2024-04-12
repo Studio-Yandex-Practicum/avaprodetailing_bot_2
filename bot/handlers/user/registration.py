@@ -2,9 +2,10 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.crud.users_crud import user_crud
+#from bot.db.crud.users_crud import user_crud
 from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
                                 STATE_PHONE_NUMBER, THX_REG)
+from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
@@ -99,7 +100,8 @@ async def registrate_agree(
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
-    await user_crud.create(obj_in=data, session=session)
+    await users_crud.update(db_obj=await User.data_to_model(obj_in=data),session=session,obj_in=data)
+    #(obj_in=data, session=session)
     await callback.message.answer(
         THX_REG,
         reply_markup=add_car_kb

@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.crud.users_crud import user_crud
+#from bot.db.crud.users_crud import user_crud
 from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE, STATE_FIO,
                                 STATE_PHONE_NUMBER, THX_REG)
 from bot.db.models.users import User
@@ -11,7 +11,7 @@ from bot.states.user_states import RegUser
 from bot.utils.validators import (validate_birth_date, validate_fio,
                                   validate_phone_number)
 from datetime import datetime
-
+from bot.db.crud.users import users_crud
 router = Router(name=__name__)
 
 # Допилить!
@@ -23,7 +23,7 @@ async def get_profile(
     
     await callback.message.delete()
     tg_id = callback.from_user.id
-    db_obj = await user_crud.get(user_id=tg_id, session=session)
+    db_obj = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
     birth_date = datetime.strftime(db_obj.birth_date,'%d.%m.%Y')
     await callback.message.answer(
         f'Фамилия:{db_obj.last_name}\n'

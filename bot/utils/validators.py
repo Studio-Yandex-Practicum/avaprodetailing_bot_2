@@ -4,7 +4,8 @@ from datetime import date, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import MAX_LENGTH_BIRTH_DATE
-from bot.db.crud.users_crud import user_crud
+#from bot.db.crud.users_crud import user_crud
+from bot.db.crud.users import users_crud
 from bot.core.enums import UserRole
 
 
@@ -12,9 +13,9 @@ async def check_user_exists(
     tg_id: int,
     session: AsyncSession,
 ) -> None:
-    user = await user_crud.get(
-        tg_user_id=tg_id, session=session
-    )
+    user = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
+        #tg_user_id=tg_id, session=session
+    
     if user is not None:
         return False
     return True
@@ -24,9 +25,7 @@ async def check_user_is_admin(
     tg_id: int,
     session: AsyncSession,
 ) -> None:
-    user = await user_crud.get(
-        user_id=tg_id, session=session
-    )
+    user = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
     if user.role is UserRole.ADMIN:
         return True
     return False

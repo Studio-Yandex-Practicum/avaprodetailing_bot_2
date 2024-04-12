@@ -36,11 +36,11 @@ class CRUDBase(Generic[ModelType]):
     ) -> Optional[ModelType]:
         return cast(
             Optional[self.model],
-            await session.scalars(
+            await session.scalar(
                 select(self.model).where(
                     getattr(self.model, attr_name) == attr_value
                 )
-            ).first(),
+            ),
         )
 
     async def get_multi(
