@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
@@ -8,6 +9,7 @@ from bot.db.models.base import Base
 
 
 # FIXME: добавить cascade
+# FIXME: объединили в одну модель
 class Payment(Base):
     __tablename__ = 'payments'
 
@@ -20,9 +22,6 @@ class Payment(Base):
                 f' state={self.payment_state!r})')
 
 
-# TODO: не странно ли что в посещении мы регистрируем сумму, а не в платеже?
-#  Если visit то же что и внесени оплаты,
-#  тогда почему бы не перенести поля из Payment в Visit и сделать visit основой
 class Visit(Base):
     __tablename__ = 'visits'
     # TODO: validations to constraints
@@ -44,11 +43,13 @@ class Visit(Base):
     admin_user: Mapped['User'] = relationship(
         foreign_keys=(admin_user_id,)
     )
-    # TODO: что за такой cars_number здесь был?
     car_id: Mapped[str] = mapped_column(ForeignKey('cars.id'))
-    # service_id: Mapped[Optional[int]] = mapped_column(ForeignKey('services.id'))
+    service_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey('services.id')
+    )
     payment_id: Mapped[int] = mapped_column(ForeignKey('payments.id'))
 
+    # TODO: положить в constraints
     @validates('summ')
     def validate_positive_visit_summ(self, summ) -> int:
         if summ < 0:

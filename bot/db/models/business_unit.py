@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,11 +18,13 @@ class BusinessUnit(Base):
     is_active: Mapped[bool]
     admin_users: Mapped[set['User']] = relationship(
         back_populates='business_unit',
-        primaryjoin="and_(BusinessUnit.id == User.business_unit_id, User.role == 'ADMIN')",
+        primaryjoin="and_(BusinessUnit.id == User.business_unit_id, "
+                    "User.role == 'ADMIN')",
     )
     services: Mapped[List['Service']] = relationship(
         secondary='service_unit', back_populates='business_units'
     )
 
     def __repr__(self) -> str:
-        return f'BusinessUnit(id={self.id}, name={self.name}, address={self.address})'
+        return (f'BusinessUnit(id={self.id},'
+                f' name={self.name}, address={self.address})')

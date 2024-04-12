@@ -33,6 +33,7 @@ class User(Base):
 
     cars: Mapped[set['Car']] = relationship()
     business_unit_id: Mapped[Optional[int]] = mapped_column(
+    business_unit_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('business_units.id')
     )
     business_unit: Mapped[Optional['BusinessUnit']] = relationship(
