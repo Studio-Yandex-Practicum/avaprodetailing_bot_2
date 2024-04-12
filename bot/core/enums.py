@@ -1,9 +1,46 @@
-import enum
+from enum import Enum
 
 
-class CarBodyTypes(str, enum.Enum):
-    '''Типы кузовов'''
-#TODO Переименовать кузова
-    type1 = "Тип 1"
-    type2 = "Тип 2"
-    type3 = "Тип 3"
+class UserRole(str, Enum):
+    """Роль пользователя"""
+
+    USER = 'Пользователь'
+    ADMIN = 'Администратор'
+    SUPERADMIN = 'Суперадмин'
+
+class BonusType(str, Enum):
+    """Тип операции над бонусами."""
+
+    ACCRUAL = 'Начисление'
+    WRITE_OFF = 'Списание'
+
+
+class PaymentState(str, Enum):
+    """Статус оплаты"""
+
+    WAITING = "Ожидание"
+    PAID = "Оплачено"
+    NOT_PAID = "Не оплачено"
+
+
+class CarBodyType(str, Enum):
+    """Типы кузовов"""
+
+    SEDAN = 'Седан'
+    COUPE = 'Купе'
+    HATCHBACK = 'Хэтчбек'
+    LIFTBACK = 'Лифтбек'
+    FASTBACK = 'Фастбэк'
+    STATION_WAGON = 'Универсал'
+    CROSSOVER = 'Кроссовер'
+    OFFROAD = 'Внедорожник'
+    PICKUP = 'Пикап'
+    VAN = 'Легковой фургон'
+    MINIVAN = 'Минивэн'
+    COMPACT_VAN = 'Компактвэн'
+    MICROVAN = 'Микровэн'
+    CONVERTIBLE = 'Кабриолет'
+    ROADSTER = 'Родстер'
+    TARGA = 'Тарга'
+    LANDAU = 'Ландо'
+    LIMOUSINE = 'Лимузин'
