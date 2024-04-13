@@ -13,9 +13,7 @@ async def check_user_exists(
     session: AsyncSession,
 ) -> None:
     user = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
-    if user is not None:
-        return False
-    return True
+    return user is None
 
 
 async def check_user_is_admin(
@@ -43,7 +41,6 @@ async def validate_birth_date(msg: str):
             (birth_date.year in range(current_date.year-100,current_date.year-16))
         ):
             return True
-        return False
     return False
 
 
