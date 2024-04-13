@@ -51,7 +51,15 @@ async def reg_fio(msg: Message, state: FSMContext):
     state_data = await state.get_data()
     
     if not await validate_fio(msg=msg.text):
-        await msg.answer(STATE_FIO)
+        await msg.delete()
+        await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text=(
+                f'{STATE_FIO}\n'
+                f'Вы ввели {msg.text}'
+            )
+        )
         return
     await msg.bot.edit_message_text(
         chat_id=msg.from_user.id,
@@ -65,13 +73,21 @@ async def reg_fio(msg: Message, state: FSMContext):
 
 @router.message(RegUser.birth_date)
 async def reg_birth_date(msg: Message, state: FSMContext):
-
+    state_data = await state.get_data()
     if not await validate_birth_date(msg=msg.text):
-        await msg.answer(STATE_BIRTH_DATE)
+        await msg.delete()
+        await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text=(
+                f'{STATE_BIRTH_DATE}\n'
+                f'Вы ввели {msg.text}'
+            )
+        )
         return
     await state.update_data(birth_date=msg.text)
     await state.set_state(RegUser.phone_number)
-    state_data = await state.get_data()
+    
     await msg.bot.edit_message_text(
         chat_id=msg.from_user.id,
         message_id=state_data['msg_id'],
@@ -86,12 +102,20 @@ async def reg_phone_number(
     state: FSMContext,
     session: AsyncSession
 ):
+    state_data = await state.get_data()
     if not await validate_phone_number(msg=msg.text):
-        await msg.answer(STATE_PHONE_NUMBER)
+        await msg.delete()
+        await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text=(
+                f'{STATE_PHONE_NUMBER}\n'
+                f'Вы ввели {msg.text}'
+            )
+        )
         return
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
-    state_data = await state.get_data()
     await msg.bot.edit_message_text(
         text=reg_message.format(
             fio=data["fio"], 
