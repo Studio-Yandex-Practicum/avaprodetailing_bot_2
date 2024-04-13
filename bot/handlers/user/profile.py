@@ -15,9 +15,7 @@ from bot.db.crud.users import users_crud
 router = Router(name=__name__)
 
 profile_message = (
-    'Фамилия:{last_name}\n'
-    'Имя:{first_name}\n'
-    'Отчество: {middle_name}\n'
+    'ФИО: {last_name} {first_name}\n'
     'Дата рождения: {birth_date}\n'
     'Номер телефона: {phone_number}\n'
     'Бонусы: {bonus}\n'
@@ -42,7 +40,6 @@ async def get_profile(
         profile_message.format(
             last_name=db_obj.last_name,
             first_name=db_obj.first_name,
-            middle_name=db_obj.middle_name,
             birth_date=birth_date,
             phone_number=db_obj.phone_number,
             bonus=1,

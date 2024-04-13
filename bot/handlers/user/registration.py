@@ -37,39 +37,46 @@ async def testing_user(
     await callback.message.delete()
 
     await state.set_state(RegUser.fio)
-    await callback.message.answer(
+    msg = await callback.message.answer(
         STATE_FIO
+    )
+    await state.update_data(
+        msg_id=msg.message_id
     )
     await callback.answer()
 
 
 @router.message(RegUser.fio)
 async def reg_fio(msg: Message, state: FSMContext):
-    await msg.bot.delete_message(
-        chat_id=msg.from_user.id,
-        message_id=msg.message_id - 1
-    )
+    state_data = await state.get_data()
+    
     if not await validate_fio(msg=msg.text):
         await msg.answer(STATE_FIO)
         return
+    await msg.bot.edit_message_text(
+        chat_id=msg.from_user.id,
+        message_id=state_data['msg_id'],
+        text=STATE_BIRTH_DATE
+    )
     await state.update_data(fio=msg.text)
     await state.set_state(RegUser.birth_date)
-    await msg.answer(STATE_BIRTH_DATE)
     await msg.delete()
 
 
 @router.message(RegUser.birth_date)
 async def reg_birth_date(msg: Message, state: FSMContext):
-    await msg.bot.delete_message(
-        chat_id=msg.from_user.id,
-        message_id=msg.message_id - 1
-    )
+
     if not await validate_birth_date(msg=msg.text):
         await msg.answer(STATE_BIRTH_DATE)
         return
     await state.update_data(birth_date=msg.text)
     await state.set_state(RegUser.phone_number)
-    await msg.answer(STATE_PHONE_NUMBER)
+    state_data = await state.get_data()
+    await msg.bot.edit_message_text(
+        chat_id=msg.from_user.id,
+        message_id=state_data['msg_id'],
+        text=STATE_PHONE_NUMBER
+    )
     await msg.delete()
 
 
@@ -79,21 +86,20 @@ async def reg_phone_number(
     state: FSMContext,
     session: AsyncSession
 ):
-    await msg.bot.delete_message(
-        chat_id=msg.from_user.id,
-        message_id=msg.message_id - 1
-    )
     if not await validate_phone_number(msg=msg.text):
         await msg.answer(STATE_PHONE_NUMBER)
         return
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
-    await msg.answer(
-        reg_message.format(
+    state_data = await state.get_data()
+    await msg.bot.edit_message_text(
+        text=reg_message.format(
             fio=data["fio"], 
             birth_date=data["birth_date"], 
             phone_number=data["phone_number"]
         ),
+        chat_id=msg.from_user.id,
+        message_id=state_data['msg_id'],
         reply_markup=agree_refuse_kb
     )
     await msg.delete()
@@ -106,12 +112,15 @@ async def registrate_agree(
     session: AsyncSession,
 ):
 
-    await callback.message.delete()
+
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
+    
     await users_crud.create(obj_in=data, session=session)
-    await callback.message.answer(
+    await callback.bot.edit_message_text(
         THX_REG,
-        reply_markup=add_car_kb
+        chat_id=callback.from_user.id,
+        message_id=data['msg_id'],
+        reply_markup=add_car_kb,
     )

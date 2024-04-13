@@ -18,7 +18,6 @@ async def test(message: Message, session: AsyncSession):
     tg_id = message.from_user.id
     # FIXME
     #await test_base(session=session)
-    await message.answer(WELCOME_MESSAGE)
     
     if await check_user_exists(tg_id=tg_id, session=session):
         await message.answer(

@@ -25,7 +25,6 @@ class User(Base):
     phone_number: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
     last_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     first_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
-    middle_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     birth_date: Mapped[date]
     note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE))
 
@@ -56,12 +55,11 @@ class User(Base):
         cls,
         obj_in,
     ):
-        last_name, first_name, middle_name = [x for x in obj_in['fio'].split()]
+        last_name, first_name= [x for x in obj_in['fio'].split(maxsplit=1)]
         db_obj = cls(
             phone_number=obj_in['phone_number'],
             last_name=last_name,
             first_name=first_name,
-            middle_name=middle_name,
             birth_date=dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date(),
             tg_user_id=obj_in['tg_user_id'],
         )  # получение данных из стейтов
