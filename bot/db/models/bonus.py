@@ -23,15 +23,14 @@ class Bonus(Base):
     user: Mapped['User'] = relationship(
         foreign_keys=(user_id,), back_populates='bonuses'
     )
-    # FIXME: А оно нам надо?
-    # admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    # admin_user: Mapped['User'] = relationship(
-    #     foreign_keys=(admin_user_id,),
-    #     back_populates='bonuses_batches',
-    #     viewonly=True,
-    #     primaryjoin='and_(BonusesBatch.admin_user_id'
-    #                 ' == User.id, User.role == 'ADMIN')'
-    # )
+    admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    admin_user: Mapped['User'] = relationship(
+        foreign_keys=(admin_user_id,),
+        back_populates='bonuses_batches',
+        viewonly=True,
+        primaryjoin='and_(BonusesBatch.admin_user_id'
+                    ' == User.id, User.role == "ADMIN")'
+    )
     case_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('bonus_cases.id')
     )

@@ -20,7 +20,6 @@ async def test_base(session: AsyncSession):
         phone_number=fake.phone_number(),
         last_name=last_name,
         first_name=first_name,
-        middle_name=middle_name,
         birth_date=dt.strptime(fake.date(), '%Y-%m-%d').date(),
     )
 

@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 4a50dd43ec91
+Revision ID: 1628c19f28b1
 Revises: 
-Create Date: 2024-04-12 15:41:17.733195
+Create Date: 2024-04-14 16:32:04.405168
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4a50dd43ec91'
+revision: str = '1628c19f28b1'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -33,12 +33,6 @@ def upgrade() -> None:
     sa.Column('address', sa.String(length=255), nullable=False),
     sa.Column('note', sa.String(length=255), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('payments',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('payment_type_online', sa.Boolean(), nullable=False),
-    sa.Column('payment_state', sa.Enum('WAITING', 'PAID', 'NOT_PAID', name='paymentstate'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('service_categories',
@@ -63,7 +57,6 @@ def upgrade() -> None:
     sa.Column('phone_number', sa.String(length=20), nullable=False),
     sa.Column('last_name', sa.String(length=120), nullable=False),
     sa.Column('first_name', sa.String(length=120), nullable=False),
-    sa.Column('middle_name', sa.String(length=120), nullable=False),
     sa.Column('birth_date', sa.Date(), nullable=False),
     sa.Column('note', sa.String(length=120), nullable=True),
     sa.Column('tg_user_id', sa.Integer(), nullable=True),
@@ -78,7 +71,9 @@ def upgrade() -> None:
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('admin_user_id', sa.Integer(), nullable=False),
     sa.Column('case_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['admin_user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['case_id'], ['bonus_cases.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -107,16 +102,17 @@ def upgrade() -> None:
     sa.Column('date', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('summ', sa.Integer(), nullable=False),
     sa.Column('bonus_payment', sa.Boolean(), nullable=False),
+    sa.Column('payment_type_online', sa.Boolean(), nullable=False),
+    sa.Column('payment_state', sa.Enum('WAITING', 'PAID', 'NOT_PAID', name='paymentstate'), nullable=False),
     sa.Column('business_unit_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('admin_user_id', sa.Integer(), nullable=False),
     sa.Column('car_id', sa.Integer(), nullable=False),
     sa.Column('service_id', sa.Integer(), nullable=True),
-    sa.Column('payment_id', sa.Integer(), nullable=False),
+    sa.CheckConstraint('summ >= 0', name='check_summ_positive'),
     sa.ForeignKeyConstraint(['admin_user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['business_unit_id'], ['business_units.id'], ),
     sa.ForeignKeyConstraint(['car_id'], ['cars.id'], ),
-    sa.ForeignKeyConstraint(['payment_id'], ['payments.id'], ),
     sa.ForeignKeyConstraint(['service_id'], ['services.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -133,7 +129,6 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('services')
     op.drop_table('service_categories')
-    op.drop_table('payments')
     op.drop_table('business_units')
     op.drop_table('bonus_cases')
     # ### end Alembic commands ###

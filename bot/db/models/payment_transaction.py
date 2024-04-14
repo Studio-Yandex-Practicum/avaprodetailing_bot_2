@@ -1,36 +1,26 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import ForeignKey, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy import CheckConstraint, ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.enums import PaymentState
 from bot.db.models.base import Base
-
-
-# FIXME: добавить cascade
-# FIXME: объединили в одну модель
-class Payment(Base):
-    __tablename__ = 'payments'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    payment_type_online: Mapped[bool]
-    payment_state: Mapped[PaymentState]
-
-    def __repr__(self):
-        return (f'Payment(id={self.id}, online={self.payment_type_online},'
-                f' state={self.payment_state!r})')
+from bot.db.models.users import User
 
 
 class Visit(Base):
     __tablename__ = 'visits'
-    # TODO: validations to constraints
+    __table_args__ = (
+        CheckConstraint("summ >= 0", name='check_summ_positive'),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[datetime] = mapped_column(server_default=func.now())
     summ: Mapped[int]
     bonus_payment: Mapped[bool] = mapped_column(default=False)
-
+    payment_type_online: Mapped[bool]
+    payment_state: Mapped[PaymentState]
     business_unit_id: Mapped[int] = mapped_column(
         ForeignKey('business_units.id')
     )
@@ -47,15 +37,17 @@ class Visit(Base):
     service_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('services.id')
     )
-    payment_id: Mapped[int] = mapped_column(ForeignKey('payments.id'))
-
-    # TODO: положить в constraints
-    @validates('summ')
-    def validate_positive_visit_summ(self, summ) -> int:
-        if summ < 0:
-            raise ValueError('Сумма платежа не может быть отрицательной.')
-        return summ
 
     def __repr__(self):
         return (f'Visit(id={self.id}, summ={self.summ},'
                 f' date={self.date!r})')
+
+    @classmethod
+    def data_to_model(cls, obj_in):
+        db_obj = cls(
+            summ=obj_in['amount'],
+            business_unit_id=obj_in['business_unit_id'],
+            user_id=obj_in['user_id'],
+            admin_user_id=obj_in['admin_user_id'],
+        )
+        return db_obj
