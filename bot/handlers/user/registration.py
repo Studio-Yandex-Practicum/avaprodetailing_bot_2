@@ -25,6 +25,10 @@ reg_message = (
     'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
     'согласие на использование данных.'
 )
+err_msg = (
+    '{STATE_FIO}\n'
+    'Вы ввели {msg.text}'
+)
 
 
 @router.callback_query(F.data == 'Registration')
@@ -55,10 +59,7 @@ async def reg_fio(msg: Message, state: FSMContext):
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=(
-                f'{STATE_FIO}\n'
-                f'Вы ввели {msg.text}'
-            )
+            text=err_msg.format(STATE_FIO,msg.text)
         )
         return
     await msg.bot.edit_message_text(
@@ -108,10 +109,7 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=(
-                f'{STATE_PHONE_NUMBER}\n'
-                f'Вы ввели {msg.text}'
-            )
+            text=err_msg.format(STATE_FIO,msg.text)
         )
         return
     await state.update_data(phone_number=msg.text)
@@ -140,7 +138,12 @@ async def registrate_agree(
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
-    
+    # TODO
+    #user11 = await users_crud.get_by_attribute(
+    #    session=session,
+    #    attr_name='phone_number',
+    #    attr_value=data['phone_number'],
+    #)
     await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
         THX_REG,

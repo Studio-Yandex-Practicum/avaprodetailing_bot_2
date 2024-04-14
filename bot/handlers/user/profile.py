@@ -12,6 +12,7 @@ from bot.utils.validators import (validate_birth_date, validate_fio,
                                   validate_phone_number)
 from datetime import datetime
 from bot.db.crud.users import users_crud
+
 router = Router(name=__name__)
 
 profile_message = (
@@ -20,8 +21,7 @@ profile_message = (
     'Номер телефона: {phone_number}\n'
     'Бонусы: {bonus}\n'
     'Автомобили: {cars}\n'
-    '\n'
-    'Для внесения изменений в информацию - обратитесь к администратору.'
+    '\nДля внесения изменений в информацию - обратитесь к администратору.'
 )
 
 

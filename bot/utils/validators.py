@@ -8,7 +8,7 @@ from bot.db.crud.users import users_crud
 from bot.core.enums import UserRole
 
 
-async def check_user_exists(
+async def check_user_is_none(
     tg_id: int,
     session: AsyncSession,
 ) -> None:
@@ -31,7 +31,7 @@ async def validate_fio(msg: str):
 
 
 async def validate_birth_date(msg: str):
-    check = '^(([0][1-9]|[1][0-9])|([2][0-9])|([3][0-1])|([1-9]))\.(([0][1-9])|([1][1-2])|[1-9])\.[1-2]([0-9]..)'
+    check = '^(([0][1-9]|[1][0-9])|([2][0-9])|([3][0-1])|([1-9]))\.(([0][1-9])|([1][0-2])|[1-9])\.[1-2]([0-9]..)'
     current_date = date.today()
     match = re.match(check, msg)
     if match is not None and len(msg) < MAX_LENGTH_BIRTH_DATE:

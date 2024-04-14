@@ -47,11 +47,11 @@ class User(Base):
     )
 
     def __repr__(self) -> str:
-        return (f'User(id={self.id}, name={self.middle_name} '
+        return (f'User(id={self.id},'
                 f'{self.first_name} {self.last_name}, role={self.role})')
 
     @classmethod
-    async def data_to_model(
+    def data_to_model(
         cls,
         obj_in,
     ):

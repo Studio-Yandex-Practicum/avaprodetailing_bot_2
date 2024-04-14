@@ -55,7 +55,7 @@ class CRUDBase(Generic[ModelType]):
         obj_in: dict[str, Any],
         session: AsyncSession,
     ):
-        db_obj = await self.model.data_to_model(obj_in)
+        db_obj = self.model.data_to_model(obj_in)
         session.add(db_obj)
         await session.commit()
         return db_obj

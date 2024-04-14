@@ -53,15 +53,25 @@ admin_main_menu = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
-                text='Регистрация пользователя',
+                text='Регистрация клиента',
                 callback_data='reg_client'
             ),
         ],
         [
             InlineKeyboardButton(
-                text='Каталог услуг',
-                callback_data='service_catalog',
-            )
+                text='Отчеты',
+                callback_data='admin_reports',
+            ),
+            InlineKeyboardButton(
+                text='Инфо',
+                callback_data='info',
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Режим настройки',
+                callback_data='extra_admin'
+            ),
         ],
     ]
 )
