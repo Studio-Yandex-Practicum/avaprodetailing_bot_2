@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from typing import Optional
 
@@ -7,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from bot.core.constants import DEFAULT_STRING_SIZE
 from bot.core.enums import BonusType
 from bot.db.models.base import Base
+from bot.db.models.users import User
 
 
 class Bonus(Base):
@@ -23,14 +25,15 @@ class Bonus(Base):
     user: Mapped['User'] = relationship(
         foreign_keys=(user_id,), back_populates='bonuses'
     )
-    admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    admin_user: Mapped['User'] = relationship(
-        foreign_keys=(admin_user_id,),
-        back_populates='bonuses_batches',
-        viewonly=True,
-        primaryjoin='and_(BonusesBatch.admin_user_id'
-                    ' == User.id, User.role == "ADMIN")'
-    )
+    # FIXME: А оно нам надо?
+    # admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    # admin_user: Mapped['User'] = relationship(
+    #     foreign_keys=(admin_user_id,),
+    #     back_populates='bonuses_batches',
+    #     viewonly=True,
+    #     primaryjoin='and_(BonusesBatch.admin_user_id'
+    #                 ' == User.id, User.role == 'ADMIN')'
+    # )
     case_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('bonus_cases.id')
     )
