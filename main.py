@@ -17,6 +17,7 @@ def set_middlewares(dp: Dispatcher, session_pool: async_sessionmaker) -> None:
     dp.edited_message.middleware(DbSessionMiddleware(session_pool))
 
 
+
 async def main() -> None:
     storage = MemoryStorage()
     bot = Bot(settings.bot_token.get_secret_value())
