@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 497a82d295b1
+Revision ID: 1628c19f28b1
 Revises: 
-Create Date: 2024-04-14 14:28:14.438384
+Create Date: 2024-04-14 16:32:04.405168
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '497a82d295b1'
+revision: str = '1628c19f28b1'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -57,7 +57,6 @@ def upgrade() -> None:
     sa.Column('phone_number', sa.String(length=20), nullable=False),
     sa.Column('last_name', sa.String(length=120), nullable=False),
     sa.Column('first_name', sa.String(length=120), nullable=False),
-    sa.Column('middle_name', sa.String(length=120), nullable=False),
     sa.Column('birth_date', sa.Date(), nullable=False),
     sa.Column('note', sa.String(length=120), nullable=True),
     sa.Column('tg_user_id', sa.Integer(), nullable=True),
@@ -72,7 +71,9 @@ def upgrade() -> None:
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('admin_user_id', sa.Integer(), nullable=False),
     sa.Column('case_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['admin_user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['case_id'], ['bonus_cases.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')

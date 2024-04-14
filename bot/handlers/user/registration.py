@@ -2,22 +2,24 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-#from bot.db.crud.users_crud import user_crud
-from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
-                                STATE_PHONE_NUMBER, THX_REG)
+# from bot.db.crud.users_crud import user_crud
+from bot.core.constants import (
+    STATE_BIRTH_DATE, STATE_FIO,
+    STATE_PHONE_NUMBER, THX_REG,
+)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
-from bot.utils.validators import (validate_birth_date, validate_fio,
-                                  validate_phone_number)
+from bot.utils.validators import (
+    validate_birth_date, validate_fio,
+    validate_phone_number,
+)
 
 router = Router(name=__name__)
 
-
-
 reg_message = (
-    'Вы зарегестрировались с такими данными:\n'
+    'Вы зарегистрировались с такими данными:\n'
     'ФИО: {fio}\n'
     'Дата рождения: {birth_date}\n'
     'Номер телефона: {phone_number}\n'
@@ -25,9 +27,10 @@ reg_message = (
     'Нажимая на "Согласиться" Вы подтверждаете корректность и даете '
     'согласие на использование данных.'
 )
-err_msg = (
-    '{STATE_FIO}\n'
-    'Вы ввели {msg.text}'
+error_message = (
+    'Неверный формат ввода\n'
+    '{info_text}\n'
+    'Вы ввели {incorrect_text}'
 )
 
 
@@ -35,7 +38,6 @@ err_msg = (
 async def testing_user(
     callback: CallbackQuery,
     state: FSMContext,
-    session: AsyncSession,
 ):
     await state.clear()
     await callback.message.delete()
@@ -53,13 +55,16 @@ async def testing_user(
 @router.message(RegUser.fio)
 async def reg_fio(msg: Message, state: FSMContext):
     state_data = await state.get_data()
-    
+
     if not await validate_fio(msg=msg.text):
         await msg.delete()
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=err_msg.format(STATE_FIO,msg.text)
+            text=error_message.format(
+                info_text=STATE_FIO,
+                incorrect=msg.text
+            )
         )
         return
     await msg.bot.edit_message_text(
@@ -80,15 +85,15 @@ async def reg_birth_date(msg: Message, state: FSMContext):
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=(
-                f'{STATE_BIRTH_DATE}\n'
-                f'Вы ввели {msg.text}'
+            text=error_message.format(
+                info_text=STATE_BIRTH_DATE,
+                incorrect=msg.text
             )
         )
         return
     await state.update_data(birth_date=msg.text)
     await state.set_state(RegUser.phone_number)
-    
+
     await msg.bot.edit_message_text(
         chat_id=msg.from_user.id,
         message_id=state_data['msg_id'],
@@ -109,15 +114,18 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=err_msg.format(STATE_FIO,msg.text)
+            text=error_message.format(
+                info_text=STATE_PHONE_NUMBER,
+                incorrect=msg.text
+            )
         )
         return
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
     await msg.bot.edit_message_text(
         text=reg_message.format(
-            fio=data["fio"], 
-            birth_date=data["birth_date"], 
+            fio=data["fio"],
+            birth_date=data["birth_date"],
             phone_number=data["phone_number"]
         ),
         chat_id=msg.from_user.id,
@@ -133,17 +141,15 @@ async def registrate_agree(
     state: FSMContext,
     session: AsyncSession,
 ):
-
-
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
     # TODO
-    #user11 = await users_crud.get_by_attribute(
+    # user11 = await users_crud.get_by_attribute(
     #    session=session,
     #    attr_name='phone_number',
     #    attr_value=data['phone_number'],
-    #)
+    # )
     await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
         THX_REG,
