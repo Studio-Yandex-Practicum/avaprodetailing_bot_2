@@ -17,7 +17,7 @@ class BusinessUnit(Base):
     note: Mapped[Optional[str]] = mapped_column(String(LONG_STRING_SIZE))
     is_active: Mapped[bool]
     admin_users: Mapped[set['User']] = relationship(
-        back_populates='business_unit',
+        back_populates='business_units',
         primaryjoin="and_(BusinessUnit.id == User.business_unit_id, User.role == 'ADMIN')",
     )
 
