@@ -71,7 +71,7 @@ def upgrade() -> None:
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('admin_user_id', sa.Integer(), nullable=False),
+    sa.Column('admin_user_id', sa.Integer(), nullable=True),
     sa.Column('case_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admin_user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['case_id'], ['bonus_cases.id'], ),

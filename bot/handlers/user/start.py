@@ -17,7 +17,7 @@ router = Router(name=__name__)
 async def test(message: Message, session: AsyncSession):
     tg_id = message.from_user.id
     # FIXME
-    #await test_base(session=session)
+    # await test_base(session=session)
     
     if await check_user_is_none(tg_id=tg_id, session=session):
         await message.answer(

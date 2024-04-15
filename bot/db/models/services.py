@@ -45,3 +45,7 @@ class ServiceCategory(Base):
 
     is_active: Mapped[bool] = mapped_column(default=True)
     name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
+
+    def __repr__(self) -> str:
+        return (f'Category(id={self.id},'
+                f'{self.is_active} {self.name}')
