@@ -26,9 +26,9 @@ class Bonus(Base):
     admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     admin_user: Mapped['User'] = relationship(
         foreign_keys=(admin_user_id,),
-        back_populates='bonuses_batches',
+        back_populates='bonuses',
         viewonly=True,
-        primaryjoin='and_(BonusesBatch.admin_user_id'
+        primaryjoin='and_(Bonus.admin_user_id'
                     ' == User.id, User.role == "ADMIN")'
     )
     case_id: Mapped[Optional[int]] = mapped_column(
