@@ -107,7 +107,7 @@ async def service_selection_callback(callback_query: types.CallbackQuery, sessio
     )
 
 
-@router.message_handler(lambda message: message.text.isdigit(), state="*")
+@router.callback_query(lambda message: message.text.isdigit(), state="*")
 async def process_visit_summ(message: types.Message, state: FSMContext, session: AsyncSession):
     async with state.proxy() as data:
         data['visit_summ'] = message.text
@@ -123,7 +123,7 @@ async def process_visit_summ(message: types.Message, state: FSMContext, session:
     await Visit.service_id
 
 
-@router.callback_query_handler(F.data == 'finish_selection', F.state == '*')
+@router.callback_query(F.data == 'finish_selection', F.state == '*')
 async def finish_selection_callback(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await callback_query.answer()
     await callback_query.message.delete()
