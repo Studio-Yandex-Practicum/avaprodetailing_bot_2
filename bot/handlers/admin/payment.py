@@ -6,8 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bot.db.models.bonus import Bonus, BonusCase
 from bot.db.models.payment_transaction import Visit
 from bot.db.models.users import User
-from bot.keyboards.inline.payment_inline import bonus_keyboard, build_user_cars_keyboard, client_profile_keyboard, identify_client_keyboard, ok_button, payment_acceptions_keyboard, services_keyboard
-from bot.utils.validators import check_user_exists_by_phone, get_user_cars
+from bot.keyboards.inline.payment_inline import (bonus_keyboard,
+                                                 build_user_cars_keyboard,
+                                                 client_profile_keyboard,
+                                                 identify_client_keyboard,
+                                                 ok_button,
+                                                 payment_acceptions_keyboard,
+                                                 reg_new_num,
+                                                 services_keyboard)
+from bot.utils.validators import check_user_exists_by_phone, get_user_cars, validate_phone_number
 
 router = Router(name=__name__)
 
@@ -23,7 +30,7 @@ async def identify_client_callback(callback_query: types.CallbackQuery):
     )
 
 
-@router.callback_query(F.data == 'find_phone')
+@router.callback_query(F.data == 'find_by_phone')
 async def find_by_phone_callback(callback_query: types.CallbackQuery, session: AsyncSession):
     await callback_query.message.delete()
     await callback_query.answer()
@@ -32,28 +39,32 @@ async def find_by_phone_callback(callback_query: types.CallbackQuery, session: A
         'Введите номер телефона в формате +78888888888:',
         reply_markup=types.ForceReply()
     )
-    phone_number = callback_query.data.get('phone_number')
-    if await check_user_exists_by_phone(phone_number, session):
-        query = select(User).filter(User.phone_number == phone_number)
-        result = await session.execute(query)
-        user = result.scalar_one()
-        profile_message = (
-            f'Профиль клиента:\n'
-            f'ФИО: {user.first_name} {user.last_name}\n'
-            f'Дата рождения: {user.birth_date}\n'
-            f'Номер телефона: {user.phone_number}\n'
-            f'Баланс: {user.bonuses} бонусов'
-        )
-        await callback_query.message.bot.send_message(
-            callback_query.from_user.id,
-            profile_message,
-            reply_markup=client_profile_keyboard
-        )
+    phone_number = callback_query.data
+    if validate_phone_number(phone_number):
+        if await check_user_exists_by_phone(phone_number, session):
+            query = select(User).filter(User.phone_number == phone_number)
+            result = await session.execute(query)
+            user = result.scalar_one()
+            profile_message = (
+                f'Профиль клиента:\n'
+                f'ФИО: {user.first_name} {user.last_name}\n'
+                f'Дата рождения: {user.birth_date}\n'
+                f'Номер телефона: {user.phone_number}\n'
+                f'Баланс: {user.bonuses} бонусов'
+            )
+            await callback_query.message.bot.send_message(
+                callback_query.from_user.id,
+                profile_message,
+                reply_markup=client_profile_keyboard
+            )
+        else:
+            await callback_query.message.bot.send_message(
+                callback_query.from_user.id,
+                'Клиент с таким номером не зарегистрирован.',
+                reply_markup=reg_new_num
+            )
     else:
-        await callback_query.message.bot.send_message(
-            callback_query.from_user.id,
-            'Клиент с указанным номером не найден.'
-        )
+        await find_by_phone_callback(callback_query, session)
 
 
 @router.callback_query(F.data == 'register_visit')
@@ -87,7 +98,7 @@ async def service_selection_callback(callback_query: types.CallbackQuery, sessio
     await callback_query.answer()
     user_id = callback_query.from_user.id
     car_info = callback_query.data.get('car_info')
-    selected_services = callback_query.data.get('selected_services')
+    selected_services = callback_query.data('service_id')
     visit_info = f'Посещение клиента:\n{car_info}\n{selected_services}\n\nВведите общую сумму посещения:'
     await callback_query.message.bot.send_message(
         user_id,
@@ -96,7 +107,7 @@ async def service_selection_callback(callback_query: types.CallbackQuery, sessio
     )
 
 
-@router.message_handler(content_types=types.ContentType.TEXT)
+@router.message_handler(lambda message: message.text.isdigit(), state="*")
 async def process_visit_summ(message: types.Message, state: FSMContext, session: AsyncSession):
     async with state.proxy() as data:
         data['visit_summ'] = message.text
@@ -108,6 +119,16 @@ async def process_visit_summ(message: types.Message, state: FSMContext, session:
         await message.reply('Введите корректную положительную сумму с дробной частью '
                             '(до двух знаков после запятой)')
         return
+    await message.reply('Выберите услуги, оказанные клиенту:', reply_markup=services_keyboard)
+    await Visit.service_id
+
+
+@router.callback_query_handler(F.data == 'finish_selection', F.state == '*')
+async def finish_selection_callback(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    await callback_query.answer()
+    await callback_query.message.delete()
+    async with state.proxy() as data:
+        visit_summ = data['visit_summ']
     visit_data = await state.get_data()
     visit = Visit(
         user_id=visit_data['user_id'],
@@ -117,7 +138,6 @@ async def process_visit_summ(message: types.Message, state: FSMContext, session:
     )
     session.add(visit)
     await session.commit()
-    await message.reply('Спасибо! Информация о посещении успешно сохранена.')
     client_id = visit_data['user_id']
     client = await session.get(User, client_id)
     possible_bonus_usage = min(int(client.bonuses * 0.98), int(visit_summ))
@@ -129,7 +149,7 @@ async def process_visit_summ(message: types.Message, state: FSMContext, session:
         f'У клиента {client.bonuses} баллов. Может быть списано {possible_bonus_usage}.\n\n'
         f'(Сумма возможно списания: {possible_bonus_usage})'
     )
-    await message.reply(message_text, reply_markup=bonus_keyboard)
+    await callback_query.message.reply(message_text, reply_markup=bonus_keyboard)
     await state.finish()
 
 
@@ -162,11 +182,6 @@ async def use_bonus_callback(callback_query: types.CallbackQuery, session: Async
         message_text,
         reply_markup=types.ForceReply()
     )
-
-
-@router.message_handler(content_types=types.ContentType.TEXT)
-async def invalid_data_message(message: types.Message, session: AsyncSession):
-    await use_bonus_callback(message, session)
 
 
 @router.callback_query(F.data == 'accept_payment')

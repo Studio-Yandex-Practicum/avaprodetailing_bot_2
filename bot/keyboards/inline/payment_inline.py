@@ -135,3 +135,20 @@ payment_acceptions_keyboard = InlineKeyboardMarkup(
 )
 
 ok_button = InlineKeyboardButton(text="ОК", callback_data="ok_button")
+
+reg_new_num = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Зарегистрировать',
+                callback_data='register_new_client'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Ввести другой номер',
+                callback_data='enter_another_number'
+            ),
+        ],
+    ]
+)

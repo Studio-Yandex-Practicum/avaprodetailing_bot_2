@@ -27,12 +27,12 @@ class User(Base):
     tg_user_id: Mapped[int]
 
     cars: Mapped[set['Car']] = relationship()
-    business_unit_id: Mapped[int] = mapped_column(
-        ForeignKey('business_units.id')
-    )
-    business_unit: Mapped['BusinessUnit'] = relationship(
-        back_populates='admin_users'
-    )
+    # business_unit_id: Mapped[int] = mapped_column(
+    #     ForeignKey('business_units.id')
+    # )
+    # business_unit: Mapped['BusinessUnit'] = relationship(
+    #     back_populates='admin_users'
+    # )
     visits: Mapped[set['Visit']] = relationship(
         back_populates='user',
         primaryjoin='User.id == Visit.user_id'

@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,3 +17,8 @@ async def get_user_cars(user_id: int, session: AsyncSession) -> list[Car]:
     query = select(Car).filter(Car.user_id == user_id)
     user_cars = await session.execute(query)
     return user_cars
+
+
+async def validate_phone_number(phone_number):
+    pattern = r'^\+7\d{10}$'
+    return bool(re.match(pattern, phone_number))
