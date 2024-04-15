@@ -5,3 +5,4 @@ class RegUser(StatesGroup):
     fio = State()
     birth_date = State()
     phone_number = State()
+    msg_id = State()
