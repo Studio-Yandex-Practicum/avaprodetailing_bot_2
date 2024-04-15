@@ -1,14 +1,16 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
-from aiogram import types, Router, F
-from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import Router, F, Bot
+from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 from bot.db.models import Bonus, User
 from bot.db.crud.bonus import BonusCRUD
 from bot.db.crud.users import users_crud
+from bot.core.config import settings
 
 router = Router(name=__name__)
+
+bonus_award_times = {}
 
 
 async def award_registration_bonus(user: User, session: AsyncSession):
@@ -48,14 +50,29 @@ async def view_bonus_history(user_id: int, session: AsyncSession) -> List[str]:
     return history_messages
 
 
-@router.callback_query(F.data == 'balance')
+async def send_bonus_expiry_reminders(session: AsyncSession):
+    current_time = datetime.now()
+    for user_id, bonus_award_time in bonus_award_times.items():
+        if (current_time - bonus_award_time) >= timedelta(days=365):
+            expiry_reminder_time = bonus_award_time + timedelta(days=365 - 14)
+            if (current_time - expiry_reminder_time) >= timedelta(days=14):
+                message = f"Напоминаем, что через 14 дней истекает срок начисления бонуса."
+                await send_reminder_message(user_id, message)
+
+
+async def send_reminder_message(user_id: int, message: str):
+    bot = Bot(settings.bot_token.get_secret_value())
+    await bot.send_message(user_id, message)
+
+
+@router.callback_query(F.data == 'Посмотреть баланс')
 async def view_balance_callback(callback: CallbackQuery, session: AsyncSession):
     user_id = callback.from_user.id
     balance = await view_balance(user_id, session)
     await callback.message.answer(f"Ваш баланс бонусных баллов: {balance}")
 
 
-@router.callback_query(F.data == 'bonus_history')
+@router.callback_query(F.data == 'История бонусов')
 async def view_bonus_history_callback(callback: CallbackQuery, session: AsyncSession):
     user_id = callback.from_user.id
     bonus_history_messages = await view_bonus_history(user_id, session)
