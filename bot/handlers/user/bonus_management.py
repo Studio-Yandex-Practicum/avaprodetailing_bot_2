@@ -78,3 +78,4 @@ async def view_bonus_history_callback(callback: CallbackQuery, session: AsyncSes
     bonus_history_messages = await view_bonus_history(user_id, session)
     for msg in bonus_history_messages:
         await callback.message.answer(msg)
+
