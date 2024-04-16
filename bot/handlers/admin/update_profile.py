@@ -129,20 +129,7 @@ async def update_client_data_state(
         attr_name='phone_number',
         attr_value=state_data['phone_number']
     )
-    if 'fio' in state_data:
-        last_name, first_name= [x for x in state_data['fio'].split(maxsplit=1)]
-        state_data['last_name'] = last_name
-        state_data['first_name'] = first_name
-    elif 'birth_date' in state_data:
-        state_data['birth_date']=dt.strptime(state_data['birth_date'], '%d.%m.%Y').date()
-    elif 'phone_num_update' in state_data:
-        state_data['phone_number']=state_data['phone_num_update']
-    elif 'note' in state_data:
-        if user.note is not None:
-            state_data['note']=user.note+'\n'+state_data['note']
-    elif 'reason_block' in state_data:
-        state_data['note'] = state_data['reason_block']
-        state_data['is_active'] = False
+    state_data = User.update_data_to_model(db_obj=user,obj_in=state_data)
         
     await users_crud.update(db_obj=user, obj_in=state_data, session=session)
     await callback.message.delete()

@@ -65,3 +65,24 @@ class User(Base):
         else:
             db_obj = cls(phone_number=obj_in['phone_number'],)
         return db_obj
+    
+    @staticmethod
+    def update_data_to_model(
+        db_obj,
+        obj_in
+    ):
+        if 'fio' in obj_in:
+            last_name, first_name= [x for x in obj_in['fio'].split(maxsplit=1)]
+            obj_in['last_name'] = last_name
+            obj_in['first_name'] = first_name
+        if 'birth_date' in obj_in:
+            obj_in['birth_date']=dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date()
+        if 'phone_num_update' in obj_in:
+            obj_in['phone_number']=obj_in['phone_num_update']
+        if 'note' in obj_in:
+            if db_obj.note is not None:
+                obj_in['note']=db_obj.note+'\n'+obj_in['note']
+        if 'reason_block' in obj_in:
+            obj_in['note'] = obj_in['reason_block']
+            obj_in['is_active'] = False
+        return obj_in

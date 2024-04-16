@@ -24,19 +24,21 @@ async def test(message: Message, session: AsyncSession):
 
     # FIXME
     #await test_base(session=session)
+    if await check_user_is_none(tg_id=tg_id, session=session):
+        await message.answer(
+            WELCOME_REG_MESSAGE,
+            reply_markup=reg_kb,
+        )
+        return
     if db_obj.is_active:
-        if await check_user_is_none(tg_id=tg_id, session=session):
-            await message.answer(
-                WELCOME_REG_MESSAGE,
-                reply_markup=reg_kb,
-            )
-        elif await check_user_is_admin(tg_id=tg_id, session=session):
+        if await check_user_is_admin(tg_id=tg_id, session=session):
             await message.answer(
                     WELCOME_ADMIN_MESSAGE,
                     reply_markup=admin_main_menu,
                 )
-        else:
-            await message.answer(
-                PROFILE_MESSAGE_WITH_INLINE,
-                reply_markup=profile_kb
-            )
+            return
+        
+        await message.answer(
+            PROFILE_MESSAGE_WITH_INLINE,
+            reply_markup=profile_kb
+        )
