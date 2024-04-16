@@ -30,7 +30,7 @@ class User(Base):
 
     tg_user_id: Mapped[Optional[int]]
 
-    cars: Mapped[set['Car']] = relationship()
+    cars: Mapped[set['Car']] = relationship(lazy='selectin')
     business_unit_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('business_units.id')
     )
@@ -39,11 +39,13 @@ class User(Base):
     )
     visits: Mapped[set['Visit']] = relationship(
         back_populates='user',
-        primaryjoin='User.id == Visit.user_id'
+        primaryjoin='User.id == Visit.user_id',
+        lazy='selectin'
     )
     bonuses: Mapped[set['Bonus']] = relationship(
         back_populates='user',
-        primaryjoin='User.id == Bonus.user_id'  # FIXME: если не будет админов
+        primaryjoin='User.id == Bonus.user_id',
+        lazy='selectin'
     )
 
     def __repr__(self) -> str:

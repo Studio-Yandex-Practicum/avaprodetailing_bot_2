@@ -22,3 +22,13 @@ THX_REG = (
 )
 
 PROFILE_MESSAGE_WITH_INLINE = 'Выберите пункт меню'
+
+CLIENT_BIO = (
+    'Профиль клиента:\n'
+    'ФИО {last_name} {first_name}\n'
+    'Дата рождения {birth_date}\n'
+    'Номер телефона {phone_number}\n'
+    'Список авто <Марка/модель/Гос.номер>\n'
+    'Баланс <Баланс> бонусов\n'
+    'Коммент {note}'
+)

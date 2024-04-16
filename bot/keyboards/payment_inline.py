@@ -1,24 +1,22 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.db.models.car import Car
 
 
-identify_client_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
+def build_user_cars_keyboard(user_cars: list[Car]) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    for car in user_cars:
+        button_text = f'{car.brand} {car.number}'
+        button_callback_data = f'car_selection_{car.id}'
+        keyboard.add(
             InlineKeyboardButton(
-                text='Отсканировать QR-код',
-                callback_data='scan_qrcode'
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text='Найти по номеру телефона',
-                callback_data='find_by_phone'
-            ),
-        ],
-    ]
-)
+                text=button_text,
+                callback_data=button_callback_data
+            )
+        )
+    return keyboard.as_markup()
+
 
 find_phone_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -67,15 +65,6 @@ client_profile_keyboard = InlineKeyboardMarkup(
         ],
     ]
 )
-
-def build_user_cars_keyboard(user_cars: list[Car]) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup()
-    for car in user_cars:
-        button_text = f'{car.brand} {car.model} {car.number}'
-        button_callback_data = f'car_selection_{car.id}'
-        keyboard.add(InlineKeyboardButton(text=button_text,
-                                          callback_data=button_callback_data))
-    return keyboard
 
 services_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[

@@ -57,5 +57,5 @@ async def validate_birth_date(msg: str):
 
 
 async def validate_phone_number(phone_number: str):
-    pattern = r'^\+\d{20}$'
+    pattern = r'^\+\d{6,20}$'
     return re.match(pattern, phone_number) is not None
