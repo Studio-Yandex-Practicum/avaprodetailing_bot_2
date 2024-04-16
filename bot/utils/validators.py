@@ -23,7 +23,7 @@ async def check_user_is_none(
 async def check_user_is_admin(
     tg_id: int,
     session: AsyncSession,
-) -> None:
+) -> bool:
     user = await users_crud.get_by_attribute(
         attr_name='tg_user_id',
         attr_value=tg_id,

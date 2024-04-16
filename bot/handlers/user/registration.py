@@ -27,7 +27,7 @@ reg_message = (
 error_message = (
     'Неверный формат ввода\n'
     '{info_text}\n'
-    'Вы ввели {incorrect_text}'
+    'Вы ввели {incorrect}'
 )
 
 

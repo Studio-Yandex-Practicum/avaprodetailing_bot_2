@@ -93,7 +93,7 @@ async def reg_phone_number(
     )
     if phone_num is None:
         await msg.bot.edit_message_text(
-            text=f'Клиент с номером {data["phone_number"]} не зарегестрирован',
+            text=f'Клиент с номером {data["phone_number"]} не зарегистрирован',
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
             reply_markup=admin_reg_client,

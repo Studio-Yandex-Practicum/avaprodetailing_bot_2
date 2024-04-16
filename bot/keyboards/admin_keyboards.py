@@ -81,7 +81,7 @@ search_client_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Отсканировать QR-код',
-                callback_data='search_qr-code',
+                callback_data='search_qr_code',
             ),
         ],
         [
