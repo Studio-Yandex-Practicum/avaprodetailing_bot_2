@@ -28,7 +28,7 @@ class User(Base):
 
     tg_user_id: Mapped[Optional[int]]
 
-    cars: Mapped[set['Car']] = relationship()
+    cars: Mapped[set['Car']] = relationship(lazy="selectin")
     business_unit_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('business_units.id')
     )

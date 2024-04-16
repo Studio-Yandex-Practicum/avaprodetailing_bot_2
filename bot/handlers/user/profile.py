@@ -51,7 +51,6 @@ async def get_profile(
                 birth_date=birth_date,
                 phone_number=db_obj.phone_number,
                 bonus=1,
-                cars=2,
             ),
             reply_markup=back_menu_kb
         )

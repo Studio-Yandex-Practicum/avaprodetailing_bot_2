@@ -140,6 +140,7 @@ async def add_new_client(
 ):
     state_data = await state.get_data()
     user = await users_crud.create(obj_in=state_data, session=session)
+
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
