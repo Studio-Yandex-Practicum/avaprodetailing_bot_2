@@ -54,7 +54,7 @@ async def main_user_menu(
     )
 
 
-@router.message(F.data == 'add_car')
+@router.callback_query(F.data == 'add_car')
 async def reg_car_start(
     callback: CallbackQuery, state: FSMContext
 ):
