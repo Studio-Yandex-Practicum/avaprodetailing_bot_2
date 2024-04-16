@@ -34,12 +34,15 @@ async def get_profile(
     callback: CallbackQuery,
     session: AsyncSession,
 ):
-    
     await callback.message.delete()
     tg_id = callback.from_user.id
-    db_obj = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
-    birth_date = datetime.strftime(db_obj.birth_date,'%d.%m.%Y')
-    #car = await 
+    db_obj = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
+    birth_date = datetime.strftime(db_obj.birth_date, '%d.%m.%Y')
+    # car = await
     if db_obj.is_active:
         await callback.message.answer(
             profile_message.format(
@@ -52,17 +55,14 @@ async def get_profile(
             ),
             reply_markup=back_menu_kb
         )
-    
+
 
 @router.callback_query(F.data == 'menu')
 async def main_user_menu(
     callback: CallbackQuery,
-    session: AsyncSession,
 ):
     await callback.message.delete()
     await callback.message.answer(
         PROFILE_MESSAGE_WITH_INLINE,
         reply_markup=profile_kb
     )
-
-

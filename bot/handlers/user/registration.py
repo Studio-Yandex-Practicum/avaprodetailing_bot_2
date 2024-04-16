@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime as dt
+
 # from bot.db.crud.users_crud import user_crud
 from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
                                 STATE_PHONE_NUMBER, THX_REG)
@@ -103,7 +103,6 @@ async def reg_birth_date(msg: Message, state: FSMContext):
 async def reg_phone_number(
     msg: Message,
     state: FSMContext,
-    session: AsyncSession
 ):
     state_data = await state.get_data()
     if not await validate_phone_number(msg=msg.text):
@@ -139,11 +138,7 @@ async def registrate_agree(
     session: AsyncSession,
 ):
     data = await state.get_data()
-    
-    
     data['tg_user_id'] = callback.from_user.id
-
-    # TODO
     user = await users_crud.get_by_attribute(
         session=session,
         attr_name='phone_number',
@@ -151,8 +146,12 @@ async def registrate_agree(
     )
     await state.clear()
     if user is not None:
-        update_data = User.update_data_to_model(db_obj=user,obj_in=data)
-        await users_crud.update(db_obj=user,obj_in=update_data,session=session)
+        update_data = User.update_data_to_model(db_obj=user, obj_in=data)
+        await users_crud.update(
+            db_obj=user,
+            obj_in=update_data,
+            session=session
+        )
     else:
         await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
@@ -161,4 +160,3 @@ async def registrate_agree(
         message_id=data['msg_id'],
         reply_markup=add_car_kb,
     )
-    

@@ -6,8 +6,8 @@ class RegUser(StatesGroup):
     birth_date = State()
     phone_number = State()
     msg_id = State()
-    
-    
+
+
 class AdminState(StatesGroup):
     phone_number = State()
     phone_num_update = State()
@@ -19,4 +19,3 @@ class AdminState(StatesGroup):
     is_active = State()
     reason_block = State()
     approv_block = State()
-

@@ -1,5 +1,4 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           KeyboardButton, ReplyKeyboardMarkup)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 reg_kb = InlineKeyboardMarkup(
     inline_keyboard=[

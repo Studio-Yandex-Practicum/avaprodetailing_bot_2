@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
                                 STATE_FIO, STATE_PHONE_NUMBER, THX_REG,
-                                WELCOME_ADMIN_MESSAGE)
+                                WELCOME_ADMIN_MESSAGE, CLIENT_BIO,REF_CLIENT_INFO)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
@@ -28,8 +28,9 @@ async def admin_menu(
     session: AsyncSession,
 ):
     tg_id = callback.from_user.id
-    db_obj = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
-
+    db_obj = await users_crud.get_by_attribute(
+        attr_name='tg_user_id', attr_value=tg_id, session=session
+    )
     await callback.message.delete()
     if db_obj.is_active:
         await callback.message.answer(
@@ -41,12 +42,10 @@ async def admin_menu(
 @router.callback_query(F.data == 'search_client')
 async def get_profile(
     callback: CallbackQuery,
-    session: AsyncSession,
     state: FSMContext,
 ):
-    
     await callback.message.delete()
-    msg = await callback.message.answer(
+    await callback.message.answer(
         text='Выберите способ идентификации клиента',
         reply_markup=search_client_kb
     )
@@ -58,10 +57,8 @@ async def get_profile(
 @router.callback_query(F.data == 'search_phone_number')
 async def get_user_by_phone(
     callback: CallbackQuery,
-    session: AsyncSession,
     state: FSMContext,
 ):
-    
     await callback.message.delete()
     await state.set_state(AdminState.phone_number)
 
@@ -80,7 +77,6 @@ async def reg_phone_number(
     state: FSMContext,
     session: AsyncSession
 ):
-    
     state_data = await state.get_data()
     if not await validate_phone_number(msg=msg.text):
         await msg.delete()
@@ -93,7 +89,7 @@ async def reg_phone_number(
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
     phone_num = await users_crud.get_by_attribute(
-        session=session,attr_name='phone_number', attr_value=data['phone_number']
+        session=session, attr_name='phone_number', attr_value=data['phone_number']
     )
     if phone_num is None:
         await msg.bot.edit_message_text(
@@ -102,23 +98,20 @@ async def reg_phone_number(
             message_id=state_data['msg_id'],
             reply_markup=admin_reg_client,
         )
-        
+
     else:
         await msg.bot.edit_message_text(
             text=(
-                f'Профиль клиента:\n'
-                f'ФИО {phone_num.last_name} {phone_num.first_name}\n'
-                f'Дата рождения {phone_num.birth_date}\n'
-                f'Номер телефона {phone_num.phone_number}\n'
-                f'Список авто <Марка/модель/Гос.номер>\n'
-                f'Баланс <Баланс> бонусов\n'
-                f'Коммент {phone_num.note}'
+                CLIENT_BIO.format(
+                    last_name=phone_num.last_name, first_name=phone_num.first_name,
+                    birth_date=phone_num.birth_date,
+                    phone_number=phone_num.phone_number, note=phone_num.note
+                )
             ),
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
             reply_markup=client_profile_for_adm,
         )
-        
     await msg.delete()
 
 
@@ -131,9 +124,7 @@ async def reg_clients(
     state_data = await state.get_data()
     await callback.bot.edit_message_text(
         text=(
-            f'Вы регистрируете клиента:\n'
-            f'Номер телефона {state_data["phone_number"]}\n'
-            f'\nДанные пользователя можно отредактировать в  кабинете клиента'
+            REF_CLIENT_INFO.format(phone_number=state_data["phone_number"])
         ),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
@@ -150,18 +141,14 @@ async def add_new_client(
     state_data = await state.get_data()
     user = await users_crud.create(obj_in=state_data, session=session)
     await callback.bot.edit_message_text(
-            text=(
-                f'Профиль клиента:\n'
-                f'ФИО {user.last_name} {user.first_name}\n'
-                f'Дата рождения {user.birth_date}\n'
-                f'Номер телефона {user.phone_number}\n'
-                f'Список авто <Марка/модель/Гос.номер>\n'
-                f'Баланс <Баланс> бонусов\n'
-                f'Коммент {user.note}'
-            ),
-            chat_id=callback.from_user.id,
-            message_id=state_data['msg_id'],
-            reply_markup=client_profile_for_adm,
-        )
-    
-
+        text=(
+            CLIENT_BIO.format(
+                last_name=user.last_name, first_name=user.first_name,
+                birth_date=user.birth_date,
+                phone_number=user.phone_number, note=user.note
+            )
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=client_profile_for_adm,
+    )
