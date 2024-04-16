@@ -5,3 +5,4 @@ class RegCar(StatesGroup):
     brand = State()
     model = State()
     number = State()
+    user_id = State()
