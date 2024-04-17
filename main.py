@@ -26,7 +26,8 @@ async def main() -> None:
         dp=dp, session_pool=await setup_get_pool(db_path=settings.database_url)
     )
     dp.include_router(main_router)
-    await dp.start_polling(bot, skip_updates=True)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 
 if __name__ == '__main__':

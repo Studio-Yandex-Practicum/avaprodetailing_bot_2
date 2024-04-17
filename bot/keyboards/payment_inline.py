@@ -1,6 +1,7 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from bot.db.models import Service
 from bot.db.models.car import Car
 
 
@@ -16,6 +17,32 @@ def build_user_cars_keyboard(user_cars: list[Car]) -> InlineKeyboardMarkup:
             )
         )
     return keyboard.as_markup()
+
+
+def build_services_keyboard(
+    services: list[Service],
+    chosen_services: list[int] = None
+) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    for service in services:
+        if service.id in chosen_services:
+            button_text = '✅' + service.name
+        else:
+            button_text = service.name
+        button_callback_data = f'service_{service.id}'
+        keyboard.add(
+            InlineKeyboardButton(
+                text=button_text,
+                callback_data=button_callback_data
+            )
+        )
+    keyboard.row(
+        InlineKeyboardButton(
+            text='Завершить выбор',
+            callback_data='finish_selection'
+        )
+    )
+    return keyboard.adjust(3).as_markup()
 
 
 find_phone_keyboard = InlineKeyboardMarkup(
@@ -61,29 +88,6 @@ client_profile_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text='Редактировать профиль',
                 callback_data='edit_profile'
-            ),
-        ],
-    ]
-)
-
-services_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text='Добавить в чек',
-                callback_data='add_to_receipt'
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text='Следующая услуга',
-                callback_data='next_service'
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text='Завершить выбор',
-                callback_data='finish_selection'
             ),
         ],
     ]
