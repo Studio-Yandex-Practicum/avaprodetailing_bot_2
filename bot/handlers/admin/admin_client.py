@@ -4,7 +4,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from bot.handlers.user.registration import error_message
 from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
                                 STATE_FIO, STATE_PHONE_NUMBER, THX_REG,
                                 WELCOME_ADMIN_MESSAGE, CLIENT_BIO,REF_CLIENT_INFO)
@@ -26,8 +26,10 @@ router = Router(name=__name__)
 async def admin_menu(
     callback: CallbackQuery,
     session: AsyncSession,
+    state: FSMContext
 ):
     tg_id = callback.from_user.id
+    await state.clear()
     db_obj = await users_crud.get_by_attribute(
         attr_name='tg_user_id', attr_value=tg_id, session=session
     )
@@ -39,21 +41,6 @@ async def admin_menu(
         )
 
 
-@router.callback_query(F.data == 'search_client')
-async def get_profile(
-    callback: CallbackQuery,
-    state: FSMContext,
-):
-    await callback.message.delete()
-    await callback.message.answer(
-        text='Выберите способ идентификации клиента',
-        reply_markup=search_client_kb
-    )
-    await state.update_data(
-        msg_id=callback.message.message_id
-    )
-
-
 @router.callback_query(F.data == 'search_phone_number')
 async def get_user_by_phone(
     callback: CallbackQuery,
@@ -61,7 +48,7 @@ async def get_user_by_phone(
 ):
     await callback.message.delete()
     await state.set_state(AdminState.phone_number)
-
+    
     msg = await callback.message.answer(
         text=STATE_PHONE_NUMBER
     )
@@ -83,7 +70,10 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text='неверный формат админ'
+            text=error_message.format(
+                info_text=STATE_PHONE_NUMBER,
+                incorrect=msg.text
+            )
         )
         return
     await state.update_data(phone_number=msg.text)

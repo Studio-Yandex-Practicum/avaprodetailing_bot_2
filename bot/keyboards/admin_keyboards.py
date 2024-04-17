@@ -48,7 +48,7 @@ admin_main_menu = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Найти клиента',
-                callback_data='search_client'
+                callback_data='search_phone_number'
             ),
         ],
         [
@@ -76,22 +76,6 @@ admin_main_menu = InlineKeyboardMarkup(
     ]
 )
 
-search_client_kb = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text='Отсканировать QR-код',
-                callback_data='search_qr_code',
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text='Найти по номеру телефона',
-                callback_data='search_phone_number'
-            )
-        ]
-    ]
-)
 
 admin_reg_client = InlineKeyboardMarkup(
     inline_keyboard=[
