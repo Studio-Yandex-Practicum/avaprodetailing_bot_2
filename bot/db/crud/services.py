@@ -1,5 +1,4 @@
 from bot.db.crud.base import CRUDBase
-from bot.db.models import Service, ServiceCategory
+from bot.db.models import Service
 
 services_crud = CRUDBase[Service](Service)
-category_crud = CRUDBase[ServiceCategory](ServiceCategory)
