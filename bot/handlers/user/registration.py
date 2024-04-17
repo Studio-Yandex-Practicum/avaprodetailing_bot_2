@@ -9,6 +9,7 @@ from bot.core.constants import (
 )
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
+from bot.handlers.user.bonus_management import award_registration_bonus
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
 from bot.utils.validators import (

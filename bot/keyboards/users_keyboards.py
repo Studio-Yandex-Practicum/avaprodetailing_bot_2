@@ -58,6 +58,12 @@ profile_kb = InlineKeyboardMarkup(
                 callback_data='qr_code',
             )
         ],
+        [
+            InlineKeyboardButton(
+                text='Баланс бонусов',
+                callback_data='view_balance',
+            )
+        ]    
     ]
 )
 
@@ -93,3 +99,11 @@ view_bonuses = InlineKeyboardMarkup(
         ],
     ]
 )
+
+
+manage_bonus_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+    [
+        InlineKeyboardButton(text="Начислить баллы (+)", callback_data="add_bonus"), 
+        InlineKeyboardButton(text="Списать баллы (-)", callback_data="spend_bonus")
+    ]
+])
