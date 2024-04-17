@@ -82,3 +82,14 @@ add_car_kb = InlineKeyboardMarkup(
         ],
     ]
 )
+
+view_bonuses = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Баланс бонусов',
+                callback_data='view_bonus',
+            )
+        ],
+    ]
+)

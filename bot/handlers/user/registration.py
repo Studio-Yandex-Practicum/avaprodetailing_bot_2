@@ -144,12 +144,14 @@ async def registrate_agree(
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
+    new_user = await users_crud.create(obj_in=data, session=session)
     # TODO
     # user11 = await users_crud.get_by_attribute(
     #    session=session,
     #    attr_name='phone_number',
     #    attr_value=data['phone_number'],
     # )
+    await award_registration_bonus(new_user, session)
     await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
         THX_REG,
