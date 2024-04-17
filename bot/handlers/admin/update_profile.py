@@ -14,8 +14,8 @@ from bot.db.models.users import User
 from bot.keyboards.admin_keyboards import (add_update_data, admin_main_menu,
                                            admin_reg_client,
                                            client_profile_for_adm,
-                                           reg_or_menu_adm, search_client_kb,
-                                           update_client_kb, update_profile_kb, return_profile_or_menu)
+                                           reg_or_menu_adm,
+                                           update_client_kb, update_profile_kb)
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
 from bot.states.user_states import AdminState, RegUser
