@@ -4,24 +4,32 @@ from datetime import date, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import MAX_LENGTH_BIRTH_DATE
-from bot.db.crud.users import users_crud
 from bot.core.enums import UserRole
+from bot.db.crud.users import users_crud
 
 
 async def check_user_is_none(
     tg_id: int,
     session: AsyncSession,
 ) -> None:
-    user = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
+    user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
     return user is None
 
 
 async def check_user_is_admin(
     tg_id: int,
     session: AsyncSession,
-) -> None:
-    user = await users_crud.get_by_attribute(attr_name='tg_user_id',attr_value=tg_id,session=session)
-    return user.role is UserRole.ADMIN
+) -> bool:
+    user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
+    return user.role is UserRole.ADMIN or user.role is UserRole.SUPERADMIN
 
 
 async def validate_fio(msg: str):
@@ -37,8 +45,8 @@ async def validate_birth_date(msg: str):
     if match is not None and len(msg) < MAX_LENGTH_BIRTH_DATE:
         birth_date = datetime.strptime(msg, '%d.%m.%Y').date()
         if (
-            (current_date > birth_date) and 
-            (birth_date.year in range(current_date.year-100,current_date.year-16))
+            (current_date > birth_date) and
+            (birth_date.year in range(current_date.year - 100, current_date.year - 16))
         ):
             return True
     return False
@@ -48,7 +56,3 @@ async def validate_phone_number(msg: str):
     check = '\+([0-9]*)'
     match = re.match(check, msg)
     return match is not None
-
-
-
-

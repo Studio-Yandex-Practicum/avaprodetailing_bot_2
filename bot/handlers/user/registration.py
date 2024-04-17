@@ -2,19 +2,16 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
+
 # from bot.db.crud.users_crud import user_crud
-from bot.core.constants import (
-    STATE_BIRTH_DATE, STATE_FIO,
-    STATE_PHONE_NUMBER, THX_REG,
-)
+from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
+                                STATE_PHONE_NUMBER, THX_REG)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
-from bot.utils.validators import (
-    validate_birth_date, validate_fio,
-    validate_phone_number,
-)
+from bot.utils.validators import (validate_birth_date, validate_fio,
+                                  validate_phone_number)
 
 router = Router(name=__name__)
 
@@ -30,7 +27,7 @@ reg_message = (
 error_message = (
     'Неверный формат ввода\n'
     '{info_text}\n'
-    'Вы ввели {incorrect_text}'
+    'Вы ввели {incorrect}'
 )
 
 
@@ -106,7 +103,6 @@ async def reg_birth_date(msg: Message, state: FSMContext):
 async def reg_phone_number(
     msg: Message,
     state: FSMContext,
-    session: AsyncSession
 ):
     state_data = await state.get_data()
     if not await validate_phone_number(msg=msg.text):
@@ -142,15 +138,22 @@ async def registrate_agree(
     session: AsyncSession,
 ):
     data = await state.get_data()
-    await state.clear()
     data['tg_user_id'] = callback.from_user.id
-    # TODO
-    # user11 = await users_crud.get_by_attribute(
-    #    session=session,
-    #    attr_name='phone_number',
-    #    attr_value=data['phone_number'],
-    # )
-    await users_crud.create(obj_in=data, session=session)
+    user = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='phone_number',
+        attr_value=data['phone_number'],
+    )
+    await state.clear()
+    if user is not None:
+        update_data = User.update_data_to_model(db_obj=user, obj_in=data)
+        await users_crud.update(
+            db_obj=user,
+            obj_in=update_data,
+            session=session
+        )
+    else:
+        await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
         THX_REG,
         chat_id=callback.from_user.id,
