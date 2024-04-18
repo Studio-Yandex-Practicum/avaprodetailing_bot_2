@@ -81,3 +81,26 @@ add_car_kb = InlineKeyboardMarkup(
         ],
     ]
 )
+
+
+
+service_category_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Добавить автомобиль',
+                callback_data='add_car',
+            ),
+            InlineKeyboardButton(
+                text='Добавить автомобиль',
+                callback_data='add_car',
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Сменить категорию',
+                callback_data='service_catalog',
+            )
+        ],
+    ]
+)

@@ -24,9 +24,6 @@ router = Router(name=__name__)
 
 
 
-
-
-
 @router.callback_query(F.data == 'extra_admin')
 async def super_admin_menu(
     callback: CallbackQuery,
@@ -52,8 +49,6 @@ async def super_admin_menu(
     )
 
 
-
-
 @router.callback_query(F.data == 'administrators')
 async def get_admins_list(
     callback: CallbackQuery,
@@ -67,12 +62,7 @@ async def get_admins_list(
         reply_markup=gener_list_admins(admins)
     )
     await state.update_data(msg_id=msg.message_id)
-    
-    
-    
 
-    
-    
 
 @router.callback_query(F.data.startswith('admin_bio_'))
 async def process_selected_business_unit(

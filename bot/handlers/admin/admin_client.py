@@ -45,6 +45,7 @@ async def admin_menu(
             WELCOME_ADMIN_MESSAGE,
             reply_markup=gener_admin_keyboard(db_obj.role)
         )
+    await state.update_data(is_admin_menu=True)
 
 
 @router.callback_query(F.data == 'search_phone_number')

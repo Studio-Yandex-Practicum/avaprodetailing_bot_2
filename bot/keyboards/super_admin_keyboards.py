@@ -96,7 +96,7 @@ def admin_bio_for_super_admin_kb(is_active):
             [
                 InlineKeyboardButton(
                     text='Изменить ФИО',
-                    callback_data='1'
+                    callback_data='change_phone_fio'
                 ),
                 InlineKeyboardButton(
                     text='Изменить номер телефона',

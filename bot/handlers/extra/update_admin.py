@@ -4,21 +4,26 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.crud.business_units import business_units_crud
-from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE, PROFILE_MESSAGE_WITH_INLINE,
-                                REF_CLIENT_INFO, STATE_BIRTH_DATE, STATE_FIO,
+
+from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE,
+                                PROFILE_MESSAGE_WITH_INLINE, REF_CLIENT_INFO,
+                                STATE_BIRTH_DATE, STATE_FIO,
                                 STATE_PHONE_NUMBER, THX_REG,
                                 WELCOME_ADMIN_MESSAGE,
                                 WELCOME_SUPER_ADMIN_MESSAGE)
 from bot.core.enums import UserRole
+from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
                                            client_profile_for_adm,
                                            reg_or_menu_adm, update_client_kb)
-from bot.keyboards.super_admin_keyboards import (OK_add_admin, ok_admin_bio, admin_bio_for_super_admin_kb,
+from bot.keyboards.super_admin_keyboards import (OK_add_admin,
+                                                 admin_bio_for_super_admin_kb,
                                                  gener_admin_keyboard,
-                                                 role_for_admin_kb,gener_business_unit_for_admin,
+                                                 gener_business_unit_for_admin,
+                                                 ok_admin_bio,
+                                                 role_for_admin_kb,
                                                  super_admin_main_menu)
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
@@ -104,16 +109,26 @@ async def reg_super_admin_phone(
         return
     await state.update_data(fio=msg.text)
     state_data = await state.get_data()
+    if 'change_fio' not in state_data:
+        await msg.bot.edit_message_text(
+            text=(
+                'Вы регистрируете администратора с данными:'
+                f'\nФИО {state_data["fio"]}\n'
+                f'Номер телефона {state_data["phone_number"]}\n\n'
+                'Укажите уровень прав'
+            ),
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            reply_markup=role_for_admin_kb
+        )
+    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
+    admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
     await msg.bot.edit_message_text(
-        text=(
-            'Вы регистрируете администратора с данными:'
-            f'\nФИО {state_data["fio"]}\n'
-            f'Номер телефона {state_data["phone_number"]}\n\n'
-            'Укажите уровень прав'
-        ),
+        f'ФИО изменено на {state_data["fio"]}',
+        reply_markup=ok_admin_bio(admin11),
         chat_id=msg.from_user.id,
         message_id=state_data['msg_id'],
-        reply_markup=role_for_admin_kb
     )
     
 
@@ -249,8 +264,6 @@ async def block_admin(
     )
 
 
-    
-
 @router.callback_query(F.data == 'change_business_unit')
 async def give_admin_permissions(
     callback: CallbackQuery,
@@ -278,7 +291,6 @@ async def give_admin_permissions(
     session: AsyncSession,
 ):
     state_data = await state.get_data()
-    units = await business_units_crud.get_multi(session=session)
     await state.update_data(change_phone_num = True)
     await state.set_state(SuperAdminState.phone_number)
     await callback.bot.edit_message_text(
@@ -289,3 +301,20 @@ async def give_admin_permissions(
         message_id=state_data['msg_id'],
     )
     
+
+@router.callback_query(F.data == 'change_phone_fio')
+async def give_admin_permissions(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
+):
+    state_data = await state.get_data()
+    await state.update_data(change_fio = True)
+    await state.set_state(SuperAdminState.fio)
+    await callback.bot.edit_message_text(
+        text=(
+            'Введите ФИО в формате Иванов Иван Иванович'
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+    )

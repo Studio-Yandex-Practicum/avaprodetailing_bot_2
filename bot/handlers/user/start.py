@@ -56,7 +56,8 @@ async def decode_qr(
 
 
 @router.message(CommandStart())
-async def test(message: Message, session: AsyncSession):
+async def test(message: Message, session: AsyncSession, state: FSMContext):
+    state_data = await state.get_data()
     tg_id = message.from_user.id
     db_obj = await users_crud.get_by_attribute(
         attr_name='tg_user_id',
@@ -77,9 +78,15 @@ async def test(message: Message, session: AsyncSession):
             )
             return
         elif db_obj.role is UserRole.SUPERADMIN:
+            if 'is_admin_menu' not in state_data:
+                await message.answer(
+                    WELCOME_SUPER_ADMIN_MESSAGE,
+                    reply_markup=super_admin_main_menu
+                )
+                return
             await message.answer(
-                WELCOME_SUPER_ADMIN_MESSAGE,
-                reply_markup=super_admin_main_menu
+                WELCOME_ADMIN_MESSAGE,
+                reply_markup=gener_admin_keyboard(data=db_obj.role),
             )
             return
     if db_obj.is_active:
