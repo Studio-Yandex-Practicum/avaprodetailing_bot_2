@@ -58,10 +58,10 @@ class User(Base):
 
     @property
     def balance(self):
-        return sum(
-            bonus.full_amount - bonus.used_amount
-            for bonus in self.bonuses
-        )
+        return self.bonuses #sum(
+            #bonus.full_amount - bonus.used_amount
+            #for bonus in self.bonuses
+        #)
 
     @classmethod
     def data_to_model(

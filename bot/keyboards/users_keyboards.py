@@ -68,12 +68,6 @@ back_menu_kb = InlineKeyboardMarkup(
                 callback_data='menu',
             )
         ],
-        [
-            InlineKeyboardButton(
-                text='Баланс бонусов',
-                callback_data='view_balance',
-            )
-        ]
     ]
 )
 

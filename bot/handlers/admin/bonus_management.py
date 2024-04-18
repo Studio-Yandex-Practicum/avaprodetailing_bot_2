@@ -94,8 +94,10 @@ async def manage_bonus_callback(message: types.Message, state: FSMContext, sessi
         attr_value=state_data['phone_number'],
         session=session
     )
+    await state.update_data(bonus_to_spend=min(user.balance, payment_amount * 0.98))
+    state_data = await state.get_data()
     await message.bot.edit_message_text(
-        f"У клиента {user.balance} баллов. Может быть списано {min(user.balance, payment_amount * 0.98)}.",
+        f"У клиента {user.balance} баллов. Может быть списано {state_data.get('bonus_to_spend')}.",
         chat_id=message.from_user.id,
         message_id=state_data['msg_id'],
         reply_markup=bonus_admin
@@ -103,31 +105,32 @@ async def manage_bonus_callback(message: types.Message, state: FSMContext, sessi
     
 
 
-#@router.callback_query(F.data=='add_bonus')
-#async def add_bonus_callback(callback: CallbackQuery, session: AsyncSession, state: FSMContext):
-    #user_id = callback.from_user.id
-    #if not await check_if_admin(user_id, session):
-       # await callback.answer("У вас нет прав для этой операции!", show_alert=True)
-        #return
-    #user = await users_crud.get()
-    #await callback.bot.edit_message_text(
-        #text=(У клиента <баланс> баллов. Может быть списано <сумма возможного списания>.)
-    #)
-    #bonus_amount = int(bonus_amount)
-    #stmt = update(Bonus).where(Bonus.user_id == user_id).values(full_amount=Bonus.full_amount + bonus_amount)
-    #await session.execute(stmt)
-    #await session.commit()
-    #await callback.answer("Баллы начислены!")
+@router.callback_query(F.data=='add_bonus')
+async def add_bonus_callback(callback: CallbackQuery, session: AsyncSession, state: FSMContext):
+    user_id = callback.from_user.id
+    user = await users_crud.get()
+    await callback.bot.edit_message_text(
+        text=('У клиента <баланс> баллов. Может быть списано <сумма возможного списания>.')
+    )
+    bonus_amount = int(bonus_amount)
+    stmt = update(Bonus).where(Bonus.user_id == user_id).values(full_amount=Bonus.full_amount + bonus_amount)
+    await session.execute(stmt)
+    await session.commit()
+    await callback.answer("Баллы начислены!")
 
 
-#@router.callback_query(F.data.startswith('spend_bonus'))
-#async def spend_bonus_callback(callback: CallbackQuery, session: AsyncSession):
-    #user_id = callback.from_user.id
-    #if not await check_if_admin(user_id, session):
-        #await callback.answer("У вас нет прав для этой операции!", show_alert=True)
-        #return
-    #bonus_amount = int(bonus_amount)
-    #stmt = update(Bonus).where(Bonus.user_id == user_id).values(full_amount=Bonus.full_amount - bonus_amount)
-    #await session.execute(stmt)
-    #await session.commit()
-    #await callback.answer("Баллы списаны!")
+@router.callback_query(F.data=='spend_bonus')
+async def spend_bonus_callback(callback: CallbackQuery, session: AsyncSession, state: FSMContext):
+    state_data = await state.get_data()
+    await state.set_state(AdminState.amount_bonus)
+    await callback.bot.edit_message_text(
+        text=f'Введите сумму списания не более {state_data.get("bonus_to_spend")}',
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+    )
+    
+#@router.message(AdminState.amount_bonus)
+#async def amount_spend_bonus(message: Message, session: AsyncSession, state: FSMContext):
+    #await state.update_data()
+    #state_date = await state.get_data()
+    #await 
