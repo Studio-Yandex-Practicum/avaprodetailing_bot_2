@@ -29,7 +29,8 @@ async def check_user_is_admin(
         attr_value=tg_id,
         session=session
     )
-    return user.role is UserRole.ADMIN or user.role is UserRole.SUPERADMIN
+    if user.is_active:
+        return user.role is UserRole.ADMIN or user.role is UserRole.SUPERADMIN
 
 
 async def validate_fio(msg: str):

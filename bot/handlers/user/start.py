@@ -16,7 +16,7 @@ from bot.keyboards.admin_keyboards import (
     admin_main_menu,
     client_profile_for_adm,
 )
-from bot.keyboards.super_admin_keyboards import super_admin_main_menu
+from bot.keyboards.super_admin_keyboards import gener_admin_keyboard, super_admin_main_menu
 from bot.keyboards.users_keyboards import profile_kb, reg_kb
 from bot.utils.validators import check_user_is_admin, check_user_is_none
 
@@ -69,20 +69,21 @@ async def test(message: Message, session: AsyncSession):
             reply_markup=reg_kb,
         )
         return
-    if db_obj.is_active:
-        if await check_user_is_admin(tg_id=tg_id, session=session):
-            if db_obj.role is UserRole.ADMIN:
-                await message.answer(
-                    WELCOME_ADMIN_MESSAGE,
-                    reply_markup=admin_main_menu,
-                )
-                return
+    if await check_user_is_admin(tg_id=tg_id, session=session): # Закинул проверку актиности
+        if db_obj.role is UserRole.ADMIN:
+            await message.answer(
+                WELCOME_ADMIN_MESSAGE,
+                reply_markup=gener_admin_keyboard(data=db_obj.role),
+            )
+            return
+        elif db_obj.role is UserRole.SUPERADMIN:
             await message.answer(
                 WELCOME_SUPER_ADMIN_MESSAGE,
                 reply_markup=super_admin_main_menu
             )
             return
+    if db_obj.is_active:
         await message.answer(
             PROFILE_MESSAGE_WITH_INLINE,
             reply_markup=profile_kb
-        )
+        ) # Пользователь зареган

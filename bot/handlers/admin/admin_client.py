@@ -2,24 +2,30 @@ from datetime import datetime
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, InlineKeyboardButton
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.handlers.user.registration import error_message
-from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from bot.core.constants import (ERROR_MESSAGE, PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
                                 STATE_FIO, STATE_PHONE_NUMBER, THX_REG,
                                 WELCOME_ADMIN_MESSAGE, CLIENT_BIO,REF_CLIENT_INFO)
+from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
                                            client_profile_for_adm,
                                            reg_or_menu_adm,
                                            update_client_kb)
+from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
 from bot.states.user_states import AdminState, RegUser
 from bot.utils.validators import validate_phone_number
 
 router = Router(name=__name__)
+
+
+    
+ 
 
 
 @router.callback_query(F.data == 'admin_main_menu')
@@ -37,7 +43,7 @@ async def admin_menu(
     if db_obj.is_active:
         await callback.message.answer(
             WELCOME_ADMIN_MESSAGE,
-            reply_markup=admin_main_menu
+            reply_markup=gener_admin_keyboard(db_obj.role)
         )
 
 
@@ -70,7 +76,7 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=error_message.format(
+            text=ERROR_MESSAGE.format(
                 info_text=STATE_PHONE_NUMBER,
                 incorrect=msg.text
             )
