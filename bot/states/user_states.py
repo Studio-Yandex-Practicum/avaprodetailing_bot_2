@@ -19,6 +19,7 @@ class AdminState(StatesGroup):
     is_active = State()
     reason_block = State()
     approv_block = State()
+    payment_amount = State()
 
 
 class SuperAdminState(StatesGroup):
