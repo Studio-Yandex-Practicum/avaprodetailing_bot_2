@@ -33,7 +33,8 @@ class User(Base):
         ForeignKey('business_units.id')
     )
     business_unit: Mapped[Optional['BusinessUnit']] = relationship(
-        back_populates='admin_users'
+        back_populates='admin_users',
+        lazy='selectin'
     )
     visits: Mapped[set['Visit']] = relationship(
         back_populates='user',

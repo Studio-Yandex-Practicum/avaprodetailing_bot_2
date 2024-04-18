@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.car import cars_crud
+from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.payment_inline import (
@@ -53,7 +54,12 @@ async def select_services_callback(
     state_data = await state.get_data()
     await state.update_data(car_id=int(callback_query.data.split('_')[-1]))
     # TODO: достаем услуги из точки, в которой работает админ по tg_user_id
-    services = await services_crud.get_multi(session=session)
+    admin = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=callback_query.from_user.id,
+        session=session
+    )
+    services = admin.business_unit.services
     await state.update_data(chosen_services=[])
     await callback_query.message.bot.edit_message_text(
         message_id=state_data['msg_id'],
@@ -79,7 +85,12 @@ async def service_choice_callback(
     else:
         chosen_services.append(selected_service)
     await state.update_data(chosen_services=chosen_services)
-    services = await services_crud.get_multi(session=session)
+    admin = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=callback_query.from_user.id,
+        session=session
+    )
+    services = admin.business_unit.services
     await callback_query.message.bot.edit_message_reply_markup(
         message_id=state_data['msg_id'],
         chat_id=callback_query.from_user.id,
@@ -100,7 +111,7 @@ async def finish_selection_callback(
     car = await cars_crud.get(
         session=session, obj_id=state_data['car_id']
     )
-    # TODO: получаем из круда услуг и прошлого сообщения
+    # TODO: получаем из круда услуг и выводим красиво
     selected_services = state_data['chosen_services']
     visit_info = (f'Посещение клиента:\n{car.brand} {car.number}\n'
                   f'{selected_services}\n\nВведите общую сумму посещения:')

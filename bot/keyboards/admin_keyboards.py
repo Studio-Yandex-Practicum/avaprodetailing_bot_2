@@ -1,9 +1,5 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
 
-
-
-
-# Доработать, тесты
 admin_main_menu = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -36,7 +32,6 @@ admin_main_menu = InlineKeyboardMarkup(
         ],
     ]
 )
-
 
 admin_reg_client = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -71,7 +66,6 @@ reg_or_menu_adm = InlineKeyboardMarkup(
         ],
     ]
 )
-
 
 client_profile_for_adm = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -123,7 +117,6 @@ update_profile_kb = InlineKeyboardMarkup(
     ]
 )
 
-
 update_client_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -152,7 +145,6 @@ update_client_kb = InlineKeyboardMarkup(
         ],
     ]
 )
-
 
 add_update_data = InlineKeyboardMarkup(
     inline_keyboard=[

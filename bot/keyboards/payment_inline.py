@@ -42,7 +42,7 @@ def build_services_keyboard(
             callback_data='finish_selection'
         )
     )
-    return keyboard.adjust(3).as_markup()
+    return keyboard.as_markup()
 
 
 find_phone_keyboard = InlineKeyboardMarkup(
