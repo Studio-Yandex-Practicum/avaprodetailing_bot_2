@@ -6,7 +6,7 @@ super_admin_main_menu = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Бизнес-юниты',
-                callback_data='business_unit'
+                callback_data='business_units'
             ),
             InlineKeyboardButton(
                 text='Каталог услуг',
