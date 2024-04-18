@@ -24,3 +24,12 @@ class AdminState(StatesGroup):
 
 class SuperAdminState(StatesGroup):
     is_admin_menu = State()
+
+
+class BusinessUnitState(StatesGroup):
+    name = State()
+    note = State()
+    address = State()
+    msg_id = State()
+    unit_id = State()
+    edit_field = State()
