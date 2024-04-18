@@ -34,6 +34,5 @@ class Car(Base):
             brand=obj_in['brand'],
             model=obj_in['model'],
             number=obj_in['number'],
-            user_id=obj_in['user_id'],
-        )  # получение данных из стейтов
+            user_id=obj_in['user_id'],)  # получение данных из стейтов
         return db_obj
