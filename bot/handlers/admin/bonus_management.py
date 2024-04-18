@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardBut
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from bot.db.models import Bonus, User
-from bot.db.crud.bonus import BonusCRUD
+from bot.db.crud.bonus import bonuses_crud
 from bot.db.crud.users import users_crud
 from bot.core.config import settings
 from bot.keyboards.users_keyboards import back_menu_kb
