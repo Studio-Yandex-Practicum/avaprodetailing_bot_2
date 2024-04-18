@@ -33,7 +33,6 @@ class BusinessUnit(Base):
             name=data.get('name'),
             note=data.get('note'),
             address=data.get('address')
-            is_active=data.get('is_active')
         )
 
     def __repr__(self) -> str:
