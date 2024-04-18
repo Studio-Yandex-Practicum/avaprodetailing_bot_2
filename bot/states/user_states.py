@@ -28,6 +28,10 @@ class SuperAdminState(StatesGroup):
     role = State()
     unit_id = State()
     admin_id = State()
+    change_unit = State()
+    change_phone_num = State()
+    change_fio = State()
+    business_unit_id = State()
 
 
 class BusinessUnitState(StatesGroup):

@@ -64,9 +64,20 @@ async def reg_super_admin_phone(
         return
     await state.update_data(phone_number=msg.text)
     state_data = await state.get_data()
-    await state.set_state(SuperAdminState.fio)
+    if 'change_phone_num' not in state_data:
+        await state.set_state(SuperAdminState.fio)
+        await msg.bot.edit_message_text(
+            text='Введите ФИО в формате Иванов Иван Иванович',
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+        )
+        return
+    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
+    admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
     await msg.bot.edit_message_text(
-        text='Введите ФИО в формате Иванов Иван Иванович',
+        f'Номер телефона изменен {state_data["phone_number"]}',
+        reply_markup=ok_admin_bio(admin11),
         chat_id=msg.from_user.id,
         message_id=state_data['msg_id'],
     )
@@ -157,16 +168,27 @@ async def process_selected_business_unit(
     )
     await state.update_data(unit_id=unit.id)
     state_data = await state.get_data()
+    if 'change_unit' not in state_data:
+        await callback.bot.edit_message_text(
+            text=(
+                'Вы регистрируете администратора с данными:'
+                f'\nФИО {state_data["fio"]}\n'
+                f'Номер телефона {state_data["phone_number"]}\n\n'
+                f'{UserRole.ADMIN}'
+            ),
+            chat_id=callback.from_user.id,
+            message_id=state_data['msg_id'],
+            reply_markup=OK_add_admin
+        )
+        return
+    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
+    admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
     await callback.bot.edit_message_text(
-        text=(
-            'Вы регистрируете администратора с данными:'
-            f'\nФИО {state_data["fio"]}\n'
-            f'Номер телефона {state_data["phone_number"]}\n\n'
-            f'{UserRole.ADMIN}'
-        ),
+        f'Бизнес-юнит изменен на {state_data["unit_id"]}',
+        reply_markup=ok_admin_bio(admin11),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
-        reply_markup=OK_add_admin
     )
     
 
@@ -225,8 +247,45 @@ async def block_admin(
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
     )
-    
-    
+
+
     
 
+@router.callback_query(F.data == 'change_business_unit')
+async def give_admin_permissions(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
+):
+    state_data = await state.get_data()
+    units = await business_units_crud.get_multi(session=session)
+    await state.update_data(change_unit = True)
+    await callback.bot.edit_message_text(
+        text=(
+            'Выберите бизнес-юнит администратора'
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=gener_business_unit_for_admin(units)
+    )
+    
+
+
+@router.callback_query(F.data == 'change_phone_number_admin')
+async def give_admin_permissions(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
+):
+    state_data = await state.get_data()
+    units = await business_units_crud.get_multi(session=session)
+    await state.update_data(change_phone_num = True)
+    await state.set_state(SuperAdminState.phone_number)
+    await callback.bot.edit_message_text(
+        text=(
+            'Введите номер телефона в формате +78888888888'
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+    )
     

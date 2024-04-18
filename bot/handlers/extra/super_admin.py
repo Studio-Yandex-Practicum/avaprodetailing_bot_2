@@ -23,23 +23,7 @@ from bot.utils.validators import validate_phone_number
 router = Router(name=__name__)
 
 
-@router.callback_query(F.data == 'switch_admin_mode')
-async def super_admin_menu(
-    callback: CallbackQuery,
-    session: AsyncSession,
-    state: FSMContext
-):
-    tg_id = callback.from_user.id
-    await state.clear()
-    db_obj = await users_crud.get_by_attribute(
-        attr_name='tg_user_id', attr_value=tg_id, session=session
-    )
-    await callback.message.delete()
-    if db_obj.is_active:
-        await callback.message.answer(
-            WELCOME_ADMIN_MESSAGE,
-            reply_markup=gener_admin_keyboard(data=db_obj.role)
-        )
+
 
 
 

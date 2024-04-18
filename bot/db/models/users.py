@@ -91,4 +91,6 @@ class User(Base):
         if 'reason_block' in obj_in:
             obj_in['note'] = obj_in['reason_block']
             obj_in['is_active'] = False
+        if 'unit_id' in obj_in:
+            obj_in['business_unit_id'] = obj_in['unit_id']
         return obj_in

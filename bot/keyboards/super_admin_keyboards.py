@@ -100,13 +100,13 @@ def admin_bio_for_super_admin_kb(is_active):
                 ),
                 InlineKeyboardButton(
                     text='Изменить номер телефона',
-                    callback_data='1',
+                    callback_data='change_phone_number_admin',
                 ),
             ],
             [
                 InlineKeyboardButton(
                     text='Изменить бизнес-юнит',
-                    callback_data='1',
+                    callback_data='change_business_unit',
                 ),
                 InlineKeyboardButton(
                     text='Изменить роль',

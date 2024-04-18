@@ -27,7 +27,7 @@ router = Router(name=__name__)
     
  
 
-
+@router.callback_query(F.data == 'switch_admin_mode')
 @router.callback_query(F.data == 'admin_main_menu')
 async def admin_menu(
     callback: CallbackQuery,
