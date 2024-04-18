@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.constants import DEFAULT_STRING_SIZE
@@ -16,7 +16,7 @@ class Bonus(Base):
 
     used_amount: Mapped[int]
     full_amount: Mapped[int]
-    start_date: Mapped[datetime]
+    start_date: Mapped[datetime] = mapped_column(server_default=func.now())
     is_active: Mapped[bool]
 
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))

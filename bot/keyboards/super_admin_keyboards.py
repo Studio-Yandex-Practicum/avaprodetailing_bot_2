@@ -1,5 +1,4 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
-
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 super_admin_main_menu = InlineKeyboardMarkup(
     inline_keyboard=[

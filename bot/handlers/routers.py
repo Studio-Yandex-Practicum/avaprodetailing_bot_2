@@ -1,8 +1,8 @@
 from aiogram import Router
 
-from .user import user_router
 from .admin import admin_router
 from .extra import super_router
+from .user import user_router
 
 main_router = Router(name='main_router')
 

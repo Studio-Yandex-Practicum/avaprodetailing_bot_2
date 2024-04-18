@@ -1,7 +1,6 @@
 from aiogram import Router
 
-from . import payment
-from . import admin_client, update_profile
+from . import admin_client, payment, update_profile
 
 admin_router = Router(name=__name__)
 admin_router.include_routers(payment.router,

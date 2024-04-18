@@ -3,14 +3,13 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (
-    PROFILE_MESSAGE_WITH_INLINE, WELCOME_MESSAGE,
-    WELCOME_REG_MESSAGE, WELCOME_ADMIN_MESSAGE,
-)
+from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE,
+                                WELCOME_ADMIN_MESSAGE, WELCOME_MESSAGE,
+                                WELCOME_REG_MESSAGE)
 from bot.core.test_base import test_base
-from bot.keyboards.users_keyboards import profile_kb, reg_kb
 from bot.keyboards.admin_keyboards import admin_main_menu
-from bot.utils.validators import check_user_is_none, check_user_is_admin
+from bot.keyboards.users_keyboards import profile_kb, reg_kb
+from bot.utils.validators import check_user_is_admin, check_user_is_none
 
 router = Router(name=__name__)
 

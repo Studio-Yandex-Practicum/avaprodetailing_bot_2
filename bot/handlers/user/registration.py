@@ -2,19 +2,16 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
+
 # from bot.db.crud.users_crud import user_crud
-from bot.core.constants import (
-    STATE_BIRTH_DATE, STATE_FIO,
-    STATE_PHONE_NUMBER, THX_REG,
-)
+from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
+                                STATE_PHONE_NUMBER, THX_REG)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
-from bot.utils.validators import (
-    validate_birth_date, validate_fio,
-    validate_phone_number,
-)
+from bot.utils.validators import (validate_birth_date, validate_fio,
+                                  validate_phone_number)
 
 router = Router(name=__name__)
 

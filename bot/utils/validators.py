@@ -1,17 +1,14 @@
 import re
-
 from datetime import date, datetime
-
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.core.constants import MAX_LENGTH_BIRTH_DATE
+from bot.core.enums import UserRole
+from bot.db.crud.users import users_crud
 from bot.db.models.car import Car
 from bot.db.models.users import User
-from bot.core.constants import MAX_LENGTH_BIRTH_DATE
-from bot.db.crud.users import users_crud
-from bot.core.enums import UserRole
 
 
 def verify_symbols(num):

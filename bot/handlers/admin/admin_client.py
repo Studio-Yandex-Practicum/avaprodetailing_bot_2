@@ -2,17 +2,14 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.handlers.user.registration import error_message
-from bot.core.constants import (
-    STATE_PHONE_NUMBER,
-    WELCOME_ADMIN_MESSAGE, CLIENT_BIO, REF_CLIENT_INFO,
-)
+
+from bot.core.constants import (CLIENT_BIO, REF_CLIENT_INFO,
+                                STATE_PHONE_NUMBER, WELCOME_ADMIN_MESSAGE)
 from bot.db.crud.users import users_crud
-from bot.keyboards.admin_keyboards import (
-    admin_main_menu, admin_reg_client,
-    client_profile_for_adm,
-    reg_or_menu_adm,
-)
+from bot.handlers.user.registration import error_message
+from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
+                                           client_profile_for_adm,
+                                           reg_or_menu_adm)
 from bot.states.user_states import AdminState
 from bot.utils.validators import validate_phone_number
 
