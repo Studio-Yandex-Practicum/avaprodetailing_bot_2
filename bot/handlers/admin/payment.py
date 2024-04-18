@@ -65,7 +65,7 @@ async def select_services_callback(
     )
 
 
-@router.callback_query(F.data.startswith('service_'))
+@router.callback_query(F.data.startswith('service_id_'))
 async def service_choice_callback(
     callback_query: types.CallbackQuery,
     state: FSMContext,

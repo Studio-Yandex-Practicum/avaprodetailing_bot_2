@@ -299,7 +299,6 @@ async def reg_car_brand(
     session: AsyncSession
 ):
     state_data = await state.get_data()
-    #  msg.delete()
     await msg.bot.edit_message_text(
         chat_id=msg.from_user.id,
         message_id=state_data['msg_id'],
@@ -339,6 +338,7 @@ async def reg_car_number(
     data = await state.get_data()
     await state.clear()
     await cars_crud.create(obj_in=data, session=session)
+    await msg.delete()
     await msg.bot.edit_message_text(
         chat_id=msg.from_user.id,
         message_id=data['msg_id'],

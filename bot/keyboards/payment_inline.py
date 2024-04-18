@@ -29,7 +29,7 @@ def build_services_keyboard(
             button_text = '✅ ' + service.name
         else:
             button_text = service.name
-        button_callback_data = f'service_{service.id}'
+        button_callback_data = f'service_id_{service.id}'
         keyboard.add(
             InlineKeyboardButton(
                 text=button_text,

@@ -66,11 +66,11 @@ class CRUDBase(Generic[ModelType]):
         obj_in: dict[str, Any],
         session: AsyncSession,
     ):
-        obj_data = db_obj.__dict__.items()
+        obj_data = db_obj.__dict__
 
-        for field, value in obj_data:
+        for field in obj_data:
             if field in obj_in:
-                setattr(db_obj, field, value)
+                setattr(db_obj, field, obj_in[field])
         session.add(db_obj)
         await session.commit()
         return db_obj
