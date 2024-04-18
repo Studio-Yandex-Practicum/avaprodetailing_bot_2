@@ -10,7 +10,7 @@ def build_user_cars_keyboard(user_cars: list[Car]) -> InlineKeyboardMarkup:
     for car in user_cars:
         button_text = f'{car.brand} {car.number}'
         button_callback_data = f'car_selection_{car.id}'
-        keyboard.add(
+        keyboard.row(
             InlineKeyboardButton(
                 text=button_text,
                 callback_data=button_callback_data
@@ -26,7 +26,7 @@ def build_services_keyboard(
     keyboard = InlineKeyboardBuilder()
     for service in services:
         if service.id in chosen_services:
-            button_text = '✅' + service.name
+            button_text = '✅ ' + service.name
         else:
             button_text = service.name
         button_callback_data = f'service_{service.id}'
