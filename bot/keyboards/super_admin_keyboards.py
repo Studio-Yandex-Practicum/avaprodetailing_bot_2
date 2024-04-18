@@ -1,6 +1,7 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from bot.core.enums import UserRole
+from bot.db.models.users import User
 
 
 super_admin_main_menu = InlineKeyboardMarkup(
@@ -81,7 +82,7 @@ def gener_admin_keyboard(data):
     return builder.as_markup()
 
 
-def gener_list_admins(data):
+def gener_list_admins(admins: list[User]):
     builder = InlineKeyboardBuilder()
     builder.row(
         InlineKeyboardButton(
@@ -89,6 +90,16 @@ def gener_list_admins(data):
             callback_data='reg_new_admin'
         ),
     )
+    for admin in admins:
+        builder.row(
+            InlineKeyboardButton(
+                text=(
+                    f'{admin.business_unit}'
+                    f'{admin.last_name} {admin.first_name}'
+                    f' - {"Активен" if admin.is_active else "Неактивен"}'),
+                callback_data=f'admin_{admin.id}'
+            )
+        )
 
 
     return builder.as_markup()

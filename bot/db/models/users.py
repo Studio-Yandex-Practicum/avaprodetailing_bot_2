@@ -86,3 +86,10 @@ class User(Base):
             obj_in['note'] = obj_in['reason_block']
             obj_in['is_active'] = False
         return obj_in
+    
+    #@classmethod
+    #def db_data_to_str(cls,db):
+    #    if 'birth_date' in db:
+            #db['birth_date'] = dt.strftime(db.birth_date, '%d.%m.%Y')
+    #        return(cls(birth_date = dt.strftime(db.birth_date, '%Y-%m-%d')))
+
