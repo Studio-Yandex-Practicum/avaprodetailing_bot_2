@@ -1,6 +1,6 @@
 # Проект Телеграмм-бота 'Avaprodetailing', сделанный командой Антона.
 
-[![Python](https://img.shields.io/badge/Python-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-blue.svg)](https://www.sqlalchemy.org/)
 [![Aiogram](https://img.shields.io/badge/Aiogram-blue.svg)](https://aiogram.readthedocs.io/en/latest/)
 [![Alembic](https://img.shields.io/badge/Alembic-blue.svg)](https://alembic.sqlalchemy.org/)
