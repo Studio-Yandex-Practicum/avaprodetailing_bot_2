@@ -8,6 +8,7 @@ from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
                                 STATE_PHONE_NUMBER, THX_REG)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
+from bot.handlers.admin.bonus_management import award_registration_bonus
 # from bot.handlers.admin.bonus_management import award_registration_bonus
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
@@ -149,7 +150,7 @@ async def registrate_agree(
     #    attr_name='phone_number',
     #    attr_value=data['phone_number'],
     # )
-    # await award_registration_bonus(new_user, session)
+    await award_registration_bonus(new_user, session)
     await callback.bot.edit_message_text(
         THX_REG,
         chat_id=callback.from_user.id,

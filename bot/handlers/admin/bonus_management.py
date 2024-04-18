@@ -1,17 +1,14 @@
-from datetime import datetime, timedelta
-from aiogram import Router, F, Bot, types
+from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
     CallbackQuery,
 )
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db.crud.bonus import bonuses_crud
-from bot.db.crud.cars import cars_crud
-from bot.db.models import Bonus, User
+from bot.db.crud.services import services_crud
+from bot.db.models import User
 from bot.db.crud.users import users_crud
-from bot.core.config import settings
+from bot.keyboards.admin_keyboards import admin_back_kb
 from bot.states.user_states import AdminState
 from bot.keyboards.bonus_keyboards import (
     bonus_admin,
@@ -24,15 +21,12 @@ router = Router(name=__name__)
 
 async def award_registration_bonus(user: User, session: AsyncSession):
     db_user = await users_crud.get(session=session, obj_id=user.id)
-    if db_user:
+    if db_user is not None:
         registration_bonus_amount = 100
         await bonuses_crud.create(
             obj_in={
                 "user_id": user.id,
-                "used_amount": 0,
                 "full_amount": registration_bonus_amount,
-                "start_date": datetime.now(),
-                "is_active": True
             },
             session=session
         )
@@ -94,12 +88,12 @@ async def manage_bonus_callback(
         session=session
     )
     await state.update_data(
-        bonus_to_spend=min(user.balance, payment_amount * 0.98)
+        bonus_to_spend=min(user.balance, int(payment_amount * 0.98))
     )
     state_data = await state.get_data()
     await message.bot.edit_message_text(
         f"У клиента {user.balance} баллов."
-        f" Может быть списано {state_data.get('bonus_to_spend')}.",
+        f" Может быть списано {state_data['bonus_to_spend']} баллов.",
         chat_id=message.from_user.id,
         message_id=state_data['msg_id'],
         reply_markup=bonus_admin
@@ -132,14 +126,22 @@ async def process_add_bonus(
     if not data.isdigit():
         message_text = 'Ошибка, попробуйте снова.'
     else:
-        bonus_sum = state_data['payment_amount'] * int(data) // 100
-        await state.update_data(bonus_to_add=bonus_sum)
+        bonus_to_add = state_data['payment_amount'] * int(data) // 100
+        await state.update_data(full_amount=bonus_to_add)
         car = state_data['car']
+        services = []
+        for service_id in state_data['chosen_services']:
+            service = await services_crud.get(
+                obj_id=service_id, session=session
+            )
+            services.append(service.name)
+        service_text = ','.join(services)
+
         message_text = ('Посещение клиента:\n'
-                        f'{car.brand} {car.number}\n'
-                        f'{state_data["chosen_services"]}\n'
-                        f'{state_data["payment_amount"]} рублей\n'
-                        f'Будет начислено {bonus_sum} баллов\n')
+                        f'Автомобиль: {car.brand} {car.number}\n'
+                        f'Услуги: {service_text}\n'
+                        f'Сумма {state_data["payment_amount"]} рублей\n'
+                        f'Будет начислено {bonus_to_add} баллов\n')
 
     await callback.bot.edit_message_text(
         chat_id=callback.from_user.id,
@@ -155,11 +157,17 @@ async def approve_bonus_callback(
     state: FSMContext,
     session: AsyncSession
 ):
-    pass
-    # state_data = await state.get_data()
-    # await bonuses_crud.create(
-    #     obj_in=
-    # )
+    state_data = await state.get_data()
+    state_data['is_accrual'] = True
+    await bonuses_crud.create(
+        obj_in=state_data, session=session
+    )
+    await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        text=f'Начислено {state_data["full_amount"]} баллов',
+        reply_markup=admin_back_kb
+    )
 
 
 @router.callback_query(F.data == 'spend_bonus')

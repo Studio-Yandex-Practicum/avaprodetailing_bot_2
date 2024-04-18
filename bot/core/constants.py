@@ -32,7 +32,7 @@ CLIENT_BIO = (
     'ФИО {last_name} {first_name}\n'
     'Дата рождения {birth_date}\n'
     'Номер телефона {phone_number}\n'
-    'Баланс <Баланс> бонусов\n'
+    'Баланс {balance} бонусов\n'
     'Коммент {note}'
 )
 REF_CLIENT_INFO = (
