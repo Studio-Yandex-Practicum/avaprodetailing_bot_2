@@ -8,7 +8,8 @@ from bot.db.models import Bonus, User
 from bot.db.crud.bonus import BonusCRUD
 from bot.db.crud.users import users_crud
 from bot.core.config import settings
-from bot.keyboards.users_keyboards import view_bonuses, manage_bonus_keyboard
+from bot.keyboards.users_keyboards import back_menu_kb
+from bot.core.enums import UserRole
 
 router = Router(name=__name__)
 
@@ -67,16 +68,26 @@ async def view_bonus_history_callback(callback: CallbackQuery, session: AsyncSes
         await callback.message.answer(msg)
 
 
+async def check_if_admin(user_id: int, session: AsyncSession) -> bool:
+    user = await session.execute(select(User).where(User.tg_user_id == user_id))
+    user = user.scalars().first()
+    return user is not None and user.role == UserRole.ADMIN
+
+
 async def calculate_max_bonus_spend(visit_amount: int, user_balance: int) -> int:
     max_percentage = 0.98
     max_spend = int(visit_amount * max_percentage)
     return min(max_spend, user_balance)
 
 
-@router.callback_query(F.data.startswith('manage_bonus'))
+@router.callback_query(F.data('manage_bonus'))
 async def manage_bonus_callback(callback: CallbackQuery, session: AsyncSession):
+    user_id = callback.from_user.id
+    if not await check_if_admin(user_id, session):
+        await callback.answer("У вас нет прав для этой операции!", show_alert=True)
+        return
     action, user_id, visit_amount = callback.data.split('_')
-    user_id = int(user_id)
+    action, user_id, visit_amount = callback.data.split('_')
     visit_amount = int(visit_amount)
     stmt = select(Bonus.full_amount).where(Bonus.user_id == user_id)
     result = await session.execute(stmt)
@@ -89,14 +100,17 @@ async def manage_bonus_callback(callback: CallbackQuery, session: AsyncSession):
         f"Сумма посещения: {visit_amount} рублей\n"
         f"У клиента {user_balance} баллов.\n"
         f"Может быть списано {max_bonus_spend}.",
-        reply_markup=manage_bonus_keyboard
+        reply_markup=back_menu_kb
     )
 
 
-@router.callback_query(F.data.startswith('add_bonus'))
+@router.callback_query(F.data('add_bonus'))
 async def add_bonus_callback(callback: CallbackQuery, session: AsyncSession):
+    user_id = callback.from_user.id
+    if not await check_if_admin(user_id, session):
+        await callback.answer("У вас нет прав для этой операции!", show_alert=True)
+        return
     user_id, bonus_amount = callback.data.split('_')
-    user_id = int(user_id)
     bonus_amount = int(bonus_amount)
     stmt = update(Bonus).where(Bonus.user_id == user_id).values(full_amount=Bonus.full_amount + bonus_amount)
     await session.execute(stmt)
@@ -106,8 +120,11 @@ async def add_bonus_callback(callback: CallbackQuery, session: AsyncSession):
 
 @router.callback_query(F.data.startswith('spend_bonus'))
 async def spend_bonus_callback(callback: CallbackQuery, session: AsyncSession):
+    user_id = callback.from_user.id
+    if not await check_if_admin(user_id, session):
+        await callback.answer("У вас нет прав для этой операции!", show_alert=True)
+        return
     user_id, bonus_amount = callback.data.split('_')
-    user_id = int(user_id)
     bonus_amount = int(bonus_amount)
     stmt = update(Bonus).where(Bonus.user_id == user_id).values(full_amount=Bonus.full_amount - bonus_amount)
     await session.execute(stmt)
