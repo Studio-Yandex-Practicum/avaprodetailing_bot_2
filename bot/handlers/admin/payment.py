@@ -59,7 +59,10 @@ async def select_services_callback(
         attr_value=callback_query.from_user.id,
         session=session
     )
-    services = admin.business_unit.services
+    if admin.business_unit is not None:
+        services = admin.business_unit.services
+    else:
+        services = []
     await state.update_data(chosen_services=[])
     await callback_query.message.bot.edit_message_text(
         message_id=state_data['msg_id'],
@@ -106,10 +109,12 @@ async def finish_selection_callback(
     state: FSMContext,
     session: AsyncSession
 ):
-    await callback_query.message.delete()
     visit_info = 'Введите общую сумму посещения:'
-    await callback_query.message.answer(
-        visit_info,
+    state_data = await state.get_data()
+    await callback_query.message.bot.edit_message_text(
+        text=visit_info,
+        chat_id=callback_query.from_user.id,
+        message_id=state_data['msg_id']
     )
     await state.set_state(AdminState.payment_amount)
 
