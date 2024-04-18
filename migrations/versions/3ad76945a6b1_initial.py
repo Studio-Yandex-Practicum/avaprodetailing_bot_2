@@ -1,8 +1,12 @@
 """initial
 
+<<<<<<< HEAD:migrations/versions/1628c19f28b1_initial.py
 Revision ID: 09a1fc406488
+=======
+Revision ID: 3ad76945a6b1
+>>>>>>> eabc74f0823c14b99ab05a13bffc71ec2d30d85e:migrations/versions/3ad76945a6b1_initial.py
 Revises: 
-Create Date: 2024-04-14 16:32:04.405168
+Create Date: 2024-04-18 15:47:10.293551
 
 """
 from typing import Sequence, Union
@@ -12,7 +16,11 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
+<<<<<<< HEAD:migrations/versions/1628c19f28b1_initial.py
 revision: str = '09a1fc406488'
+=======
+revision: str = '3ad76945a6b1'
+>>>>>>> eabc74f0823c14b99ab05a13bffc71ec2d30d85e:migrations/versions/3ad76945a6b1_initial.py
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -43,6 +51,7 @@ def upgrade() -> None:
     )
     op.create_table('services',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('note', sa.String(length=255), nullable=True),
@@ -55,9 +64,9 @@ def upgrade() -> None:
     sa.Column('user_agreement', sa.Boolean(), nullable=False),
     sa.Column('role', sa.Enum('USER', 'ADMIN', 'SUPERADMIN', name='userrole'), nullable=False),
     sa.Column('phone_number', sa.String(length=20), nullable=False),
-    sa.Column('last_name', sa.String(length=120), nullable=False),
-    sa.Column('first_name', sa.String(length=120), nullable=False),
-    sa.Column('birth_date', sa.Date(), nullable=False),
+    sa.Column('last_name', sa.String(length=120), nullable=True),
+    sa.Column('first_name', sa.String(length=120), nullable=True),
+    sa.Column('birth_date', sa.Date(), nullable=True),
     sa.Column('note', sa.String(length=120), nullable=True),
     sa.Column('tg_user_id', sa.Integer(), nullable=True),
     sa.Column('business_unit_id', sa.Integer(), nullable=True),

@@ -27,13 +27,14 @@ class Service(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
+    name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     category_id: Mapped[int] = mapped_column(
         ForeignKey('service_categories.id')
     )
     is_active: Mapped[bool] = mapped_column(default=True)
     note: Mapped[Optional[str]] = mapped_column(String(LONG_STRING_SIZE))
     business_units: Mapped[List['BusinessUnit']] = relationship(
-        secondary='service_unit', back_populates='services'
+        lazy='selectin', secondary='service_unit', back_populates='services'
     )
     name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
 

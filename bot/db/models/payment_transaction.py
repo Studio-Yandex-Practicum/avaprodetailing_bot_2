@@ -17,7 +17,7 @@ class Visit(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[datetime] = mapped_column(server_default=func.now())
-    summ: Mapped[int]
+    summ: Mapped[int] = mapped_column(CheckConstraint("summ >= 0", name='check_summ_positive'))
     bonus_payment: Mapped[bool] = mapped_column(default=False)
     payment_type_online: Mapped[bool]
     payment_state: Mapped[PaymentState]
@@ -34,9 +34,7 @@ class Visit(Base):
         foreign_keys=(admin_user_id,)
     )
     car_id: Mapped[str] = mapped_column(ForeignKey('cars.id'))
-    service_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey('services.id')
-    )
+    service_id: Mapped[Optional[int]] = mapped_column(ForeignKey('services.id'))
 
     def __repr__(self):
         return (f'Visit(id={self.id}, summ={self.summ},'
