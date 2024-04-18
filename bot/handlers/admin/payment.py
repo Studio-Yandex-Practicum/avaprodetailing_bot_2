@@ -112,16 +112,3 @@ async def finish_selection_callback(
         visit_info,
     )
     await state.set_state(AdminState.payment_amount)
-
-
-@router.message(AdminState.payment_amount)
-async def payment_amount_callback(message: types.Message, state: FSMContext):
-    try:
-        payment_amount = int(message.text)
-        if payment_amount <= 0:
-            raise ValueError
-    except ValueError:
-        await message.answer('Введите корректную положительную сумму.')
-        return
-    await state.update_data(payment_amount=payment_amount)
-    await state.set_state()

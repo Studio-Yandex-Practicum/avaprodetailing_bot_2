@@ -9,7 +9,7 @@ from bot.core.constants import (
 )
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
-from bot.handlers.user.bonus_management import award_registration_bonus
+from bot.handlers.admin.bonus_management import award_registration_bonus
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
 from bot.utils.validators import (
@@ -153,7 +153,6 @@ async def registrate_agree(
     #    attr_value=data['phone_number'],
     # )
     await award_registration_bonus(new_user, session)
-    await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
         THX_REG,
         chat_id=callback.from_user.id,

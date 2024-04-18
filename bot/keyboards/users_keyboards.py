@@ -73,14 +73,6 @@ back_menu_kb = InlineKeyboardMarkup(
                 text='Баланс бонусов',
                 callback_data='view_balance',
             )
-        ],
-        [        
-            InlineKeyboardButton(
-                text="Начислить баллы (+)",
-                callback_data="add_bonus"),
-            InlineKeyboardButton(
-                text="Списать баллы (-)",
-                callback_data="spend_bonus")
         ]
     ]
 )
