@@ -31,7 +31,7 @@ reg_message = (
 error_message = (
     'Неверный формат ввода\n'
     '{info_text}\n'
-    'Вы ввели {incorrect_text}'
+    'Вы ввели {incorrect}'
 )
 
 
@@ -110,7 +110,7 @@ async def reg_phone_number(
     session: AsyncSession
 ):
     state_data = await state.get_data()
-    if not await validate_phone_number(msg=msg.text):
+    if not await validate_phone_number(phone_number=msg.text):
         await msg.delete()
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,

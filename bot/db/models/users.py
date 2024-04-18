@@ -1,12 +1,10 @@
 from datetime import date
-
 from datetime import datetime as dt
 from typing import Optional, cast
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 
 from bot.core.constants import (DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
                                 SHORT_STRING_SIZE)
@@ -23,19 +21,20 @@ class User(Base):
     user_agreement: Mapped[bool] = mapped_column(default=True)
     role: Mapped[UserRole] = mapped_column(default=DEFAULT_USER_ROLE)
     phone_number: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
-    last_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
-    first_name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
-    birth_date: Mapped[date]
+    last_name: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE))
+    first_name: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE))
+    birth_date: Mapped[Optional[date]]
     note: Mapped[Optional[str]] = mapped_column(String(DEFAULT_STRING_SIZE))
 
     tg_user_id: Mapped[Optional[int]]
 
-    cars: Mapped[set['Car']] = relationship()
+    cars: Mapped[set['Car']] = relationship(lazy="selectin")
     business_unit_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('business_units.id')
     )
     business_unit: Mapped[Optional['BusinessUnit']] = relationship(
-        back_populates='admin_users'
+        back_populates='admin_users',
+        lazy='selectin'
     )
     visits: Mapped[set['Visit']] = relationship(
         back_populates='user',
@@ -55,12 +54,36 @@ class User(Base):
         cls,
         obj_in,
     ):
-        last_name, first_name= [x for x in obj_in['fio'].split(maxsplit=1)]
-        db_obj = cls(
-            phone_number=obj_in['phone_number'],
-            last_name=last_name,
-            first_name=first_name,
-            birth_date=dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date(),
-            tg_user_id=obj_in['tg_user_id'],
-        )  # получение данных из стейтов
+        if 'fio' in obj_in:
+            last_name, first_name = [x for x in obj_in['fio'].split(maxsplit=1)]
+            db_obj = cls(
+                phone_number=obj_in['phone_number'],
+                last_name=last_name,
+                first_name=first_name,
+                birth_date=dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date(),
+                tg_user_id=obj_in['tg_user_id'],
+            )
+        else:
+            db_obj = cls(phone_number=obj_in['phone_number'],)
         return db_obj
+
+    @staticmethod
+    def update_data_to_model(
+        db_obj,
+        obj_in
+    ):
+        if 'fio' in obj_in:
+            last_name, first_name = [x for x in obj_in['fio'].split(maxsplit=1)]
+            obj_in['last_name'] = last_name
+            obj_in['first_name'] = first_name
+        if 'birth_date' in obj_in:
+            obj_in['birth_date'] = dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date()
+        if 'phone_num_update' in obj_in:
+            obj_in['phone_number'] = obj_in['phone_num_update']
+        if 'note' in obj_in:
+            if db_obj.note is not None:
+                obj_in['note'] = db_obj.note + '\n' + obj_in['note']
+        if 'reason_block' in obj_in:
+            obj_in['note'] = obj_in['reason_block']
+            obj_in['is_active'] = False
+        return obj_in

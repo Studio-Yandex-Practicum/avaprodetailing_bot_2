@@ -27,6 +27,7 @@ class Service(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
+    name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
     category_id: Mapped[int] = mapped_column(
         ForeignKey('service_categories.id')
     )
