@@ -61,6 +61,22 @@ role_for_admin_kb = InlineKeyboardMarkup(
     ],
 )
 
+
+def ok_admin_bio(admin):
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='ОК',
+                    callback_data=f'admin_bio_{admin.id}'
+                ),
+
+            ],
+        ],
+    )
+    return kb
+
+
 OK_add_admin = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -72,6 +88,40 @@ OK_add_admin = InlineKeyboardMarkup(
         ],
     ],
 )
+
+
+def admin_bio_for_super_admin_kb(is_active):
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='Изменить ФИО',
+                    callback_data='1'
+                ),
+                InlineKeyboardButton(
+                    text='Изменить номер телефона',
+                    callback_data='1',
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text='Изменить бизнес-юнит',
+                    callback_data='1',
+                ),
+                InlineKeyboardButton(
+                    text='Изменить роль',
+                    callback_data='change_role'
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text='Заблокировать' if is_active else 'Разблокировать',
+                    callback_data='block_admin'
+                ),
+            ],
+        ]
+    )
+    return kb
 
 
 def gener_business_unit_for_admin(data):
@@ -139,7 +189,7 @@ def gener_list_admins(admins: list[User]):
                         f'{admin.business_unit if admin.role is UserRole.ADMIN else "Суперадмин"} - '
                         f'{admin.last_name} {admin.first_name}'
                         f' - {"Активен" if admin.is_active else "Неактивен"}'),
-                    callback_data=f'admin_{admin.id}'
+                    callback_data=f'admin_bio_{admin.id}'
                 )
             )
 

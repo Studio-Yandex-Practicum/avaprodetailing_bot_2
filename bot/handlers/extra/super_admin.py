@@ -14,7 +14,7 @@ from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
                                            client_profile_for_adm,
                                            reg_or_menu_adm,
                                            update_client_kb)
-from bot.keyboards.super_admin_keyboards import gener_admin_keyboard, gener_list_admins, super_admin_main_menu
+from bot.keyboards.super_admin_keyboards import admin_bio_for_super_admin_kb, gener_admin_keyboard, gener_list_admins, super_admin_main_menu
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
 from bot.states.user_states import AdminState, RegUser, SuperAdminState
@@ -85,4 +85,32 @@ async def get_admins_list(
     await state.update_data(msg_id=msg.message_id)
     
     
+    
 
+    
+    
+
+@router.callback_query(F.data.startswith('admin_bio_'))
+async def process_selected_business_unit(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession
+):
+    admin = await users_crud.get(
+        obj_id=int(callback.data.split('_')[-1]), session=session
+    )
+    await state.update_data(admin_id=admin.id)
+    state_data = await state.get_data()
+    await callback.bot.edit_message_text(
+        text=(
+            'Выберите действие для администратора:'
+            f'\nФИО {admin.last_name} {admin.first_name}\n'
+            f'Номер телефона {admin.phone_number}\n'
+            f'{admin.role}\n'
+            f'{admin.business_unit}\n'
+            f'{"Действующий" if admin.is_active else "Архив"}'
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=admin_bio_for_super_admin_kb(admin.is_active)
+    )

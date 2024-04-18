@@ -16,7 +16,7 @@ from bot.db.models.users import User
 from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
                                            client_profile_for_adm,
                                            reg_or_menu_adm, update_client_kb)
-from bot.keyboards.super_admin_keyboards import (OK_add_admin,
+from bot.keyboards.super_admin_keyboards import (OK_add_admin, ok_admin_bio, admin_bio_for_super_admin_kb,
                                                  gener_admin_keyboard,
                                                  role_for_admin_kb,gener_business_unit_for_admin,
                                                  super_admin_main_menu)
@@ -187,7 +187,44 @@ async def invite_admin(
         message_id=state_data['msg_id'],
     ) 
     await state.clear()
+    
 
+@router.callback_query(F.data == 'block_admin')
+async def block_admin(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
+):
+    state_data = await state.get_data()
+    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    state_data['is_active'] = not admin.is_active
+    admin = await users_crud.update(db_obj=admin,obj_in=state_data,session=session)
+    await callback.bot.edit_message_text(
+        'Статус администратора изменен на '
+        f'{"Действующий" if admin.is_active else "Архив"}',
+        reply_markup=ok_admin_bio(admin),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+    )
+    
+
+@router.callback_query(F.data == 'change_role')
+async def block_admin(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
+):
+    state_data = await state.get_data()
+    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    state_data['role'] = UserRole.SUPERADMIN if admin.role is UserRole.ADMIN else UserRole.ADMIN
+    admin = await users_crud.update(db_obj=admin,obj_in=state_data,session=session)
+    await callback.bot.edit_message_text(
+        f'Роль {"Администратор" if admin.role is UserRole.SUPERADMIN else "Старший администратор"} изменена на '
+        f'{"Администратор" if admin.role is UserRole.ADMIN else "Старший администратор"}',
+        reply_markup=ok_admin_bio(admin),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+    )
     
     
     

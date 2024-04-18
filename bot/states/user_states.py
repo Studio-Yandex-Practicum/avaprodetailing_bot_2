@@ -27,6 +27,7 @@ class SuperAdminState(StatesGroup):
     fio = State()
     role = State()
     unit_id = State()
+    admin_id = State()
 
 
 class BusinessUnitState(StatesGroup):
