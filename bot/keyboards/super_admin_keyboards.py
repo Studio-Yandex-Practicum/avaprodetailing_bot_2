@@ -79,3 +79,16 @@ def gener_admin_keyboard(data):
         )
 
     return builder.as_markup()
+
+
+def gener_list_admins(data):
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(
+            text='Зарегистрировать администратора',
+            callback_data='reg_new_admin'
+        ),
+    )
+
+
+    return builder.as_markup()
