@@ -15,6 +15,7 @@ from bot.keyboards.cars_keyboards import (
 )
 from bot.db.crud.cars import cars_crud
 from bot.db.crud.users import users_crud
+from bot.utils.validators import verify_symbols
 
 router = Router(name=__name__)
 
@@ -70,7 +71,7 @@ async def choose_car(
     sizes = []
     for car in cars:
         car_name = f" Авто: {car.brand}/{car.model} - {car.number}"
-        choose_car_kb.button(text=car_name, callback_data=f'Авто:{car.id}')
+        choose_car_kb.button(text=car_name, callback_data=f'car_{car.id}')
         sizes += [1]
     choose_car_kb.adjust(*sizes)
     await callback.message.answer(
@@ -79,14 +80,14 @@ async def choose_car(
     )
 
 
-@router.callback_query(F.data.startswith("Авто:"))
+@router.callback_query(F.data.startswith("car_"))
 async def edit_car(
     callback: CallbackQuery,
     state: FSMContext,
     session: AsyncSession,
 ):
     await callback.message.delete()
-    car_id = int(callback.data.split(':')[1])
+    car_id = int(callback.data.split('_')[1])
     car = await cars_crud.get(obj_id=car_id, session=session)
     await state.set_state(ChooseCar.chosen)
     await state.update_data(chosen=car)
