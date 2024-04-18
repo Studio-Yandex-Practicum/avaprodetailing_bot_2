@@ -6,11 +6,11 @@
 [![Alembic](https://img.shields.io/badge/Alembic-1.8-blue.svg)](https://alembic.sqlalchemy.org/)
 
 ### Над проектом работают:
-https://github.com/antonata-c
-https://github.com/mkmmcvrs68
-https://github.com/ilyaryk
-https://github.com/Vladislav199912
-https://github.com/pgphil86
+- https://github.com/antonata-c
+- https://github.com/mkmmcvrs68
+- https://github.com/ilyaryk
+- https://github.com/Vladislav199912
+- https://github.com/pgphil86
 
 ### Описание:
 Avaprodetailing - это Telegram-бот, разработанный для автосервиса, который предоставляет комплексную систему лояльности для клиентов. Бот позволяет клиентам:
