@@ -1,5 +1,4 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           KeyboardButton, ReplyKeyboardMarkup)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 reg_kb = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -55,7 +54,7 @@ profile_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Предъявить QR код',
-                callback_data='qr_code',
+                callback_data='generate_qr_code',
             )
         ],
     ]

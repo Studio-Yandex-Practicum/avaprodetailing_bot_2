@@ -4,8 +4,8 @@ from datetime import date, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import MAX_LENGTH_BIRTH_DATE
-from bot.db.crud.users import users_crud
 from bot.core.enums import UserRole
+from bot.db.crud.users import users_crud
 
 
 def verify_symbols(num):
@@ -18,7 +18,9 @@ async def check_user_is_none(
     session: AsyncSession,
 ) -> None:
     user = await users_crud.get_by_attribute(
-        attr_name='tg_user_id', attr_value=tg_id, session=session
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
     )
     return user is None
 
@@ -26,11 +28,13 @@ async def check_user_is_none(
 async def check_user_is_admin(
     tg_id: int,
     session: AsyncSession,
-) -> None:
+) -> bool:
     user = await users_crud.get_by_attribute(
-        attr_name='tg_user_id', attr_value=tg_id, session=session
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
     )
-    return user.role is UserRole.ADMIN
+    return user.role is UserRole.ADMIN or user.role is UserRole.SUPERADMIN
 
 
 async def validate_fio(msg: str):

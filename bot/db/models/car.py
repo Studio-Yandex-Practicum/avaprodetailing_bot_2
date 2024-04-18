@@ -9,7 +9,7 @@ from bot.db.models.base import Base
 
 
 class Car(Base):
-    '''Модель автомобиля'''
+    """Модель автомобиля"""
 
     __tablename__ = 'cars'
     id: Mapped[int] = mapped_column(primary_key=True)
