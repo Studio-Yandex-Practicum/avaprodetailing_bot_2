@@ -14,6 +14,11 @@ from bot.db.crud.users import users_crud
 from bot.core.enums import UserRole
 
 
+def verify_symbols(num):
+    special_characters = "!@#$%^&*()-+?_=, <>/'\""
+    return not any(c in special_characters for c in num)
+
+
 async def check_user_is_none(
     tg_id: int,
     session: AsyncSession,
