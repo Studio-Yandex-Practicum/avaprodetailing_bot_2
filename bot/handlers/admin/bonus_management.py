@@ -13,16 +13,16 @@ from bot.keyboards.users_keyboards import back_menu_kb
 from bot.core.enums import UserRole
 from bot.states.user_states import AdminState
 from bot.keyboards.bonus_keybords import bonus_admin
+from bot.db.crud.bonus import bonuses_crud
 
 router = Router(name=__name__)
 
 
 async def award_registration_bonus(user: User, session: AsyncSession):
-    db_user = await users_crud.get(session=session, id=user.user_id)
+    db_user = await users_crud.get(session=session,obj_id=user.id)
     if db_user:
         registration_bonus_amount = 100
-        bonus_crud = BonusCRUD()
-        await bonus_crud.create(
+        await bonuses_crud.create(
             obj_in={
                 "user_id": user.id,
                 "used_amount": 0,
