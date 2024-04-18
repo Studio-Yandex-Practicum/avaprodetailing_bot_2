@@ -77,7 +77,6 @@ async def get_admins_list(
     state: FSMContext
 ):
     admins = await users_crud.get_multi(session=session)
-    print(admins)
     await callback.message.delete()
     msg = await callback.message.answer(
         text='Выберите админа',
@@ -85,3 +84,5 @@ async def get_admins_list(
     )
     await state.update_data(msg_id=msg.message_id)
     
+    
+

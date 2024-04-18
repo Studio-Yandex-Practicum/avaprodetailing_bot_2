@@ -33,7 +33,7 @@ class User(Base):
         ForeignKey('business_units.id')
     )
     business_unit: Mapped[Optional['BusinessUnit']] = relationship(
-        back_populates='admin_users'
+        back_populates='admin_users', lazy="selectin"
     )
     visits: Mapped[set['Visit']] = relationship(
         back_populates='user',
@@ -53,14 +53,20 @@ class User(Base):
         cls,
         obj_in,
     ):
+        if 'birth_date' in obj_in:
+            birth_date=dt.strptime(obj_in.get('birth_date'), '%d.%m.%Y').date()
+        else:
+            birth_date=None
         if 'fio' in obj_in:
             last_name, first_name = [x for x in obj_in['fio'].split(maxsplit=1)]
             db_obj = cls(
                 phone_number=obj_in['phone_number'],
                 last_name=last_name,
                 first_name=first_name,
-                birth_date=dt.strptime(obj_in['birth_date'], '%d.%m.%Y').date(),
-                tg_user_id=obj_in['tg_user_id'],
+                birth_date=birth_date,
+                tg_user_id=obj_in.get('tg_user_id'),
+                role=obj_in.get('role'),
+                business_unit_id=obj_in.get('unit_id')
             )
         else:
             db_obj = cls(phone_number=obj_in['phone_number'],)
@@ -86,10 +92,3 @@ class User(Base):
             obj_in['note'] = obj_in['reason_block']
             obj_in['is_active'] = False
         return obj_in
-    
-    #@classmethod
-    #def db_data_to_str(cls,db):
-    #    if 'birth_date' in db:
-            #db['birth_date'] = dt.strftime(db.birth_date, '%d.%m.%Y')
-    #        return(cls(birth_date = dt.strftime(db.birth_date, '%Y-%m-%d')))
-
