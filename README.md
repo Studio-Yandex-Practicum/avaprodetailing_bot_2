@@ -5,13 +5,13 @@
 [![Aiogram](https://img.shields.io/badge/Aiogram-blue.svg)](https://aiogram.readthedocs.io/en/latest/)
 [![Alembic](https://img.shields.io/badge/Alembic-blue.svg)](https://alembic.sqlalchemy.org/)
 
-### Над проектом работают:
-- https://github.com/antonata-c
-- https://github.com/mkmmcvrs68
-- https://github.com/ilyaryk
-- https://github.com/Vladislav199912
-- https://github.com/pgphil86
-- https://github.com/R1su
+### Стек технологий
+* Python==3.11
+* aiogram==3.4.1
+* SQLAlchemy==2.0.29
+* alembic==1.13.1
+* pydantic==2.5.3
+* qrcode==7.4.2
 
 ### Описание:
 Avaprodetailing - это Telegram-бот, разработанный для автосервиса, который предоставляет комплексную систему лояльности для клиентов. Бот позволяет клиентам:
@@ -71,10 +71,10 @@ docker run -p 80:80 avaprodetailing
 http://localhost:80
 ```
 
-### В проекте используются:
-1. Python==3.11
-1. aiogram==3.4.1
-1. SQLAlchemy==2.0.29
-1. alembic==1.13.1
-1. pydantic==2.5.3
-1. qrcode==7.4.2
+### Авторы проекта:
+- [Антон Земцов](https://github.com/antonata-c)
+- [Максим Козлов](https://github.com/mkmmcvrs68)
+- [Илья Рыкованов](https://github.com/ilyaryk)
+- [Владислав Ермаков](https://github.com/Vladislav199912)
+- [Павел Филиппов](https://github.com/pgphil86)
+- [Павел Войнов](https://github.com/R1su)
