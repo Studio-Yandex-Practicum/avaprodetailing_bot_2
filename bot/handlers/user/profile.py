@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from aiogram import F, Router
+from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,13 +35,39 @@ profile_message = (
 )
 
 
-# FIXME
+@router.callback_query(F.data == 'history')
+async def get_bonus_history(
+    callback: CallbackQuery,
+    session: AsyncSession
+):
+    await callback.message.delete()
+    user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=callback.from_user.id,
+        session=session
+    )
+    message_text = ['История начислений и списаний:']
+    for bonus in reversed(user.bonuses):
+        message_text.append(
+            f'{bonus.start_date}'
+            f' {"Начисление" if bonus.is_accrual else "Списание"}'
+            f' - {bonus.full_amount - bonus.used_amount} бонусов'
+        )
+    if len(message_text) == 1:
+        message_text.append('_история отсутствует_')
+    message_text.append(f'\nТекущий баланс {user.balance} баллов')
+    await callback.message.answer(
+        text='\n'.join(message_text),
+        reply_markup=back_menu_kb,
+        parse_mode=ParseMode.MARKDOWN
+    )
+
+
 @router.callback_query(F.data == 'profile')
 async def get_profile(
     callback: CallbackQuery,
     session: AsyncSession,
 ):
-
     await callback.message.delete()
     tg_id = callback.from_user.id
     db_obj = await users_crud.get_by_attribute(

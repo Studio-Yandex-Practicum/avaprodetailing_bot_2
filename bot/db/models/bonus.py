@@ -14,17 +14,18 @@ class Bonus(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    used_amount: Mapped[int]
+    used_amount: Mapped[int] = mapped_column(default=0)
     full_amount: Mapped[int]
     start_date: Mapped[datetime] = mapped_column(server_default=func.now())
-    is_active: Mapped[bool]
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_accrual: Mapped[bool]
 
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     user: Mapped['User'] = relationship(
         foreign_keys=(user_id,), back_populates='bonuses'
     )
-    admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    admin_user: Mapped['User'] = relationship(
+    admin_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey('users.id'))
+    admin_user: Mapped[Optional['User']] = relationship(
         foreign_keys=(admin_user_id,),
         back_populates='bonuses',
         viewonly=True,

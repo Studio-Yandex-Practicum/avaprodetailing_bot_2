@@ -36,3 +36,4 @@ async def test(message: Message, session: AsyncSession):
             PROFILE_MESSAGE_WITH_INLINE,
             reply_markup=profile_kb
         )
+
