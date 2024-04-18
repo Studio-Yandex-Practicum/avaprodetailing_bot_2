@@ -11,6 +11,7 @@
 - https://github.com/ilyaryk
 - https://github.com/Vladislav199912
 - https://github.com/pgphil86
+- https://github.com/R1su
 
 ### Описание:
 Avaprodetailing - это Telegram-бот, разработанный для автосервиса, который предоставляет комплексную систему лояльности для клиентов. Бот позволяет клиентам:
@@ -44,16 +45,8 @@ pip install -r requirements.txt
 ```
 В корневой директории проекта создаем файл .env с переменными:
 ```
-BOT_TOKEN = Ваш токен.
+BOT_TOKEN = 'Ваш токен'
 DATABASE_URL = sqlite+aiosqlite:///./avapro.db
-```
-Инициализируйте репозиторий миграций, выполнив следующую команду:
-```
-alembic init migrations
-```
-Создайте новую миграцию, выполнив команду:
-```
-alembic revision --autogenerate -m "Initial migration"
 ```
 Примените миграцию, выполнив команду:
 ```
