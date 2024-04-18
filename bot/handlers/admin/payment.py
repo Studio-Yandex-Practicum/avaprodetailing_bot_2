@@ -107,14 +107,7 @@ async def finish_selection_callback(
     session: AsyncSession
 ):
     await callback_query.message.delete()
-    state_data = await state.get_data()
-    car = await cars_crud.get(
-        session=session, obj_id=state_data['car_id']
-    )
-    # TODO: получаем из круда услуг и выводим красиво
-    selected_services = state_data['chosen_services']
-    visit_info = (f'Посещение клиента:\n{car.brand} {car.number}\n'
-                  f'{selected_services}\n\nВведите общую сумму посещения:')
+    visit_info = 'Введите общую сумму посещения:'
     await callback_query.message.answer(
         visit_info,
     )
