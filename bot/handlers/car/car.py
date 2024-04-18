@@ -1,27 +1,22 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message, InlineKeyboardButton
+from aiogram.types import CallbackQuery, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.states.car_states import RegCar, ChooseCar
 from bot.keyboards.users_keyboards import back_menu_kb
-from bot.keyboards.cars_keyboards import (car_kb,
-                                          add_car_kb,
-                                          edit_car_kb,
-                                          finish_add_car_kb,
-                                          verify_delete_car_kb)
+from bot.keyboards.cars_keyboards import (
+    car_kb,
+    add_car_kb,
+    edit_car_kb,
+    finish_add_car_kb,
+    verify_delete_car_kb,
+)
 from bot.db.crud.cars import cars_crud
 from bot.db.crud.users import users_crud
-from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE,)
-from bot.db.models import User
 
 router = Router(name=__name__)
-
-
-def verify_symbols(num):
-    special_characters = "!@#$%^&*()-+?_=, <>/'"+'"'
-    return not any(c in special_characters for c in num)
 
 
 @router.callback_query(F.data == 'car_menu')
@@ -32,16 +27,17 @@ async def car_menu(
 
     await callback.message.delete()
     tg_id = callback.from_user.id
-    user = await users_crud.get_by_attribute(attr_name='tg_user_id',
-                                             attr_value=tg_id,
-                                             session=session)
+    user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
     cars = user.cars
     if not cars:
-        print(cars)
         await callback.message.answer(
             "Внесите информацию по автомобилю",
             reply_markup=add_car_kb
-            )
+        )
     else:
         car_message = 'Список авто: \n'
         for car in list(cars):
@@ -63,9 +59,11 @@ async def choose_car(
 
     await callback.message.delete()
     tg_id = callback.from_user.id
-    user = await users_crud.get_by_attribute(attr_name='tg_user_id',
-                                             attr_value=tg_id,
-                                             session=session)
+    user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
     cars = user.cars
     car_message = 'Выберите автомобиль'
     choose_car_kb = InlineKeyboardBuilder()
@@ -92,9 +90,10 @@ async def edit_car(
     car = await cars_crud.get(obj_id=car_id, session=session)
     await state.set_state(ChooseCar.chosen)
     await state.update_data(chosen=car)
-    await callback.message.answer((
-        "Выберите действие для\n"
-        f"{car.brand}/{car.model} - {car.number}"),
+    await callback.message.answer(
+        (
+            "Выберите действие для\n"
+            f"{car.brand}/{car.model} - {car.number}"),
         reply_markup=edit_car_kb
     )
 
@@ -145,9 +144,10 @@ async def car_change_number(
 
 @router.message(ChooseCar.new_number)
 async def car_change_number_verify(
-        msg: Message,
-        state: FSMContext,
-        session: AsyncSession):
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
     state_data = await state.get_data()
     if not verify_symbols(msg.text):
         await msg.bot.edit_message_text(
@@ -159,9 +159,10 @@ async def car_change_number_verify(
         return
     else:
         await state.update_data(new_number=msg.text)
-        await cars_crud.update(state_data['chosen'],
-                               {"number": msg.text},
-                               session=session,)
+        await cars_crud.update(
+            state_data['chosen'],
+            {"number": msg.text},
+            session=session, )
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
@@ -190,9 +191,10 @@ async def car_change_brand(
 
 @router.message(ChooseCar.new_brand)
 async def car_change_brand_verify(
-        msg: Message,
-        state: FSMContext,
-        session: AsyncSession):
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
     state_data = await state.get_data()
     if not verify_symbols(msg.text):
         await msg.bot.edit_message_text(
@@ -204,9 +206,10 @@ async def car_change_brand_verify(
         return
     else:
         await state.update_data(new_number=msg.text)
-        await cars_crud.update(state_data['chosen'],
-                               {"brand": msg.text},
-                               session=session,)
+        await cars_crud.update(
+            state_data['chosen'],
+            {"brand": msg.text},
+            session=session, )
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
@@ -235,9 +238,10 @@ async def car_change_model(
 
 @router.message(ChooseCar.new_model)
 async def car_change_model_verify(
-        msg: Message,
-        state: FSMContext,
-        session: AsyncSession):
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
     state_data = await state.get_data()
     if not verify_symbols(msg.text):
         await msg.bot.edit_message_text(
@@ -249,9 +253,10 @@ async def car_change_model_verify(
         return
     else:
         await state.update_data(new_number=msg.text)
-        await cars_crud.update(state_data['chosen'],
-                               {"model": msg.text},
-                               session=session,)
+        await cars_crud.update(
+            state_data['chosen'],
+            {"model": msg.text},
+            session=session, )
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
@@ -269,9 +274,11 @@ async def reg_car_start(
     await state.clear()
     await callback.message.delete()
     tg_id = callback.from_user.id
-    user = await users_crud.get_by_attribute(attr_name='tg_user_id',
-                                             attr_value=tg_id,
-                                             session=session)
+    user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
     await state.update_data(user_id=user.id)
 
     await state.set_state(RegCar.brand)
@@ -285,9 +292,11 @@ async def reg_car_start(
 
 
 @router.message(RegCar.brand)
-async def reg_car_brand(msg: Message,
-                        state: FSMContext,
-                        session: AsyncSession):
+async def reg_car_brand(
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
     state_data = await state.get_data()
     #  msg.delete()
     await msg.bot.edit_message_text(
@@ -301,9 +310,11 @@ async def reg_car_brand(msg: Message,
 
 
 @router.message(RegCar.model)
-async def reg_car_model(msg: Message,
-                        state: FSMContext,
-                        session: AsyncSession):
+async def reg_car_model(
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
     state_data = await state.get_data()
 
     await state.update_data(model=msg.text)
@@ -318,9 +329,11 @@ async def reg_car_model(msg: Message,
 
 
 @router.message(RegCar.number)
-async def reg_car_number(msg: Message,
-                         state: FSMContext,
-                         session: AsyncSession):
+async def reg_car_number(
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
     await state.update_data(number=msg.text)
     data = await state.get_data()
     await state.clear()
