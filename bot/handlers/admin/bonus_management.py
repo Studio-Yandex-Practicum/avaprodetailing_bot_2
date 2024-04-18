@@ -17,40 +17,25 @@ from bot.keyboards.bonus_keyboards import (
     bonus_admin,
     bonus_add_choice_keyboard, bonus_approve_cancel_keyboard,
 )
+from bot.db.crud.bonus import bonuses_crud
 
 router = Router(name=__name__)
 
 
-# async def award_registration_bonus(user: User, session: AsyncSession):
-#     db_user = await users_crud.get(session=session, id=user.user_id)
-#     if db_user:
-#         registration_bonus_amount = 100
-#         bonus_crud = BonusCRUD()
-#         await bonus_crud.create(
-#             obj_in={
-#                 "user_id": user.id,
-#                 "used_amount": 0,
-#                 "full_amount": registration_bonus_amount,
-#                 "start_date": datetime.now(),
-#                 "is_active": True
-#             },
-#             session=session
-#         )
-
-
-@router.callback_query(F.data == 'view_balance')
-async def view_balance_callback(
-    callback: CallbackQuery, session: AsyncSession
-):
-    user_id = callback.from_user.id
-    stmt = select(Bonus.full_amount).where(Bonus.user_id == user_id)
-    result = await session.execute(stmt)
-    balance = result.scalar_one_or_none()
-
-    await callback.message.answer(
-        f"Ваш баланс бонусных баллов: {balance or 0}",
-        reply_markup=view_bonuses
-    )
+async def award_registration_bonus(user: User, session: AsyncSession):
+    db_user = await users_crud.get(session=session, obj_id=user.id)
+    if db_user:
+        registration_bonus_amount = 100
+        await bonuses_crud.create(
+            obj_in={
+                "user_id": user.id,
+                "used_amount": 0,
+                "full_amount": registration_bonus_amount,
+                "start_date": datetime.now(),
+                "is_active": True
+            },
+            session=session
+        )
 
 
 # использовать поле модели start_date и так же одной функцией
@@ -108,9 +93,13 @@ async def manage_bonus_callback(
         attr_value=state_data['phone_number'],
         session=session
     )
+    await state.update_data(
+        bonus_to_spend=min(user.balance, payment_amount * 0.98)
+    )
+    state_data = await state.get_data()
     await message.bot.edit_message_text(
-        f"У клиента {user.balance} баллов. "
-        f"Может быть списано {min(user.balance, payment_amount * 0.98)}.",
+        f"У клиента {user.balance} баллов."
+        f" Может быть списано {state_data.get('bonus_to_spend')}.",
         chat_id=message.from_user.id,
         message_id=state_data['msg_id'],
         reply_markup=bonus_admin
@@ -171,3 +160,22 @@ async def approve_bonus_callback(
     # await bonuses_crud.create(
     #     obj_in=
     # )
+
+
+@router.callback_query(F.data == 'spend_bonus')
+async def spend_bonus_callback(
+    callback: CallbackQuery, session: AsyncSession, state: FSMContext
+):
+    state_data = await state.get_data()
+    await state.set_state(AdminState.amount_bonus)
+    await callback.bot.edit_message_text(
+        text=f'Введите сумму списания не более {state_data.get("bonus_to_spend")}',
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+    )
+
+    # @router.message(AdminState.amount_bonus)
+    # async def amount_spend_bonus(message: Message, session: AsyncSession, state: FSMContext):
+    # await state.update_data()
+    # state_date = await state.get_data()
+    # await

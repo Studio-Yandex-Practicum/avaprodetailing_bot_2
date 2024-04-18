@@ -20,8 +20,11 @@ class AdminState(StatesGroup):
     reason_block = State()
     approv_block = State()
     payment_amount = State()
+    #TODO: объединить 4 в 2
     bonus_method = State()
     bonus_to_add = State()
+    bonus_to_spend = State()
+    amount_bonus = State()
 
 
 class SuperAdminState(StatesGroup):

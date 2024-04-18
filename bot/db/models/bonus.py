@@ -36,6 +36,14 @@ class Bonus(Base):
         ForeignKey('bonus_cases.id')
     )
     case: Mapped[Optional['BonusCase']] = relationship()
+    
+    @classmethod
+    def data_to_model(cls, data):
+        return cls(
+            used_amount=data.get('used_amount'),
+            full_amount=data.get('full_amount'),
+            user_id=data.get('user_id')
+        )
 
     def __repr__(self):
         return (f'Bonus(id={self.id}, '
