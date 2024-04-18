@@ -79,7 +79,6 @@ async def service_choice_callback(
     else:
         chosen_services.append(selected_service)
     await state.update_data(chosen_services=chosen_services)
-
     services = await services_crud.get_multi(session=session)
     await callback_query.message.bot.edit_message_reply_markup(
         message_id=state_data['msg_id'],
@@ -103,7 +102,6 @@ async def finish_selection_callback(
     )
     # TODO: получаем из круда услуг и прошлого сообщения
     selected_services = state_data['chosen_services']
-    # TODO: добить текст по юзер флоу
     visit_info = (f'Посещение клиента:\n{car.brand} {car.number}\n'
                   f'{selected_services}\n\nВведите общую сумму посещения:')
     await callback_query.message.answer(
@@ -113,7 +111,13 @@ async def finish_selection_callback(
 
 
 @router.message(AdminState.payment_amount)
-async def payment_amount_callback(state: FSMContext, message: types.Message):
-    # TODO: валидация на нормальную сумму
-    await state.update_data(payment_amount=int(message.text))
-
+async def payment_amount_callback(message: types.Message, state: FSMContext):
+    try:
+        payment_amount = int(message.text)
+        if payment_amount <= 0:
+            raise ValueError
+    except ValueError:
+        await message.answer('Введите корректную положительную сумму.')
+        return
+    await state.update_data(payment_amount=payment_amount)
+    await state.set_state()
