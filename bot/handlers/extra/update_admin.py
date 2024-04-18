@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 from bot.db.crud.business_units import business_units_crud
-from bot.core.constants import (CLIENT_BIO, PROFILE_MESSAGE_WITH_INLINE,
+from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE, PROFILE_MESSAGE_WITH_INLINE,
                                 REF_CLIENT_INFO, STATE_BIRTH_DATE, STATE_FIO,
                                 STATE_PHONE_NUMBER, THX_REG,
                                 WELCOME_ADMIN_MESSAGE,
@@ -23,7 +23,7 @@ from bot.keyboards.super_admin_keyboards import (OK_add_admin,
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
 from bot.states.user_states import AdminState, RegUser, SuperAdminState
-from bot.utils.validators import validate_phone_number
+from bot.utils.validators import validate_fio, validate_phone_number
 
 router = Router(name=__name__)
 
@@ -50,6 +50,18 @@ async def reg_super_admin_phone(
     session: AsyncSession
 ):
     await msg.delete()
+    state_data = await state.get_data()
+    if not await validate_phone_number(msg=msg.text):
+        await msg.delete()
+        await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text=ERROR_MESSAGE.format(
+                info_text=STATE_PHONE_NUMBER,
+                incorrect=msg.text
+            )
+        )
+        return
     await state.update_data(phone_number=msg.text)
     state_data = await state.get_data()
     await state.set_state(SuperAdminState.fio)
@@ -67,6 +79,18 @@ async def reg_super_admin_phone(
     session: AsyncSession
 ):
     await msg.delete()
+    state_data = await state.get_data()
+    if not await validate_fio(msg=msg.text):
+        await msg.delete()
+        await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text=ERROR_MESSAGE.format(
+                info_text=STATE_FIO,
+                incorrect=msg.text
+            )
+        )
+        return
     await state.update_data(fio=msg.text)
     state_data = await state.get_data()
     await msg.bot.edit_message_text(
@@ -124,18 +148,26 @@ async def give_admin_permissions(
 
 @router.callback_query(F.data.startswith('add_unit_admin_'))
 async def process_selected_business_unit(
-    callback_query: CallbackQuery,
+    callback: CallbackQuery,
     state: FSMContext,
     session: AsyncSession
 ):
     unit = await business_units_crud.get(
-        obj_id=int(callback_query.data.split('_')[-1]), session=session
+        obj_id=int(callback.data.split('_')[-1]), session=session
     )
-    
-    
     await state.update_data(unit_id=unit.id)
     state_data = await state.get_data()
-    await users_crud.create(obj_in=state_data,session=session)
+    await callback.bot.edit_message_text(
+        text=(
+            'Вы регистрируете администратора с данными:'
+            f'\nФИО {state_data["fio"]}\n'
+            f'Номер телефона {state_data["phone_number"]}\n\n'
+            f'{UserRole.ADMIN}'
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=OK_add_admin
+    )
     
 
 
@@ -145,16 +177,17 @@ async def invite_admin(
     state: FSMContext,
     session: AsyncSession,
 ):
-    await callback.message.delete()
+
     state_data = await state.get_data()
     await users_crud.create(obj_in=state_data,session=session)
     await callback.bot.edit_message_text(
-        text=(
-            '/start'
-        ),
+        WELCOME_SUPER_ADMIN_MESSAGE,
+        reply_markup=super_admin_main_menu,
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
     ) 
+    await state.clear()
+
     
     
     
