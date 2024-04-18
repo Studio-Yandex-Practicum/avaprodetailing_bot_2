@@ -1,9 +1,9 @@
 # Проект Телеграмм-бота 'Avaprodetailing', сделанный командой Антона.
 
-[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-1.4-blue.svg)](https://www.sqlalchemy.org/)
-[![Aiogram](https://img.shields.io/badge/Aiogram-2.17-blue.svg)](https://aiogram.readthedocs.io/en/latest/)
-[![Alembic](https://img.shields.io/badge/Alembic-1.8-blue.svg)](https://alembic.sqlalchemy.org/)
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)]
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-1.4-blue.svg)]
+[![Aiogram](https://img.shields.io/badge/Aiogram-2.17-blue.svg)]
+[![Alembic](https://img.shields.io/badge/Alembic-1.8-blue.svg)]
 
 ### Над проектом работают:
 - https://github.com/antonata-c
