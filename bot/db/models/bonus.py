@@ -27,20 +27,10 @@ class Bonus(Base):
     admin_user: Mapped['User'] = relationship(
         foreign_keys=(admin_user_id,),
         back_populates='bonuses',
-<<<<<<< HEAD
         viewonly=True,
         primaryjoin='and_(Bonus.admin_user_id'
                     ' == User.id, User.role == "ADMIN")'
     )
-    '''admin_user: Mapped['User'] = relationship(
-        foreign_keys=(admin_user_id,),
-        back_populates='bonuses_batches',
-=======
->>>>>>> develop
-        viewonly=True,
-        primaryjoin='and_(Bonus.admin_user_id'
-                    ' == User.id, User.role == "ADMIN")'
-    )'''
     case_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey('bonus_cases.id')
     )
