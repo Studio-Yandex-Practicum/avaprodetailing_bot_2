@@ -77,22 +77,10 @@ async def calculate_max_bonus_spend(visit_amount: int, user_balance: int) -> int
     return min(max_spend, user_balance)
 
 
-@router.message()
-async def manage_bonus_callback(message: Message, session: AsyncSession, state: FSMContext):
-    
-    await callback.message.edit_text(
-        f"Посещение клиента:\n"
-        f"<Марка_модель> <Гос.номер>\n"
-        f"<Список услуг посещения>\n"
-        f"Сумма посещения: {visit_amount} рублей\n"
-        f"У клиента {user_balance} баллов.\n"
-        f"Может быть списано {max_bonus_spend}.",
-        reply_markup=back_menu_kb
-    )
-
 @router.message(AdminState.payment_amount)
 async def manage_bonus_callback(message: types.Message, state: FSMContext, session: AsyncSession):
     try:
+        await message.delete()
         payment_amount = int(message.text)
         if payment_amount <= 0:
             raise ValueError
@@ -107,7 +95,7 @@ async def manage_bonus_callback(message: types.Message, state: FSMContext, sessi
         session=session
     )
     await message.bot.edit_message_text(
-        f"У клиента {'за'} баллов. Может быть списано {'211'}.",
+        f"У клиента {user.balance} баллов. Может быть списано {min(user.balance, payment_amount * 0.98)}.",
         chat_id=message.from_user.id,
         message_id=state_data['msg_id'],
         reply_markup=bonus_admin
