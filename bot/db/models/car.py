@@ -24,3 +24,15 @@ class Car(Base):
     def __repr__(self):
         return (f'Car(brand={self.brand!r},'
                 f' model={self.model!r}, number={self.number!r})')
+
+    @classmethod
+    def data_to_model(
+        cls,
+        obj_in,
+    ):
+        db_obj = cls(
+            brand=obj_in['brand'],
+            model=obj_in['model'],
+            number=obj_in['number'],
+            user_id=obj_in['user_id'],)  # получение данных из стейтов
+        return db_obj

@@ -8,6 +8,11 @@ from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
 
 
+def verify_symbols(num):
+    special_characters = "!@#$%^&*()-+?_=, <>/'\""
+    return not any(c in special_characters for c in num)
+
+
 async def check_user_is_none(
     tg_id: int,
     session: AsyncSession,
@@ -46,7 +51,9 @@ async def validate_birth_date(msg: str):
         birth_date = datetime.strptime(msg, '%d.%m.%Y').date()
         if (
             (current_date > birth_date) and
-            (birth_date.year in range(current_date.year - 100, current_date.year - 16))
+            (birth_date.year in range(
+                current_date.year - 100, current_date.year - 16
+            ))
         ):
             return True
     return False
