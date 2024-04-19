@@ -116,11 +116,11 @@ async def finish_selection_callback(
     state: FSMContext,
     session: AsyncSession
 ):
-    state_data = await state.get_data()
     visit_info = 'Введите общую сумму посещения:'
+    state_data = await state.get_data()
     await callback_query.message.bot.edit_message_text(
-        visit_info,
-        message_id=state_data['msg_id'],
+        text=visit_info,
         chat_id=callback_query.from_user.id,
+        message_id=state_data['msg_id']
     )
     await state.set_state(AdminState.payment_amount)
