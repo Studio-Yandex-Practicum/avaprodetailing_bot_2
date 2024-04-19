@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.constants import DEFAULT_STRING_SIZE, LONG_STRING_SIZE
-from bot.db.models import Base, BusinessUnit
+from bot.db.models import Base
 
 
 class ServiceUnit(Base):
