@@ -15,6 +15,7 @@ from bot.keyboards.bonus_keyboards import (
     bonus_approve_amount_keyboard,
 )
 from bot.db.crud.bonus import bonuses_crud
+from bot.utils.bonus import spend_bonuses
 
 router = Router(name=__name__)
 
@@ -221,8 +222,29 @@ async def spend_bonus_callback(
         message_id=state_data['msg_id'],
     )
 
-    # @router.message(AdminState.amount_bonus)
-    # async def amount_spend_bonus(message: Message, session: AsyncSession, state: FSMContext):
-    # await state.update_data()
-    # state_date = await state.get_data()
-    # await
+
+@router.message(F.data == 'approve_spend_bonus')
+async def process_spend_bonus(
+    message: Message, session: AsyncSession, state: FSMContext
+):
+    state_data = await state.get_data()
+    state_data['is_accrual'] = False
+    admin_user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=message.from_user.id,
+        session=session
+    )
+    state_data['admin_user_id'] = admin_user.id
+    bonus_amount = state_data['amount_bonus']
+    user = await users_crud.get(
+        obj_id=state_data['user_id'], session=session
+    )
+    await bonuses_crud.add_multi(
+        await spend_bonuses(
+            list(filter(lambda bonus: bonus.is_active, user.bonuses)),
+            bonus_amount
+        )
+    )
+    await bonuses_crud.create(
+        obj_in=state_data, session=session
+    )
