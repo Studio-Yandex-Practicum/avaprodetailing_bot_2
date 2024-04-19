@@ -4,13 +4,13 @@ from aiogram.types import (
     CallbackQuery, Message,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from aiogram.types import CallbackQuery, Message
 from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import admin_back_kb
 from bot.states.user_states import AdminState
 from bot.keyboards.bonus_keyboards import (
-    bonus_admin,
+    bonus_admin, spend_approve_cancel_keyboard,
     bonus_add_choice_keyboard, bonus_approve_cancel_keyboard,
     bonus_approve_amount_keyboard,
 )
@@ -220,6 +220,54 @@ async def spend_bonus_callback(
         text=f'Введите сумму списания не более {state_data.get("bonus_to_spend")}',
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
+    )
+
+
+@router.message(AdminState.amount_bonus)
+async def amount_spend_bonus(
+    message: Message, session: AsyncSession, state: FSMContext
+):
+    if message.text.isdigit():
+        state_data = await state.get_data()
+        await state.update_data(amount_bonus=state_data.get('amount_bonus'))
+    if 'amount_bonus' in state_data:
+        user = await users_crud.get_by_attribute(
+            session=session,
+            attr_name='phone_number',
+            attr_value=state_data.get('phone_number')
+        )
+        await message.bot.edit_message_text(
+            text=(
+                'Посещение клиента:'
+                f'\n{user.cars} <Гос.номер>\n'
+                f'<Список услуг посещения>\n'
+                f'{state_data.get("payment_amount")} рублей\n'
+                f'Будет списано {state_data.get("amount_bonus")} баллов\n\n'
+                f'К оплате {state_data.get("payment_amount") - state_data.get("amount_bonus")} рублей'
+            ),
+            message_id=state_data.get('msg_id'),
+            chat_id=message.from_user.id,
+            reply_markup=spend_approve_cancel_keyboard
+        )
+
+
+@router.callback_query(F.data == 'cancel_spend_bonus')
+async def amount_spend_bonus(
+    message: Message, session: AsyncSession, state: FSMContext
+):
+    state_data = await state.get_data()
+    user = await users_crud.get_by_attribute(
+        attr_name='phone_number',
+        attr_value=state_data['phone_number'],
+        session=session
+    )
+
+    await message.bot.edit_message_text(
+        f"У клиента {user.balance} баллов."
+        f" Может быть списано {state_data.get('bonus_to_spend')}.",
+        chat_id=message.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=bonus_admin
     )
 
 
