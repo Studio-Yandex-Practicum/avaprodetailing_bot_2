@@ -1,28 +1,18 @@
-from datetime import datetime
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
-                                STATE_FIO, STATE_PHONE_NUMBER, THX_REG,
-                                WELCOME_ADMIN_MESSAGE, CLIENT_BIO,REF_CLIENT_INFO, WELCOME_SUPER_ADMIN_MESSAGE)
-from bot.core.enums import UserRole
+from bot.core.constants import (
+    WELCOME_SUPER_ADMIN_MESSAGE,
+)
 from bot.db.crud.users import users_crud
-from bot.db.models.users import User
-from bot.handlers.user.registration import error_message
-from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
-                                           client_profile_for_adm,
-                                           reg_or_menu_adm,
-                                           update_client_kb)
-from bot.keyboards.super_admin_keyboards import admin_bio_for_super_admin_kb, gener_admin_keyboard, gener_list_admins, super_admin_main_menu
-from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
-                                           back_menu_kb, profile_kb)
-from bot.states.user_states import AdminState, RegUser, SuperAdminState
-from bot.utils.validators import validate_phone_number
+from bot.keyboards.super_admin_keyboards import (
+    admin_bio_for_super_admin_kb,
+    gener_list_admins,
+    super_admin_main_menu,
+)
 
 router = Router(name=__name__)
-
 
 
 @router.callback_query(F.data == 'extra_admin')
@@ -42,12 +32,12 @@ async def super_admin_menu(
     )
     if db_obj.is_active:
         msg = await callback.message.answer(
-                WELCOME_SUPER_ADMIN_MESSAGE,
-                reply_markup=super_admin_main_menu
-            )
+            WELCOME_SUPER_ADMIN_MESSAGE,
+            reply_markup=super_admin_main_menu
+        )
         await state.update_data(
-        msg_id=msg.message_id
-    )
+            msg_id=msg.message_id
+        )
 
 
 @router.callback_query(F.data == 'administrators')
