@@ -99,9 +99,10 @@ async def reg_birth_date(msg: Message, state: FSMContext):
 async def reg_phone_number(
     msg: Message,
     state: FSMContext,
+    session: AsyncSession
 ):
     state_data = await state.get_data()
-    if not await validate_phone_number(msg=msg.text):
+    if not await validate_phone_number(phone_number=msg.text):
         await msg.delete()
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
@@ -134,22 +135,15 @@ async def registrate_agree(
     session: AsyncSession,
 ):
     data = await state.get_data()
-    data['tg_user_id'] = callback.from_user.id
-    user = await users_crud.get_by_attribute(
-        session=session,
-        attr_name='phone_number',
-        attr_value=data['phone_number'],
-    )
     await state.clear()
-    if user is not None:
-        update_data = User.update_data_to_model(db_obj=user, obj_in=data)
-        await users_crud.update(
-            db_obj=user,
-            obj_in=update_data,
-            session=session
-        )
-    else:
-        await users_crud.create(obj_in=data, session=session)
+    data['tg_user_id'] = callback.from_user.id
+    # TODO
+    # user11 = await users_crud.get_by_attribute(
+    #    session=session,
+    #    attr_name='phone_number',
+    #    attr_value=data['phone_number'],
+    # )
+    await users_crud.create(obj_in=data, session=session)
     await callback.bot.edit_message_text(
         THX_REG,
         chat_id=callback.from_user.id,

@@ -22,7 +22,9 @@ class BusinessUnit(Base):
                     "User.role == 'ADMIN')",
     )
     services: Mapped[List['Service']] = relationship(
-        secondary='service_unit', back_populates='business_units'
+        lazy='selectin',
+        secondary='service_unit',
+        back_populates='business_units'
     )
 
     @classmethod

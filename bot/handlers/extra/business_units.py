@@ -1,13 +1,12 @@
-from aiogram import Router, F
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.business_units import business_units_crud
 from bot.keyboards.business_units_keyboards import (
-    build_business_units_keyboard,
-    business_unit_manage_keyboard, business_unit_edit_keyboard,
-)
+    build_business_units_keyboard, business_unit_edit_keyboard,
+    business_unit_manage_keyboard)
 from bot.states.user_states import BusinessUnitState
 
 router = Router(name=__name__)

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message, InlineKeyboardButton
@@ -10,7 +8,7 @@ from bot.core.constants import (ERROR_MESSAGE, PROFILE_MESSAGE_WITH_INLINE, STAT
                                 WELCOME_ADMIN_MESSAGE, CLIENT_BIO,REF_CLIENT_INFO)
 from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
-from bot.db.models.users import User
+from bot.handlers.user.registration import error_message
 from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
                                            client_profile_for_adm,
                                            reg_or_menu_adm,
@@ -55,7 +53,7 @@ async def get_user_by_phone(
 ):
     await callback.message.delete()
     await state.set_state(AdminState.phone_number)
-    
+
     msg = await callback.message.answer(
         text=STATE_PHONE_NUMBER
     )
@@ -72,7 +70,7 @@ async def reg_phone_number(
     session: AsyncSession
 ):
     state_data = await state.get_data()
-    if not await validate_phone_number(msg=msg.text):
+    if not await validate_phone_number(phone_number=msg.text):
         await msg.delete()
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
@@ -86,7 +84,8 @@ async def reg_phone_number(
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
     phone_num = await users_crud.get_by_attribute(
-        session=session, attr_name='phone_number', attr_value=data['phone_number']
+        session=session, attr_name='phone_number',
+        attr_value=data['phone_number']
     )
     if phone_num is None:
         await msg.bot.edit_message_text(
@@ -100,7 +99,8 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             text=(
                 CLIENT_BIO.format(
-                    last_name=phone_num.last_name, first_name=phone_num.first_name,
+                    last_name=phone_num.last_name,
+                    first_name=phone_num.first_name,
                     birth_date=phone_num.birth_date,
                     phone_number=phone_num.phone_number, note=phone_num.note
                 )

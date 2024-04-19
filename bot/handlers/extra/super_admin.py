@@ -10,6 +10,7 @@ from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
 from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
+from bot.handlers.user.registration import error_message
 from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
                                            client_profile_for_adm,
                                            reg_or_menu_adm,
