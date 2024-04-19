@@ -138,11 +138,8 @@ async def add_new_client(
     if user is None:
         new_user = await users_crud.create(obj_in=state_data, session=session)
         bonus = await award_registration_bonus(user=new_user,session=session)
-        print(new_user)
-        print(state_data)
     else:
         state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
-        print(state_data)
         new_user = await users_crud.update(
             db_obj=user, obj_in=state_data, session=session
         )
