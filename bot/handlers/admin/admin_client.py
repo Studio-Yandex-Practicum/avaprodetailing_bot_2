@@ -11,7 +11,6 @@ from bot.keyboards.admin_keyboards import (admin_reg_client,
                                            reg_or_menu_adm)
 from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.states.user_states import AdminState
-from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_phone_number
 
 router = Router(name=__name__)

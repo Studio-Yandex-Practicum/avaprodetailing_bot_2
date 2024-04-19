@@ -178,10 +178,12 @@ def gener_list_admins(admins: list[User]):
     )
     for admin in admins:
         if admin.role is not UserRole.USER:
+            role = (admin.business_unit
+                    if admin.role is UserRole.ADMIN else "Суперадмин")
             builder.row(
                 InlineKeyboardButton(
                     text=(
-                        f'{admin.business_unit if admin.role is UserRole.ADMIN else "Суперадмин"} - '
+                        f'{role} - '
                         f'{admin.last_name} {admin.first_name}'
                         f' - {"Активен" if admin.is_active else "Неактивен"}'),
                     callback_data=f'admin_bio_{admin.id}'

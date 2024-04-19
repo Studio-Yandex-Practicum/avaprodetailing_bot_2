@@ -2,23 +2,16 @@ from datetime import datetime
 
 from aiogram import Bot, F, Router
 from aiogram.enums import ParseMode
-from aiogram.fsm.context import FSMContext
-from aiogram.types import BufferedInputFile, CallbackQuery, Message
+from aiogram.types import BufferedInputFile, CallbackQuery
 from aiogram.utils.deep_linking import create_start_link
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# from bot.db.crud.users_crud import user_crud
-from bot.core.constants import (PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
-                                STATE_FIO, STATE_PHONE_NUMBER, THX_REG)
-from bot.db.crud.bonus import bonuses_crud
+from bot.core.constants import PROFILE_MESSAGE_WITH_INLINE
 from bot.db.crud.users import users_crud
-from bot.db.models.users import User
-from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
-                                           back_menu_kb, profile_kb)
-from bot.states.user_states import RegUser
+from bot.keyboards.users_keyboards import (
+    back_menu_kb, profile_kb,
+)
 from bot.utils.qr_code import generate_qrcode
-from bot.utils.validators import (validate_birth_date, validate_fio,
-                                  validate_phone_number)
 
 router = Router(name=__name__)
 

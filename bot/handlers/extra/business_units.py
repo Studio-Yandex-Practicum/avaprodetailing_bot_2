@@ -4,10 +4,10 @@ from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.business_units import business_units_crud
-from bot.keyboards.admin_keyboards import admin_back_kb
 from bot.keyboards.business_units_keyboards import (
     build_business_units_keyboard, business_unit_edit_keyboard,
-    business_unit_manage_keyboard)
+    business_unit_manage_keyboard,
+)
 from bot.keyboards.super_admin_keyboards import super_admin_back_kb
 from bot.states.user_states import BusinessUnitState
 
@@ -156,7 +156,7 @@ async def process_edit_unit_data(
         'note': 'Введите новое описание'
     }
     if field == 'status':
-        message_text = f'Для изменения статуса бизнес-юнита введите ДА'
+        message_text = 'Для изменения статуса бизнес-юнита введите ДА'
     else:
         message_text = replies[field]
     await callback_query.bot.edit_message_text(

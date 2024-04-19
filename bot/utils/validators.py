@@ -1,18 +1,15 @@
 import re
 from datetime import date, datetime
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import MAX_LENGTH_BIRTH_DATE
 from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
-from bot.db.models.car import Car
-from bot.db.models.users import User
 
 
 def verify_symbols(num):
-    special_characters = "!@#$%^&*()-+?_=, <>/'\""
+    special_characters = "!@#$%^&*()+?_=,<>/'\""
     return not any(c in special_characters for c in num)
 
 
