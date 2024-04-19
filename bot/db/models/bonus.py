@@ -42,6 +42,7 @@ class Bonus(Base):
         return cls(
             full_amount=data.get('full_amount'),
             user_id=data.get('user_id'),
+            admin_user_id=data.get('admin_user_id'),
             is_accrual=data.get('is_accrual')
         )
 

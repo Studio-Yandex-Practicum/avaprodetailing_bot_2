@@ -1,35 +1,22 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
-    CallbackQuery,
+    CallbackQuery, Message,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.services import services_crud
-from bot.db.models import User
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import admin_back_kb
 from bot.states.user_states import AdminState
 from bot.keyboards.bonus_keyboards import (
     bonus_admin,
     bonus_add_choice_keyboard, bonus_approve_cancel_keyboard,
+    bonus_approve_amount_keyboard,
 )
 from bot.db.crud.bonus import bonuses_crud
 
 router = Router(name=__name__)
-
-
-async def award_registration_bonus(user: User, session: AsyncSession):
-    db_user = await users_crud.get(session=session, obj_id=user.id)
-    if db_user is not None:
-        registration_bonus_amount = 100
-        await bonuses_crud.create(
-            obj_in={
-                "user_id": user.id,
-                "full_amount": registration_bonus_amount,
-            },
-            session=session
-        )
 
 
 # использовать поле модели start_date и так же одной функцией
@@ -118,36 +105,82 @@ async def process_add_bonus(
     callback: CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     data = callback.data.split('_')[-1]
+    state_data = await state.get_data()
     if data in ('custom', 'sum'):
         await state.update_data(bonus_method=data)
+        await callback.bot.edit_message_text(
+            chat_id=callback.from_user.id,
+            message_id=state_data['msg_id'],
+            text=f'Введите {"сумму" if data == "sum" else "процент"} бонуса'
+        )
         await state.set_state(AdminState.bonus_method)
         return
-    state_data = await state.get_data()
     if not data.isdigit():
-        message_text = 'Ошибка, попробуйте снова.'
-    else:
-        bonus_to_add = state_data['payment_amount'] * int(data) // 100
-        await state.update_data(full_amount=bonus_to_add)
-        car = state_data['car']
-        services = []
-        for service_id in state_data['chosen_services']:
-            service = await services_crud.get(
-                obj_id=service_id, session=session
-            )
-            services.append(service.name)
-        service_text = ','.join(services)
-
-        message_text = ('Посещение клиента:\n'
-                        f'Автомобиль: {car.brand} {car.number}\n'
-                        f'Услуги: {service_text}\n'
-                        f'Сумма {state_data["payment_amount"]} рублей\n'
-                        f'Будет начислено {bonus_to_add} баллов\n')
-
+        await callback.bot.edit_message_text(
+            chat_id=callback.from_user.id,
+            message_id=state_data['msg_id'],
+            text='Ошибка, попробуйте снова.'
+        )
+        return
+    bonus_to_add = state_data['payment_amount'] * int(data) // 100
+    await state.update_data(full_amount=bonus_to_add)
+    car = state_data['car']
+    services = []
+    for service_id in state_data['chosen_services']:
+        service = await services_crud.get(
+            obj_id=service_id, session=session
+        )
+        services.append(service.name)
+    service_text = ','.join(services)
     await callback.bot.edit_message_text(
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
-        text=message_text,
+        text=('Посещение клиента:\n'
+              f'Автомобиль: {car.brand} {car.number}\n'
+              f'Услуги: {service_text}\n'
+              f'Сумма {state_data["payment_amount"]} рублей\n'
+              f'Будет начислено {bonus_to_add} баллов\n'),
         reply_markup=bonus_approve_cancel_keyboard
+    )
+
+
+@router.message(AdminState.bonus_method)
+async def process_bonus_method(
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession
+):
+    await message.delete()
+    state_data = await state.get_data()
+    method = state_data['bonus_method']
+    if not message.text.isdigit():
+        await message.bot.edit_message_text(
+            message_id=state_data['msg_id'],
+            chat_id=message.from_user.id,
+            text='Ошибка. Попробуйте позже'
+        )
+        return
+    amount = int(message.text)
+    if method == 'sum':
+        if amount > state_data['payment_amount']:
+            await message.bot.edit_message_text(
+                message_id=state_data['msg_id'],
+                chat_id=message.from_user.id,
+                text='Ошибка. Попробуйте позже'
+            )
+            return
+        amount = int(
+            amount
+            / state_data['payment_amount'] * 100
+        )
+    await message.bot.edit_message_text(
+        message_id=state_data['msg_id'],
+        chat_id=message.from_user.id,
+        text=f'Подтвердите '
+             f'{"сумму" if method == "sum" else "процент"} {amount}',
+        reply_markup=bonus_approve_amount_keyboard(
+            f'bonus_add_{amount}'
+        )
     )
 
 
@@ -159,6 +192,12 @@ async def approve_bonus_callback(
 ):
     state_data = await state.get_data()
     state_data['is_accrual'] = True
+    admin_user = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=callback.from_user.id,
+        session=session
+    )
+    state_data['admin_user_id'] = admin_user.id
     await bonuses_crud.create(
         obj_in=state_data, session=session
     )

@@ -56,3 +56,19 @@ bonus_approve_cancel_keyboard = InlineKeyboardMarkup(
         ]
     ]
 )
+
+def bonus_approve_amount_keyboard(callback_data):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='Подтвердить',
+                    callback_data=callback_data
+                ),
+                InlineKeyboardButton(
+                    text='Отменить',
+                    callback_data='admin_main_menu'
+                )
+            ]
+        ]
+    )

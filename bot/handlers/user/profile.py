@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from aiogram import F, Router
+from aiogram import F, Router, Bot
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, BufferedInputFile
+from aiogram.utils.deep_linking import create_start_link
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from bot.db.crud.users_crud import user_crud
@@ -19,6 +20,7 @@ from bot.keyboards.users_keyboards import (
     back_menu_kb, profile_kb,
 )
 from bot.states.user_states import RegUser
+from bot.utils.qr_code import generate_qrcode
 from bot.utils.validators import (
     validate_birth_date, validate_fio,
     validate_phone_number,
@@ -83,6 +85,21 @@ async def get_profile(
             bonus=db_obj.balance,
         ),
         reply_markup=back_menu_kb
+    )
+
+
+@router.callback_query(F.data == 'generate_qr_code')
+async def generate_qr_code(callback: CallbackQuery, bot: Bot):
+    link = await create_start_link(
+        bot, str(callback.from_user.id), encode=True
+    )
+
+    qrcode = generate_qrcode(link)
+    if qrcode is None:
+        await callback.message.answer('Произошла ошибка.\nПопробуйте позже')
+        return
+    await callback.message.answer_photo(
+        photo=BufferedInputFile(qrcode, 'qrcode.png'),
     )
 
 
