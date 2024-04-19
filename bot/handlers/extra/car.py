@@ -4,17 +4,13 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.states.car_states import RegCar, ChooseCar
-from bot.keyboards.users_keyboards import back_menu_kb
-from bot.keyboards.cars_keyboards import (
-    car_kb,
-    add_car_kb,
-    edit_car_kb,
-    finish_add_car_kb,
-    verify_delete_car_kb,
-)
 from bot.db.crud.cars import cars_crud
 from bot.db.crud.users import users_crud
+from bot.keyboards.cars_keyboards import (add_car_kb, car_kb, edit_car_kb,
+                                          finish_add_car_kb,
+                                          verify_delete_car_kb)
+from bot.keyboards.users_keyboards import back_menu_kb
+from bot.states.car_states import ChooseCar, RegCar
 from bot.utils.validators import verify_symbols
 
 router = Router(name=__name__)
@@ -43,7 +39,7 @@ async def car_menu(
         car_message = 'Список авто: \n'
         for car in list(cars):
             car_message += (
-                f"{car.brand}/{car.model} - {car.number}\n"
+                f"{car.brand} {car.model} | {car.number}\n"
             )
 
         await callback.message.answer(

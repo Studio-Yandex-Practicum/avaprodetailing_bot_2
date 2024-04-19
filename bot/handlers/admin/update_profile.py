@@ -6,7 +6,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (BLOCK_MSG, CLIENT_BIO, PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
+from bot.core.constants import (BLOCK_MSG, CLIENT_BIO,
+                                PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
                                 STATE_FIO, STATE_PHONE_NUMBER, THX_REG,
                                 WELCOME_ADMIN_MESSAGE)
 from bot.db.crud.users import users_crud
@@ -14,8 +15,8 @@ from bot.db.models.users import User
 from bot.keyboards.admin_keyboards import (add_update_data, admin_main_menu,
                                            admin_reg_client,
                                            client_profile_for_adm,
-                                           reg_or_menu_adm,
-                                           update_client_kb, update_profile_kb)
+                                           reg_or_menu_adm, update_client_kb,
+                                           update_profile_kb)
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
 from bot.states.user_states import AdminState, RegUser
@@ -57,9 +58,12 @@ async def update_client_data(
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
-                last_name=user.last_name, first_name=user.first_name,
+                last_name=user.last_name,
+                first_name=user.first_name,
                 birth_date=user.birth_date,
-                phone_number=user.phone_number, note=user.note
+                phone_number=user.phone_number,
+                balance=user.balance,
+                note=user.note
             )
         ),
         chat_id=callback.from_user.id,
@@ -128,12 +132,23 @@ async def update_client_data_state(
     )
     state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
     await users_crud.update(db_obj=user, obj_in=state_data, session=session)
-    await callback.message.delete()
-    await callback.message.answer(
-        WELCOME_ADMIN_MESSAGE,
-        reply_markup=admin_main_menu
+    
+    msg = await callback.bot.edit_message_text(
+        text=(
+            CLIENT_BIO.format(
+                last_name=user.last_name, first_name=user.first_name,
+                birth_date=user.birth_date,
+                phone_number=user.phone_number, note=user.note
+            )
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=client_profile_for_adm,
     )
     await state.clear()
+    await state.update_data(msg_id=msg.message_id)
+    await state.update_data(phone_number=user.phone_number)
+    
 
 
 @router.callback_query(F.data == 'update_client_birth_date')
