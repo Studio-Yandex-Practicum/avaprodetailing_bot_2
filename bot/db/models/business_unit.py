@@ -38,3 +38,6 @@ class BusinessUnit(Base):
     def __repr__(self) -> str:
         return (f'BusinessUnit(id={self.id},'
                 f' name={self.name}, address={self.address})')
+    
+    def __str__(self) -> str:
+        return f'{self.name}'

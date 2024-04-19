@@ -7,14 +7,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import (
     PROFILE_MESSAGE_WITH_INLINE,
-    WELCOME_ADMIN_MESSAGE, WELCOME_MESSAGE,
-    WELCOME_REG_MESSAGE, CLIENT_BIO,
+    WELCOME_ADMIN_MESSAGE,
+    WELCOME_REG_MESSAGE,
+    CLIENT_BIO, WELCOME_SUPER_ADMIN_MESSAGE,
 )
-from bot.core.test_base import test_base
+from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import (
-    admin_main_menu,
     client_profile_for_adm,
+)
+from bot.keyboards.super_admin_keyboards import (
+    gener_admin_keyboard,
+    super_admin_main_menu,
 )
 from bot.keyboards.users_keyboards import profile_kb, reg_kb
 from bot.utils.validators import check_user_is_admin, check_user_is_none
@@ -55,7 +59,8 @@ async def decode_qr(
 
 
 @router.message(CommandStart())
-async def test(message: Message, session: AsyncSession):
+async def start(message: Message, session: AsyncSession, state: FSMContext):
+    state_data = await state.get_data()
     tg_id = message.from_user.id
     await message.delete()
 
@@ -64,12 +69,34 @@ async def test(message: Message, session: AsyncSession):
             WELCOME_REG_MESSAGE,
             reply_markup=reg_kb,
         )
-    elif await check_user_is_admin(tg_id=tg_id, session=session):
-        await message.answer(
-            WELCOME_ADMIN_MESSAGE,
-            reply_markup=admin_main_menu,
-        )
-    else:
+        return
+    db_obj = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
+    if await check_user_is_admin(
+        tg_id=tg_id, session=session
+    ):
+        if db_obj.role is UserRole.ADMIN:
+            await message.answer(
+                WELCOME_ADMIN_MESSAGE,
+                reply_markup=gener_admin_keyboard(data=db_obj.role),
+            )
+            return
+        elif db_obj.role is UserRole.SUPERADMIN:
+            if 'is_admin_menu' not in state_data:
+                await message.answer(
+                    WELCOME_SUPER_ADMIN_MESSAGE,
+                    reply_markup=super_admin_main_menu
+                )
+                return
+            await message.answer(
+                WELCOME_ADMIN_MESSAGE,
+                reply_markup=gener_admin_keyboard(data=db_obj.role),
+            )
+            return
+    if db_obj.is_active:
         await message.answer(
             PROFILE_MESSAGE_WITH_INLINE,
             reply_markup=profile_kb

@@ -132,12 +132,23 @@ async def update_client_data_state(
     )
     state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
     await users_crud.update(db_obj=user, obj_in=state_data, session=session)
-    await callback.message.delete()
-    await callback.message.answer(
-        WELCOME_ADMIN_MESSAGE,
-        reply_markup=admin_main_menu
+    
+    msg = await callback.bot.edit_message_text(
+        text=(
+            CLIENT_BIO.format(
+                last_name=user.last_name, first_name=user.first_name,
+                birth_date=user.birth_date,
+                phone_number=user.phone_number, note=user.note
+            )
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=client_profile_for_adm,
     )
     await state.clear()
+    await state.update_data(msg_id=msg.message_id)
+    await state.update_data(phone_number=user.phone_number)
+    
 
 
 @router.callback_query(F.data == 'update_client_birth_date')

@@ -28,6 +28,15 @@ class AdminState(StatesGroup):
 
 class SuperAdminState(StatesGroup):
     is_admin_menu = State()
+    phone_number = State()
+    fio = State()
+    role = State()
+    unit_id = State()
+    admin_id = State()
+    change_unit = State()
+    change_phone_num = State()
+    change_fio = State()
+    business_unit_id = State()
 
 
 class BusinessUnitState(StatesGroup):

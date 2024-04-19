@@ -2,15 +2,16 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.core.constants import (
     STATE_PHONE_NUMBER,
     WELCOME_ADMIN_MESSAGE, CLIENT_BIO, REF_CLIENT_INFO,
     ERROR_MESSAGE,
 )
 from bot.db.crud.users import users_crud
-from bot.handlers.user.registration import error_message
 from bot.keyboards.admin_keyboards import (
-    admin_main_menu, admin_reg_client,
+    admin_reg_client,
     client_profile_for_adm,
     reg_or_menu_adm,
 )
@@ -20,6 +21,7 @@ from bot.utils.validators import validate_phone_number
 router = Router(name=__name__)
 
 
+@router.callback_query(F.data == 'switch_admin_mode')
 @router.callback_query(F.data == 'admin_main_menu')
 async def admin_menu(
     callback: CallbackQuery,
@@ -35,8 +37,9 @@ async def admin_menu(
     if db_obj.is_active:
         await callback.message.answer(
             WELCOME_ADMIN_MESSAGE,
-            reply_markup=admin_main_menu
+            reply_markup=gener_admin_keyboard(db_obj.role)
         )
+    await state.update_data(is_admin_menu=True)
 
 
 @router.callback_query(F.data == 'search_phone_number')
@@ -68,7 +71,7 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=error_message.format(
+            text=ERROR_MESSAGE.format(
                 info_text=STATE_PHONE_NUMBER,
                 incorrect=msg.text
             )
@@ -142,6 +145,33 @@ async def add_new_client(
                 phone_number=user.phone_number,
                 balance=user.balance,
                 note=user.note
+            )
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=client_profile_for_adm,
+    )
+
+
+@router.callback_query(F.data == 'profile_before_search')
+async def add_new_client(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession
+):
+    state_data = await state.get_data()
+    user = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='phone_number',
+        attr_value=state_data['phone_number']
+    )
+
+    await callback.bot.edit_message_text(
+        text=(
+            CLIENT_BIO.format(
+                last_name=user.last_name, first_name=user.first_name,
+                birth_date=user.birth_date,
+                phone_number=user.phone_number, note=user.note
             )
         ),
         chat_id=callback.from_user.id,
