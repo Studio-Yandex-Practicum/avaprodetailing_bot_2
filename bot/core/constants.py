@@ -6,6 +6,8 @@ MAX_LENGTH_BIRTH_DATE = 11
 DEFAULT_STRING_SIZE = 120
 LONG_STRING_SIZE = 255
 
+REGISTRATION_BONUS_AMOUNT = 100
+
 DEFAULT_USER_ROLE = 'Пользователь'
 
 WELCOME_MESSAGE = 'Привет'
@@ -21,7 +23,11 @@ THX_REG = (
     'Дополните, пожалуйста, Ваш профиль информацией по автомобилю. '
     'Так мы сможем предложить наиболее подробный перечень услуг.'
 )
-
+ERROR_MESSAGE = (
+    'Неверный формат ввода\n'
+    '{info_text}\n'
+    'Вы ввели {incorrect}'
+)
 
 
 PROFILE_MESSAGE_WITH_INLINE = 'Выберите пункт меню'
@@ -32,7 +38,7 @@ CLIENT_BIO = (
     'ФИО {last_name} {first_name}\n'
     'Дата рождения {birth_date}\n'
     'Номер телефона {phone_number}\n'
-    'Баланс <Баланс> бонусов\n'
+    'Баланс {balance} бонусов\n'
     'Коммент {note}'
 )
 REF_CLIENT_INFO = (
@@ -49,7 +55,6 @@ BLOCK_MSG = (
     'Введите МЕНЮ для перехода в главное меню'
 )
 
-
 SIGNUP_BONUS = 100
 BONUS_LIFESPAN = "1 год"
 BONUS_DESCRIPTION = (
@@ -58,4 +63,10 @@ BONUS_DESCRIPTION = (
     "Срок действия баллов: {bonus_lifespan}.\n"
     "\n"
     "Бонусные баллы могут списывать 98% суммы общего чека. При списании баллов, начисление не производится.\n"
+)
+
+ERROR_MESSAGE = (
+    'Неверный формат ввода\n'
+    '{info_text}\n'
+    'Вы ввели {incorrect}'
 )

@@ -48,7 +48,7 @@ profile_kb = InlineKeyboardMarkup(
             ),
             InlineKeyboardButton(
                 text='История',
-                callback_data='Reports',
+                callback_data='history',
             )
         ],
         [
@@ -56,7 +56,7 @@ profile_kb = InlineKeyboardMarkup(
                 text='Предъявить QR код',
                 callback_data='generate_qr_code',
             )
-        ],
+        ],   
     ]
 )
 
@@ -77,6 +77,29 @@ add_car_kb = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text='Добавить автомобиль',
                 callback_data='car_menu',
+            )
+        ],
+    ]
+)
+
+
+
+service_category_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Добавить автомобиль',
+                callback_data='add_car',
+            ),
+            InlineKeyboardButton(
+                text='Добавить автомобиль',
+                callback_data='add_car',
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Сменить категорию',
+                callback_data='service_catalog',
             )
         ],
     ]
