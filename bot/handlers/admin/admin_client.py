@@ -137,14 +137,17 @@ async def add_new_client(
     state_data = await state.get_data()
     user = await users_crud.get_by_attribute(
         attr_name='phone_number',
-        attr_value=state_data['phone_number'],
+        attr_value=state_data.get('phone_number'),
         session=session
     )
     if user is None:
         new_user = await users_crud.create(obj_in=state_data, session=session)
-        await award_registration_bonus(new_user, session)
+        bonus = await award_registration_bonus(user=new_user,session=session)
+        print(new_user)
+        print(state_data)
     else:
         state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
+        print(state_data)
         new_user = await users_crud.update(
             db_obj=user, obj_in=state_data, session=session
         )
@@ -155,8 +158,8 @@ async def add_new_client(
                 first_name=new_user.first_name,
                 birth_date=new_user.birth_date,
                 phone_number=new_user.phone_number,
-                balance=new_user.balance,
-                note=new_user.note
+                balance=bonus.full_amount,
+                note=new_user.note if new_user.note is not None else ''
             )
         ),
         chat_id=callback.from_user.id,
