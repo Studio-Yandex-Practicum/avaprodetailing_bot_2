@@ -2,15 +2,12 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.core.constants import (
-    WELCOME_SUPER_ADMIN_MESSAGE,
-)
+
+from bot.core.constants import WELCOME_SUPER_ADMIN_MESSAGE
 from bot.db.crud.users import users_crud
-from bot.keyboards.super_admin_keyboards import (
-    admin_bio_for_super_admin_kb,
-    gener_list_admins,
-    super_admin_main_menu,
-)
+from bot.keyboards.super_admin_keyboards import (admin_bio_for_super_admin_kb,
+                                                 gener_list_admins,
+                                                 super_admin_main_menu)
 
 router = Router(name=__name__)
 

@@ -2,9 +2,7 @@ from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.cars import cars_crud
-from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.payment_inline import (
     build_services_keyboard,

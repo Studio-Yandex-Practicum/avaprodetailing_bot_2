@@ -1,5 +1,6 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           KeyboardButton, ReplyKeyboardMarkup)
+from aiogram.types import (
+    InlineKeyboardButton, InlineKeyboardMarkup,
+)
 
 car_kb = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -24,7 +25,6 @@ car_kb = InlineKeyboardMarkup(
     ],
 )
 
-
 add_car_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -32,55 +32,52 @@ add_car_kb = InlineKeyboardMarkup(
                 text='Внесите информацию об автомобиле',
                 callback_data='add_car',
             )
-        ],]
+        ], ]
 )
-
 
 choose_car_kb = InlineKeyboardMarkup(
-        inline_keyboard=[[
-            InlineKeyboardButton(
-                text='Выберите автомобиль',
-                callback_data='choose_car',
-            )]
-        ],
+    inline_keyboard=[[
+        InlineKeyboardButton(
+            text='Выберите автомобиль',
+            callback_data='choose_car',
+        )]
+    ],
 )
-
 
 edit_car_kb = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Изменить марку',
-                    callback_data='change_brand',
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Изменить модель',
-                    callback_data='change_model',
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Изменить гос.номер',
-                    callback_data='change_number',
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Удалить автомобиль из списка',
-                    callback_data='delete_car',
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Вернуться к списку автомобилей',
-                    callback_data='choose_car',
-                )
-            ]
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Изменить марку',
+                callback_data='change_brand',
+            )
         ],
+        [
+            InlineKeyboardButton(
+                text='Изменить модель',
+                callback_data='change_model',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Изменить гос.номер',
+                callback_data='change_number',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Удалить автомобиль из списка',
+                callback_data='delete_car',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Вернуться к списку автомобилей',
+                callback_data='choose_car',
+            )
+        ]
+    ],
 )
-
 
 verify_delete_car_kb = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -98,7 +95,6 @@ verify_delete_car_kb = InlineKeyboardMarkup(
         ],
     ],
 )
-
 
 finish_add_car_kb = InlineKeyboardMarkup(
     inline_keyboard=[

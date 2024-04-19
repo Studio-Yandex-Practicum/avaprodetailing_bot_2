@@ -4,8 +4,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.constants import DEFAULT_STRING_SIZE, LONG_STRING_SIZE
-from bot.db.models.base import Base
-from bot.db.models.users import User
+from bot.db.models import Base, User, Service
 
 
 class BusinessUnit(Base):
@@ -38,6 +37,6 @@ class BusinessUnit(Base):
     def __repr__(self) -> str:
         return (f'BusinessUnit(id={self.id},'
                 f' name={self.name}, address={self.address})')
-    
+
     def __str__(self) -> str:
         return f'{self.name}'

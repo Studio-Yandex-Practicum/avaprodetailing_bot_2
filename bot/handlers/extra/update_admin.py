@@ -1,34 +1,26 @@
-from datetime import datetime
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE,
-                                PROFILE_MESSAGE_WITH_INLINE, REF_CLIENT_INFO,
-                                STATE_BIRTH_DATE, STATE_FIO,
-                                STATE_PHONE_NUMBER, THX_REG,
-                                WELCOME_ADMIN_MESSAGE,
-                                WELCOME_SUPER_ADMIN_MESSAGE)
+from bot.core.constants import (
+    ERROR_MESSAGE,
+    STATE_FIO,
+    STATE_PHONE_NUMBER,
+    WELCOME_SUPER_ADMIN_MESSAGE,
+)
 from bot.core.enums import UserRole
 from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
-from bot.keyboards.admin_keyboards import (admin_main_menu, admin_reg_client,
-                                           client_profile_for_adm,
-                                           reg_or_menu_adm, update_client_kb)
-from bot.keyboards.super_admin_keyboards import (OK_add_admin,
-                                                 admin_bio_for_super_admin_kb,
-                                                 gener_admin_keyboard,
-                                                 gener_business_unit_for_admin,
-                                                 ok_admin_bio,
-                                                 role_for_admin_kb,
-                                                 super_admin_main_menu)
-from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
-                                           back_menu_kb, profile_kb)
-from bot.states.user_states import AdminState, RegUser, SuperAdminState
-from bot.utils.bonus import award_registration_bonus
+from bot.keyboards.super_admin_keyboards import (
+    OK_add_admin,
+    gener_business_unit_for_admin,
+    ok_admin_bio,
+    role_for_admin_kb,
+    super_admin_main_menu,
+)
+from bot.states.user_states import SuperAdminState
 from bot.utils.validators import validate_fio, validate_phone_number
 
 router = Router(name=__name__)
@@ -78,9 +70,13 @@ async def reg_super_admin_phone(
             message_id=state_data['msg_id'],
         )
         return
-    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
-    state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
-    admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
+    admin = await users_crud.get(
+        session=session, obj_id=state_data['admin_id']
+    )
+    state_data = User.update_data_to_model(db_obj=admin, obj_in=state_data)
+    admin11 = await users_crud.update(
+        db_obj=admin, obj_in=state_data, session=session
+    )
     await msg.bot.edit_message_text(
         f'Номер телефона изменен {state_data["phone_number"]}',
         reply_markup=ok_admin_bio(admin11),
@@ -90,7 +86,7 @@ async def reg_super_admin_phone(
 
 
 @router.message(SuperAdminState.fio)
-async def reg_super_admin_phone(
+async def reg_super_admin_fio(
     msg: Message,
     state: FSMContext,
     session: AsyncSession
@@ -123,12 +119,12 @@ async def reg_super_admin_phone(
             reply_markup=role_for_admin_kb
         )
         return
-    admin = await users_crud.get(session=session, obj_id=state_data.get('admin_id'))
-    state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
+    admin = await users_crud.get(
+        session=session, obj_id=state_data.get('admin_id')
+    )
+    state_data = User.update_data_to_model(db_obj=admin, obj_in=state_data)
     admin11 = await users_crud.update(
-        db_obj=admin,
-        obj_in=state_data,
-        session=session
+        db_obj=admin, obj_in=state_data, session=session
     )
     await msg.bot.edit_message_text(
         f'ФИО изменено на {state_data["fio"]}',
@@ -136,7 +132,7 @@ async def reg_super_admin_phone(
         chat_id=msg.from_user.id,
         message_id=state_data['msg_id'],
     )
-    
+
 
 @router.callback_query(F.data == 'give_super_admin_permissions')
 async def give_super_admin_permissions(
@@ -157,7 +153,7 @@ async def give_super_admin_permissions(
         reply_markup=OK_add_admin
     )
     await state.update_data(role=UserRole.SUPERADMIN)
-    
+
 
 @router.callback_query(F.data == 'give_admin_permissions')
 async def give_admin_permissions(
@@ -202,16 +198,19 @@ async def process_selected_business_unit(
             reply_markup=OK_add_admin
         )
         return
-    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
-    state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
-    admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
+    admin = await users_crud.get(
+        session=session, obj_id=state_data['admin_id']
+    )
+    state_data = User.update_data_to_model(db_obj=admin, obj_in=state_data)
+    admin11 = await users_crud.update(
+        db_obj=admin, obj_in=state_data, session=session
+    )
     await callback.bot.edit_message_text(
         f'Бизнес-юнит изменен на {state_data["unit_id"]}',
         reply_markup=ok_admin_bio(admin11),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
     )
-    
 
 
 @router.callback_query(F.data == 'invite_admin')
@@ -244,9 +243,9 @@ async def invite_admin(
         reply_markup=super_admin_main_menu,
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
-    ) 
+    )
     await state.clear()
-    
+
 
 @router.callback_query(F.data == 'block_admin')
 async def block_admin(
@@ -255,9 +254,13 @@ async def block_admin(
     session: AsyncSession,
 ):
     state_data = await state.get_data()
-    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    admin = await users_crud.get(
+        session=session, obj_id=state_data['admin_id']
+    )
     state_data['is_active'] = not admin.is_active
-    admin = await users_crud.update(db_obj=admin,obj_in=state_data,session=session)
+    admin = await users_crud.update(
+        db_obj=admin, obj_in=state_data, session=session
+    )
     await callback.bot.edit_message_text(
         'Статус администратора изменен на '
         f'{"Действующий" if admin.is_active else "Архив"}',
@@ -265,21 +268,31 @@ async def block_admin(
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
     )
-    
+
 
 @router.callback_query(F.data == 'change_role')
-async def block_admin(
+async def change_role(
     callback: CallbackQuery,
     state: FSMContext,
     session: AsyncSession,
 ):
     state_data = await state.get_data()
-    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
-    state_data['role'] = UserRole.SUPERADMIN if admin.role is UserRole.ADMIN else UserRole.ADMIN
-    admin = await users_crud.update(db_obj=admin,obj_in=state_data,session=session)
+    admin = await users_crud.get(
+        session=session, obj_id=state_data['admin_id']
+    )
+    state_data['role'] = (UserRole.SUPERADMIN
+                          if admin.role is UserRole.ADMIN else UserRole.ADMIN)
+    admin = await users_crud.update(
+        db_obj=admin, obj_in=state_data, session=session
+    )
+    old_role = ("Администратор"
+                if admin.role is UserRole.SUPERADMIN
+                else "Старший администратор")
+    new_role = ("Администратор"
+                if admin.role is UserRole.ADMIN
+                else "Старший администратор")
     await callback.bot.edit_message_text(
-        f'Роль {"Администратор" if admin.role is UserRole.SUPERADMIN else "Старший администратор"} изменена на '
-        f'{"Администратор" if admin.role is UserRole.ADMIN else "Старший администратор"}',
+        f'Роль {old_role} изменена на {new_role}',
         reply_markup=ok_admin_bio(admin),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
@@ -287,14 +300,14 @@ async def block_admin(
 
 
 @router.callback_query(F.data == 'change_business_unit')
-async def give_admin_permissions(
+async def change_business_unit(
     callback: CallbackQuery,
     state: FSMContext,
     session: AsyncSession,
 ):
     state_data = await state.get_data()
     units = await business_units_crud.get_multi(session=session)
-    await state.update_data(change_unit = True)
+    await state.update_data(change_unit=True)
     await callback.bot.edit_message_text(
         text=(
             'Выберите бизнес-юнит администратора'
@@ -303,17 +316,16 @@ async def give_admin_permissions(
         message_id=state_data['msg_id'],
         reply_markup=gener_business_unit_for_admin(units)
     )
-    
 
 
 @router.callback_query(F.data == 'change_phone_number_admin')
-async def give_admin_permissions(
+async def change_phone_number_admin(
     callback: CallbackQuery,
     state: FSMContext,
     session: AsyncSession,
 ):
     state_data = await state.get_data()
-    await state.update_data(change_phone_num = True)
+    await state.update_data(change_phone_num=True)
     await state.set_state(SuperAdminState.phone_number)
     await callback.bot.edit_message_text(
         text=(
@@ -322,16 +334,16 @@ async def give_admin_permissions(
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
     )
-    
+
 
 @router.callback_query(F.data == 'change_phone_fio')
-async def give_admin_permissions(
+async def change_phone_fio(
     callback: CallbackQuery,
     state: FSMContext,
     session: AsyncSession,
 ):
     state_data = await state.get_data()
-    await state.update_data(change_fio = True)
+    await state.update_data(change_fio=True)
     await state.set_state(SuperAdminState.fio)
     await callback.bot.edit_message_text(
         text=(

@@ -5,7 +5,7 @@ reg_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Зарегистрироваться',
-                #web_app=WebAppInfo(url='')
+                # web_app=WebAppInfo(url='')
                 callback_data='Registration',
             ),
         ],
@@ -56,7 +56,7 @@ profile_kb = InlineKeyboardMarkup(
                 text='Предъявить QR код',
                 callback_data='generate_qr_code',
             )
-        ],   
+        ],
     ]
 )
 
@@ -81,8 +81,6 @@ add_car_kb = InlineKeyboardMarkup(
         ],
     ]
 )
-
-
 
 service_category_kb = InlineKeyboardMarkup(
     inline_keyboard=[
