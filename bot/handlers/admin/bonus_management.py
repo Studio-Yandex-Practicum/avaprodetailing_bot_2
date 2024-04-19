@@ -167,7 +167,7 @@ async def process_bonus_method(
             await message.bot.edit_message_text(
                 message_id=state_data['msg_id'],
                 chat_id=message.from_user.id,
-                text='Ошибка. Попробуйте позже'
+                text='Сумма не должна превышать сумму оплаты.'
             )
             return
         amount = int(
@@ -177,8 +177,7 @@ async def process_bonus_method(
     await message.bot.edit_message_text(
         message_id=state_data['msg_id'],
         chat_id=message.from_user.id,
-        text=f'Подтвердите '
-             f'{"сумму" if method == "sum" else "процент"} {amount}',
+        text=f'Подтвердите процент {amount}',
         reply_markup=bonus_approve_amount_keyboard(
             f'bonus_add_{amount}'
         )
@@ -215,7 +214,7 @@ async def spend_bonus_callback(
     callback: CallbackQuery, session: AsyncSession, state: FSMContext
 ):
     state_data = await state.get_data()
-    await state.set_state(AdminState.amount_bonus)
+    await state.set_state(AdminState.full_amount)
     await callback.bot.edit_message_text(
         text=f'Введите сумму списания не более {state_data.get("bonus_to_spend")}',
         chat_id=callback.from_user.id,
@@ -223,32 +222,41 @@ async def spend_bonus_callback(
     )
 
 
-@router.message(AdminState.amount_bonus)
+@router.message(AdminState.full_amount)
 async def amount_spend_bonus(
     message: Message, session: AsyncSession, state: FSMContext
 ):
-    if message.text.isdigit():
-        state_data = await state.get_data()
-        await state.update_data(amount_bonus=state_data.get('amount_bonus'))
-    if 'amount_bonus' in state_data:
-        user = await users_crud.get_by_attribute(
-            session=session,
-            attr_name='phone_number',
-            attr_value=state_data.get('phone_number')
-        )
+    await message.delete()
+    state_data = await state.get_data()
+    bonus_to_spend = state_data["bonus_to_spend"]
+    if not (message.text.isdigit() and int(message.text) <= bonus_to_spend):
         await message.bot.edit_message_text(
-            text=(
-                'Посещение клиента:'
-                f'\n{user.cars} <Гос.номер>\n'
-                f'<Список услуг посещения>\n'
-                f'{state_data.get("payment_amount")} рублей\n'
-                f'Будет списано {state_data.get("amount_bonus")} баллов\n\n'
-                f'К оплате {state_data.get("payment_amount") - state_data.get("amount_bonus")} рублей'
-            ),
             message_id=state_data.get('msg_id'),
             chat_id=message.from_user.id,
-            reply_markup=spend_approve_cancel_keyboard
+            text=f'Введите сумму целым числом не превышающим '
+                 f'{bonus_to_spend}.'
         )
+        return
+    amount_bonus = int(message.text)
+    await state.update_data(full_amount=amount_bonus)
+    user = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='phone_number',
+        attr_value=state_data.get('phone_number')
+    )
+    await message.bot.edit_message_text(
+        text=(
+            'Посещение клиента:'
+            f'\n{user.cars} <Гос.номер>\n'
+            f'<Список услуг посещения>\n'
+            f'{state_data.get("payment_amount")} рублей\n'
+            f'Будет списано {amount_bonus} баллов\n\n'
+            f'К оплате {state_data["payment_amount"] - amount_bonus} рублей'
+        ),
+        message_id=state_data.get('msg_id'),
+        chat_id=message.from_user.id,
+        reply_markup=spend_approve_cancel_keyboard
+    )
 
 
 @router.callback_query(F.data == 'cancel_spend_bonus')
@@ -264,35 +272,46 @@ async def amount_spend_bonus(
 
     await message.bot.edit_message_text(
         f"У клиента {user.balance} баллов."
-        f" Может быть списано {state_data.get('bonus_to_spend')}.",
+        f" Может быть списано {state_data['bonus_to_spend']}.",
         chat_id=message.from_user.id,
         message_id=state_data['msg_id'],
         reply_markup=bonus_admin
     )
 
 
-@router.message(F.data == 'approve_spend_bonus')
+@router.callback_query(F.data == 'approve_spend_bonus')
 async def process_spend_bonus(
-    message: Message, session: AsyncSession, state: FSMContext
+    callback: CallbackQuery, session: AsyncSession, state: FSMContext
 ):
     state_data = await state.get_data()
     state_data['is_accrual'] = False
     admin_user = await users_crud.get_by_attribute(
         attr_name='tg_user_id',
-        attr_value=message.from_user.id,
+        attr_value=callback.from_user.id,
         session=session
     )
     state_data['admin_user_id'] = admin_user.id
-    bonus_amount = state_data['amount_bonus']
+    bonus_amount = state_data['full_amount']
     user = await users_crud.get(
         obj_id=state_data['user_id'], session=session
     )
     await bonuses_crud.add_multi(
         await spend_bonuses(
-            list(filter(lambda bonus: bonus.is_active, user.bonuses)),
+            list(
+                filter(
+                    lambda bonus: bonus.is_active and bonus.is_accrual,
+                    user.bonuses
+                )
+            ),
             bonus_amount
-        )
+        ), session=session
     )
     await bonuses_crud.create(
         obj_in=state_data, session=session
+    )
+    await callback.bot.edit_message_text(
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        text=f'Списано {state_data["full_amount"]} баллов',
+        reply_markup=admin_back_kb
     )

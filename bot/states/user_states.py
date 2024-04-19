@@ -23,7 +23,7 @@ class AdminState(StatesGroup):
     bonus_method = State()
     bonus_to_add = State()
     bonus_to_spend = State()
-    amount_bonus = State()
+    full_amount = State()
 
 
 class SuperAdminState(StatesGroup):
