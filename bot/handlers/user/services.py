@@ -57,7 +57,7 @@ async def get_all_services_business_unit(
     )
     msg = f'Услугу {service.name} можно заказать в:'
     for bu in service.business_units:
-        msg +=f'{bu.name} {bu.note} {bu.address}'
+        msg += f'{bu.name} {bu.note} {bu.address}'
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
         text='Вернуться к списку услуг',
         callback_data='service_catalog'
