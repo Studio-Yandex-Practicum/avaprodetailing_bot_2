@@ -6,7 +6,7 @@ from bot.db.crud.services import services_crud
 from bot.db.crud.categories import category_crud
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from bot.keyboards.categories_keyboard import service_category_kb
-
+from aiogram.fsm.context import FSMContext
 
 router = Router(name=__name__)
 
@@ -37,6 +37,7 @@ async def get_all_services(
     category = await category_crud.get(
         obj_id=int(callback.data.split('_')[-1]), session=session
     )
+    await callback.message.delete()
     services = await services_crud.get_multi(session=session)
     for service in services:
         if service.category_id == category.id:
@@ -55,6 +56,7 @@ async def get_all_services_business_unit(
     service = await services_crud.get(
         obj_id=int(callback.data.split('_')[-1]), session=session
     )
+    await callback.message.delete()
     msg = f'Услугу {service.name} можно заказать в:'
     for bu in service.business_units:
         msg += f'{bu.name} {bu.note} {bu.address}'
@@ -63,7 +65,7 @@ async def get_all_services_business_unit(
         callback_data='service_catalog'
         )
         ]])
-    await callback.message.delete()
+    
     await callback.message.answer(
         text=msg,
         reply_markup=keyboard
