@@ -14,17 +14,18 @@ class Bonus(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    used_amount: Mapped[int]
+    used_amount: Mapped[int] = mapped_column(default=0)
     full_amount: Mapped[int]
     start_date: Mapped[datetime] = mapped_column(server_default=func.now())
-    is_active: Mapped[bool]
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_accrual: Mapped[bool]
 
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     user: Mapped['User'] = relationship(
         foreign_keys=(user_id,), back_populates='bonuses'
     )
-    admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    admin_user: Mapped['User'] = relationship(
+    admin_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey('users.id'))
+    admin_user: Mapped[Optional['User']] = relationship(
         foreign_keys=(admin_user_id,),
         back_populates='bonuses',
         viewonly=True,
@@ -35,6 +36,15 @@ class Bonus(Base):
         ForeignKey('bonus_cases.id')
     )
     case: Mapped[Optional['BonusCase']] = relationship()
+    
+    @classmethod
+    def data_to_model(cls, data):
+        return cls(
+            full_amount=data.get('full_amount'),
+            user_id=data.get('user_id'),
+            admin_user_id=data.get('admin_user_id'),
+            is_accrual=data.get('is_accrual')
+        )
 
     def __repr__(self):
         return (f'Bonus(id={self.id}, '

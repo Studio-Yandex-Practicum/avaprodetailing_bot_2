@@ -20,6 +20,10 @@ class AdminState(StatesGroup):
     reason_block = State()
     approv_block = State()
     payment_amount = State()
+    bonus_method = State()
+    bonus_to_add = State()
+    bonus_to_spend = State()
+    full_amount = State()
 
 
 class SuperAdminState(StatesGroup):

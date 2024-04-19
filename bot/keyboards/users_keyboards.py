@@ -48,7 +48,7 @@ profile_kb = InlineKeyboardMarkup(
             ),
             InlineKeyboardButton(
                 text='История',
-                callback_data='Reports',
+                callback_data='history',
             )
         ],
         [
@@ -56,7 +56,7 @@ profile_kb = InlineKeyboardMarkup(
                 text='Предъявить QR код',
                 callback_data='generate_qr_code',
             )
-        ],
+        ],   
     ]
 )
 

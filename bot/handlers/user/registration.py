@@ -4,14 +4,20 @@ from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from bot.db.crud.users_crud import user_crud
-from bot.core.constants import (STATE_BIRTH_DATE, STATE_FIO,
-                                STATE_PHONE_NUMBER, THX_REG)
+from bot.core.constants import (
+    STATE_BIRTH_DATE, STATE_FIO,
+    STATE_PHONE_NUMBER, THX_REG,
+)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
+# from bot.handlers.admin.bonus_management import award_registration_bonus
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
-from bot.utils.validators import (validate_birth_date, validate_fio,
-                                  validate_phone_number)
+from bot.utils.validators import (
+    validate_birth_date, validate_fio,
+    validate_phone_number,
+)
+from bot.utils.bonus import award_registration_bonus
 
 router = Router(name=__name__)
 
@@ -141,13 +147,8 @@ async def registrate_agree(
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
-    # TODO
-    # user11 = await users_crud.get_by_attribute(
-    #    session=session,
-    #    attr_name='phone_number',
-    #    attr_value=data['phone_number'],
-    # )
-    await users_crud.create(obj_in=data, session=session)
+    new_user = await users_crud.create(obj_in=data, session=session)
+    await award_registration_bonus(new_user, session)
     await callback.bot.edit_message_text(
         THX_REG,
         chat_id=callback.from_user.id,
