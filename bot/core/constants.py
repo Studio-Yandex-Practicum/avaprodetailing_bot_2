@@ -29,10 +29,8 @@ ERROR_MESSAGE = (
     'Вы ввели {incorrect}'
 )
 
-
 PROFILE_MESSAGE_WITH_INLINE = 'Выберите пункт меню'
 
-# admin_client + update_profile
 CLIENT_BIO = (
     'Профиль клиента:\n'
     'ФИО {last_name} {first_name}\n'
@@ -55,8 +53,12 @@ BLOCK_MSG = (
     'Введите МЕНЮ для перехода в главное меню'
 )
 
-ERROR_MESSAGE = (
-    'Неверный формат ввода\n'
-    '{info_text}\n'
-    'Вы ввели {incorrect}'
+BONUS_LIFESPAN = "1 год"
+BONUS_DESCRIPTION = (
+    "Бонусная программа:\n"
+    "Количество приветственных баллов: {signup_bonus}\n"
+    "Срок действия баллов: {bonus_lifespan}.\n"
+    "\n"
+    "Бонусные баллы могут списывать 98% суммы общего чека. При списании баллов, начисление не производится.\n"
 )
+
