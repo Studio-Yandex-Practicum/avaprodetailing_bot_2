@@ -7,8 +7,8 @@ from bot.db.crud.business_units import business_units_crud
 from bot.keyboards.admin_keyboards import admin_back_kb
 from bot.keyboards.business_units_keyboards import (
     build_business_units_keyboard, business_unit_edit_keyboard,
-    business_unit_manage_keyboard,
-)
+    business_unit_manage_keyboard)
+from bot.keyboards.super_admin_keyboards import super_admin_back_kb
 from bot.states.user_states import BusinessUnitState
 
 router = Router(name=__name__)
@@ -100,7 +100,7 @@ async def process_address(
               f'Название: {created_obj.name}\n'
               f'Описание: {created_obj.note}\n'
               f'Адрес: {created_obj.address}'),
-        reply_markup=admin_back_kb
+        reply_markup=super_admin_back_kb
     )
 
 

@@ -1,8 +1,8 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from bot.core.enums import UserRole
 from bot.db.models.users import User
-
 
 super_admin_main_menu = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -26,7 +26,7 @@ super_admin_main_menu = InlineKeyboardMarkup(
                 callback_data='mailing',
             ),
         ],
-                [
+        [
             InlineKeyboardButton(
                 text='Администраторы',
                 callback_data='administrators',
@@ -40,7 +40,6 @@ super_admin_main_menu = InlineKeyboardMarkup(
         ],
     ]
 )
-
 
 role_for_admin_kb = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -157,7 +156,7 @@ def gener_admin_keyboard(data):
             callback_data='info',
         ),
     )
-            
+
     if data is UserRole.SUPERADMIN:
         builder.row(
             InlineKeyboardButton(
@@ -189,5 +188,16 @@ def gener_list_admins(admins: list[User]):
                 )
             )
 
-
     return builder.as_markup()
+
+
+super_admin_back_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Вернуться в меню',
+                callback_data='extra_admin'
+            )
+        ]
+    ]
+)

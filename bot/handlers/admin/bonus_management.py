@@ -1,20 +1,18 @@
-from aiogram import Router, F, types
+from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import (
-    CallbackQuery, Message,
-)
-from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.types import CallbackQuery, Message
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.db.crud.bonus import bonuses_crud
 from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import admin_back_kb
+from bot.keyboards.bonus_keyboards import (bonus_add_choice_keyboard,
+                                           bonus_admin,
+                                           bonus_approve_amount_keyboard,
+                                           bonus_approve_cancel_keyboard,
+                                           spend_approve_cancel_keyboard)
 from bot.states.user_states import AdminState
-from bot.keyboards.bonus_keyboards import (
-    bonus_admin, spend_approve_cancel_keyboard,
-    bonus_add_choice_keyboard, bonus_approve_cancel_keyboard,
-    bonus_approve_amount_keyboard,
-)
-from bot.db.crud.bonus import bonuses_crud
 from bot.utils.bonus import spend_bonuses
 
 router = Router(name=__name__)

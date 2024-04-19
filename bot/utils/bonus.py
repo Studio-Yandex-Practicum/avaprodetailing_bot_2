@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import REGISTRATION_BONUS_AMOUNT
 from bot.db.crud.bonus import bonuses_crud
-from bot.db.models import User, Bonus
+from bot.db.models import Bonus, User
 
 
 async def award_registration_bonus(user: User, session: AsyncSession):

@@ -1,7 +1,6 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            KeyboardButton, ReplyKeyboardMarkup)
 
-
 info_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [

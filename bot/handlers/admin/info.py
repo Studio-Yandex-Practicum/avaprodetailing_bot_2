@@ -4,16 +4,11 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.keyboards.info_keyboards import (
-    info_kb, info_bonus_kb,
-)
+from bot.core.constants import (BONUS_DESCRIPTION, BONUS_LIFESPAN,
+                                REGISTRATION_BONUS_AMOUNT)
 from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.users import users_crud
-from bot.core.constants import (
-    BONUS_DESCRIPTION,
-    REGISTRATION_BONUS_AMOUNT,
-    BONUS_LIFESPAN,
-)
+from bot.keyboards.info_keyboards import info_bonus_kb, info_kb
 
 router = Router(name=__name__)
 

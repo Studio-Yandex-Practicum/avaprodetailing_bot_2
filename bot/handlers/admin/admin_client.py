@@ -3,18 +3,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
-from bot.core.constants import (
-    STATE_PHONE_NUMBER,
-    WELCOME_ADMIN_MESSAGE, CLIENT_BIO, REF_CLIENT_INFO,
-    ERROR_MESSAGE,
-)
+from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE, REF_CLIENT_INFO,
+                                STATE_PHONE_NUMBER, WELCOME_ADMIN_MESSAGE)
 from bot.db.crud.users import users_crud
-from bot.keyboards.admin_keyboards import (
-    admin_reg_client,
-    client_profile_for_adm,
-    reg_or_menu_adm,
-)
+from bot.keyboards.admin_keyboards import (admin_reg_client,
+                                           client_profile_for_adm,
+                                           reg_or_menu_adm)
+from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.states.user_states import AdminState
 from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_phone_number

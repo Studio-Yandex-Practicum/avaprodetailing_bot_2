@@ -6,10 +6,8 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from bot.core.constants import (
-    DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
-    SHORT_STRING_SIZE,
-)
+from bot.core.constants import (DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
+                                SHORT_STRING_SIZE)
 from bot.core.enums import UserRole
 from bot.db.models.base import Base
 

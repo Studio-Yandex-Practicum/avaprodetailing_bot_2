@@ -44,7 +44,8 @@ async def validate_fio(msg: str):
 
 
 async def validate_birth_date(msg: str):
-    check = r'^(([0][1-9]|[1][0-9])|([2][0-9])|([3][0-1])|([1-9]))\.(([0][1-9])|([1][0-2])|[1-9])\.[1-2]([0-9]..)'
+    check = (r'^(([0][1-9]|[1][0-9])|([2][0-9])|([3][0-1])|([1-9]))\.'
+             r'(([0][1-9])|([1][0-2])|[1-9])\.[1-2]([0-9]..)')
     current_date = date.today()
     match = re.match(check, msg)
     if match is not None and len(msg) < MAX_LENGTH_BIRTH_DATE:
