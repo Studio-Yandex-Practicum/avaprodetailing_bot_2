@@ -18,22 +18,18 @@ super_admin_main_menu = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
-                text='Администраторы',
-                callback_data='administrators',
-            ),
-            InlineKeyboardButton(
-                text='Клиенты',
-                callback_data='clients'
-            ),
-        ],
-        [
-            InlineKeyboardButton(
                 text='Отчеты',
                 callback_data='reports',
             ),
             InlineKeyboardButton(
                 text='Рассылки',
                 callback_data='mailing',
+            ),
+        ],
+                [
+            InlineKeyboardButton(
+                text='Администраторы',
+                callback_data='administrators',
             ),
         ],
         [
