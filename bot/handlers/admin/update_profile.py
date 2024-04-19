@@ -1,26 +1,25 @@
-from datetime import datetime
-from datetime import datetime as dt
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (BLOCK_MSG, CLIENT_BIO, PROFILE_MESSAGE_WITH_INLINE, STATE_BIRTH_DATE,
-                                STATE_FIO, STATE_PHONE_NUMBER, THX_REG,
-                                WELCOME_ADMIN_MESSAGE)
+from bot.core.constants import (
+    BLOCK_MSG, CLIENT_BIO,
+    WELCOME_ADMIN_MESSAGE,
+)
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
-from bot.keyboards.admin_keyboards import (add_update_data, admin_main_menu,
-                                           admin_reg_client,
-                                           client_profile_for_adm,
-                                           reg_or_menu_adm,
-                                           update_client_kb, update_profile_kb)
-from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
-                                           back_menu_kb, profile_kb)
-from bot.states.user_states import AdminState, RegUser
-from bot.utils.validators import (validate_birth_date, validate_fio,
-                                  validate_phone_number)
+from bot.keyboards.admin_keyboards import (
+    add_update_data, admin_main_menu,
+    client_profile_for_adm,
+    update_client_kb,
+    update_profile_kb,
+)
+from bot.states.user_states import AdminState
+from bot.utils.validators import (
+    validate_birth_date, validate_fio,
+    validate_phone_number,
+)
 
 router = Router(name=__name__)
 
@@ -57,9 +56,12 @@ async def update_client_data(
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
-                last_name=user.last_name, first_name=user.first_name,
+                last_name=user.last_name,
+                first_name=user.first_name,
                 birth_date=user.birth_date,
-                phone_number=user.phone_number, note=user.note
+                phone_number=user.phone_number,
+                balance=user.balance,
+                note=user.note
             )
         ),
         chat_id=callback.from_user.id,
@@ -128,12 +130,22 @@ async def update_client_data_state(
     )
     state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
     await users_crud.update(db_obj=user, obj_in=state_data, session=session)
-    await callback.message.delete()
-    await callback.message.answer(
-        WELCOME_ADMIN_MESSAGE,
-        reply_markup=admin_main_menu
+
+    msg = await callback.bot.edit_message_text(
+        text=(
+            CLIENT_BIO.format(
+                last_name=user.last_name, first_name=user.first_name,
+                birth_date=user.birth_date,
+                phone_number=user.phone_number, note=user.note
+            )
+        ),
+        chat_id=callback.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=client_profile_for_adm,
     )
     await state.clear()
+    await state.update_data(msg_id=msg.message_id)
+    await state.update_data(phone_number=user.phone_number)
 
 
 @router.callback_query(F.data == 'update_client_birth_date')
@@ -238,7 +250,7 @@ async def update_client_note(
     state_data = await state.get_data()
     await callback.bot.edit_message_text(
         text=(
-            f'Введите комментарий к профилю клиента'
+            'Введите комментарий к профилю клиента'
         ),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
@@ -256,7 +268,7 @@ async def admin_update_client_note(
     await state.update_data(note=message.text)
     await message.bot.edit_message_text(
         text=(
-            f'Комментарий к профилю клиента сохранен'
+            'Комментарий к профилю клиента сохранен'
         ),
         chat_id=message.from_user.id,
         message_id=state_data['msg_id'],
@@ -265,7 +277,7 @@ async def admin_update_client_note(
 
 
 @router.callback_query(F.data == 'block_client')
-async def update_client_note(
+async def block_client(
     callback: CallbackQuery,
     state: FSMContext,
 ):
@@ -273,7 +285,7 @@ async def update_client_note(
     await state.set_state(AdminState.reason_block)
     await callback.bot.edit_message_text(
         text=(
-            f'Введите причину блокировки'
+            'Введите причину блокировки'
         ),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
@@ -281,7 +293,7 @@ async def update_client_note(
 
 
 @router.message(AdminState.reason_block)
-async def admin_update_client_note(
+async def admin_update_reason_block(
     message: Message,
     state: FSMContext,
     session: AsyncSession
@@ -300,7 +312,8 @@ async def admin_update_client_note(
         text=(
             BLOCK_MSG.format(
                 last_name=user.last_name, first_name=user.first_name,
-                phone_number=user.phone_number, reason_block=state_data["reason_block"]
+                phone_number=user.phone_number,
+                reason_block=state_data["reason_block"]
             )
         ),
         chat_id=message.from_user.id,
@@ -309,7 +322,7 @@ async def admin_update_client_note(
 
 
 @router.message(AdminState.approv_block)
-async def admin_update_client_note(
+async def admin_approve_block(
     message: Message,
     state: FSMContext,
     session: AsyncSession
@@ -340,7 +353,8 @@ async def admin_update_client_note(
     elif state_data['approv_block'] == 'ДА':
         await message.bot.edit_message_text(
             text=(
-                f'Клиент {user.last_name} {user.first_name} {user.phone_number} заблокирован '
+                f'Клиент {user.last_name} {user.first_name} '
+                f'{user.phone_number} заблокирован '
                 f'по причине {state_data["reason_block"]} '
             ),
             chat_id=message.from_user.id,
@@ -352,7 +366,8 @@ async def admin_update_client_note(
             text=(
                 BLOCK_MSG.format(
                     last_name=user.last_name, first_name=user.first_name,
-                    phone_number=user.phone_number, reason_block=state_data["reason_block"]
+                    phone_number=user.phone_number,
+                    reason_block=state_data["reason_block"]
                 )
             ),
             chat_id=message.from_user.id,

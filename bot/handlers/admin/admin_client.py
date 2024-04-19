@@ -2,23 +2,21 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.handlers.user.registration import error_message
-from bot.core.constants import (
-    STATE_PHONE_NUMBER,
-    WELCOME_ADMIN_MESSAGE, CLIENT_BIO, REF_CLIENT_INFO,
-)
+
+from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE, REF_CLIENT_INFO,
+                                STATE_PHONE_NUMBER, WELCOME_ADMIN_MESSAGE)
 from bot.db.crud.users import users_crud
-from bot.keyboards.admin_keyboards import (
-    admin_main_menu, admin_reg_client,
-    client_profile_for_adm,
-    reg_or_menu_adm,
-)
+from bot.keyboards.admin_keyboards import (admin_reg_client,
+                                           client_profile_for_adm,
+                                           reg_or_menu_adm)
+from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.states.user_states import AdminState
 from bot.utils.validators import validate_phone_number
 
 router = Router(name=__name__)
 
 
+@router.callback_query(F.data == 'switch_admin_mode')
 @router.callback_query(F.data == 'admin_main_menu')
 async def admin_menu(
     callback: CallbackQuery,
@@ -34,8 +32,9 @@ async def admin_menu(
     if db_obj.is_active:
         await callback.message.answer(
             WELCOME_ADMIN_MESSAGE,
-            reply_markup=admin_main_menu
+            reply_markup=gener_admin_keyboard(db_obj.role)
         )
+    await state.update_data(is_admin_menu=True)
 
 
 @router.callback_query(F.data == 'search_phone_number')
@@ -67,7 +66,7 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
-            text=error_message.format(
+            text=ERROR_MESSAGE.format(
                 info_text=STATE_PHONE_NUMBER,
                 incorrect=msg.text
             )
@@ -75,11 +74,11 @@ async def reg_phone_number(
         return
     await state.update_data(phone_number=msg.text)
     data = await state.get_data()
-    phone_num = await users_crud.get_by_attribute(
+    user = await users_crud.get_by_attribute(
         session=session, attr_name='phone_number',
         attr_value=data['phone_number']
     )
-    if phone_num is None:
+    if user is None:
         await msg.bot.edit_message_text(
             text=f'Клиент с номером {data["phone_number"]} не зарегистрирован',
             chat_id=msg.from_user.id,
@@ -91,10 +90,12 @@ async def reg_phone_number(
         await msg.bot.edit_message_text(
             text=(
                 CLIENT_BIO.format(
-                    last_name=phone_num.last_name,
-                    first_name=phone_num.first_name,
-                    birth_date=phone_num.birth_date,
-                    phone_number=phone_num.phone_number, note=phone_num.note
+                    last_name=user.last_name,
+                    first_name=user.first_name,
+                    birth_date=user.birth_date,
+                    balance=user.balance,
+                    phone_number=user.phone_number,
+                    note=user.note if user.note is not None else ''
                 )
             ),
             chat_id=msg.from_user.id,
@@ -108,7 +109,6 @@ async def reg_phone_number(
 async def reg_clients(
     callback: CallbackQuery,
     state: FSMContext,
-    session: AsyncSession
 ):
     state_data = await state.get_data()
     await callback.bot.edit_message_text(
@@ -129,13 +129,16 @@ async def add_new_client(
 ):
     state_data = await state.get_data()
     user = await users_crud.create(obj_in=state_data, session=session)
-
+    # await award_registration_bonus(user=user, session=session)
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
-                last_name=user.last_name, first_name=user.first_name,
+                last_name=user.last_name,
+                first_name=user.first_name,
                 birth_date=user.birth_date,
-                phone_number=user.phone_number, note=user.note
+                phone_number=user.phone_number,
+                balance=user.balance,
+                note=user.note
             )
         ),
         chat_id=callback.from_user.id,

@@ -5,7 +5,7 @@ reg_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Зарегистрироваться',
-                #web_app=WebAppInfo(url='')
+                # web_app=WebAppInfo(url='')
                 callback_data='Registration',
             ),
         ],
@@ -48,7 +48,7 @@ profile_kb = InlineKeyboardMarkup(
             ),
             InlineKeyboardButton(
                 text='История',
-                callback_data='Reports',
+                callback_data='history',
             )
         ],
         [
@@ -77,6 +77,27 @@ add_car_kb = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text='Добавить автомобиль',
                 callback_data='car_menu',
+            )
+        ],
+    ]
+)
+
+service_category_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Добавить автомобиль',
+                callback_data='add_car',
+            ),
+            InlineKeyboardButton(
+                text='Добавить автомобиль',
+                callback_data='add_car',
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Сменить категорию',
+                callback_data='service_catalog',
             )
         ],
     ]

@@ -9,6 +9,5 @@ def generate_qrcode(data):
         img = qrcode.make(data)
         img.save(img_byte_arr, 'PNG')
         return img_byte_arr.getvalue()
-    except Exception as error:
-        # TODO: логирование
+    except Exception:
         return

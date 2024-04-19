@@ -1,4 +1,4 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 admin_main_menu = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -30,6 +30,17 @@ admin_main_menu = InlineKeyboardMarkup(
                 callback_data='extra_admin'
             ),
         ],
+    ]
+)
+
+admin_back_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Вернуться в меню',
+                callback_data='admin_main_menu'
+            )
+        ]
     ]
 )
 
@@ -152,6 +163,17 @@ add_update_data = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text='ОК',
                 callback_data='OK_update_client',
+            ),
+        ],
+    ]
+)
+
+adddd_data = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='ОК',
+                callback_data='profile_before_search',
             ),
         ],
     ]
