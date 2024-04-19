@@ -31,7 +31,6 @@ ERROR_MESSAGE = (
 
 PROFILE_MESSAGE_WITH_INLINE = 'Выберите пункт меню'
 
-# admin_client + update_profile
 CLIENT_BIO = (
     'Профиль клиента:\n'
     'ФИО {last_name} {first_name}\n'
@@ -62,8 +61,4 @@ BONUS_DESCRIPTION = (
     "\n"
     "Бонусные баллы могут списывать 98% суммы общего чека. При списании баллов, начисление не производится.\n"
 )
-ERROR_MESSAGE = (
-    'Неверный формат ввода\n'
-    '{info_text}\n'
-    'Вы ввели {incorrect}'
-)
+
