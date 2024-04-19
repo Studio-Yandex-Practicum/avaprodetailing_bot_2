@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.enums import PaymentState
 from bot.db.models.base import Base
-from bot.db.models.users import User
 
 
 class Visit(Base):

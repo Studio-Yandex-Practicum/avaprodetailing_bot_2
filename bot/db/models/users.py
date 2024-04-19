@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from bot.core.constants import (DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
                                 SHORT_STRING_SIZE)
 from bot.core.enums import UserRole
-from bot.db.models import Base, Car, BusinessUnit, Visit, Bonus
+from bot.db.models import Base
 
 
 class User(Base):
