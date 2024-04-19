@@ -58,6 +58,7 @@ class CRUDBase(Generic[ModelType]):
         db_obj = self.model.data_to_model(obj_in)
         session.add(db_obj)
         await session.commit()
+        await session.refresh(db_obj)
         return db_obj
 
     async def update(
@@ -73,6 +74,8 @@ class CRUDBase(Generic[ModelType]):
                 setattr(db_obj, field, obj_in[field])
         session.add(db_obj)
         await session.commit()
+        await session.refresh(db_obj)
+
         return db_obj
 
     async def remove(

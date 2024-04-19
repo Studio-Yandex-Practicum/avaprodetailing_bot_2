@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.constants import DEFAULT_STRING_SIZE
 from bot.core.enums import BonusType
-from bot.db.models import Base, User
+from bot.db.models import Base
 
 
 class Bonus(Base):
