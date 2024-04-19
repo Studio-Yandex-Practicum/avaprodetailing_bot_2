@@ -32,7 +32,7 @@ class BusinessUnit(Base):
         return cls(
             name=data.get('name'),
             note=data.get('note'),
-            address=data.get('address')
+            address=data.get('address'),
             is_active=data.get('is_active')
         )
 
