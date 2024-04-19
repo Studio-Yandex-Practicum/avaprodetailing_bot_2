@@ -10,7 +10,6 @@ from bot.keyboards.payment_inline import (
     build_services_keyboard,
     build_user_cars_keyboard,
 )
-from bot.keyboards.users_keyboards import back_menu_kb
 from bot.states.user_states import AdminState
 
 router = Router(name=__name__)
@@ -28,6 +27,7 @@ async def register_visit_callback(
         attr_value=state_data['phone_number'],
         session=session
     )
+    await state.update_data(user_id=user.id)
     user_cars = user.cars
     if not user_cars:
         await callback_query.message.bot.edit_message_text(

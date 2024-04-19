@@ -40,9 +40,10 @@ class Bonus(Base):
     @classmethod
     def data_to_model(cls, data):
         return cls(
-            used_amount=data.get('used_amount'),
             full_amount=data.get('full_amount'),
-            user_id=data.get('user_id')
+            user_id=data.get('user_id'),
+            admin_user_id=data.get('admin_user_id'),
+            is_accrual=data.get('is_accrual')
         )
 
     def __repr__(self):
