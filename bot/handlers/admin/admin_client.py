@@ -16,6 +16,7 @@ from bot.keyboards.admin_keyboards import (
     reg_or_menu_adm,
 )
 from bot.states.user_states import AdminState
+from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_phone_number
 
 router = Router(name=__name__)
@@ -114,7 +115,6 @@ async def reg_phone_number(
 async def reg_clients(
     callback: CallbackQuery,
     state: FSMContext,
-    session: AsyncSession
 ):
     state_data = await state.get_data()
     await callback.bot.edit_message_text(
@@ -135,7 +135,7 @@ async def add_new_client(
 ):
     state_data = await state.get_data()
     user = await users_crud.create(obj_in=state_data, session=session)
-
+    # await award_registration_bonus(user=user, session=session)
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
@@ -145,33 +145,6 @@ async def add_new_client(
                 phone_number=user.phone_number,
                 balance=user.balance,
                 note=user.note
-            )
-        ),
-        chat_id=callback.from_user.id,
-        message_id=state_data['msg_id'],
-        reply_markup=client_profile_for_adm,
-    )
-
-
-@router.callback_query(F.data == 'profile_before_search')
-async def add_new_client(
-    callback: CallbackQuery,
-    state: FSMContext,
-    session: AsyncSession
-):
-    state_data = await state.get_data()
-    user = await users_crud.get_by_attribute(
-        session=session,
-        attr_name='phone_number',
-        attr_value=state_data['phone_number']
-    )
-
-    await callback.bot.edit_message_text(
-        text=(
-            CLIENT_BIO.format(
-                last_name=user.last_name, first_name=user.first_name,
-                birth_date=user.birth_date,
-                phone_number=user.phone_number, note=user.note
             )
         ),
         chat_id=callback.from_user.id,

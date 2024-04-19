@@ -56,7 +56,7 @@ async def reg_super_admin_phone(
 ):
     await msg.delete()
     state_data = await state.get_data()
-    if not await validate_phone_number(msg=msg.text):
+    if not await validate_phone_number(phone_number=msg.text):
         await msg.delete()
         await msg.bot.edit_message_text(
             chat_id=msg.from_user.id,
@@ -121,7 +121,7 @@ async def reg_super_admin_phone(
             message_id=state_data['msg_id'],
             reply_markup=role_for_admin_kb
         )
-    admin = await users_crud.get(session=session, obj_id=state_data['admin_id'])
+    admin = await users_crud.get(session=session, obj_id=state_data.get('admin_id'))
     state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
     admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
     await msg.bot.edit_message_text(

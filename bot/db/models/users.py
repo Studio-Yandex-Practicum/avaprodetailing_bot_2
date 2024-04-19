@@ -59,6 +59,7 @@ class User(Base):
 
     @property
     def balance(self):
+        # TODO: поправить relationship для пустых значений
         return sum(
             bonus.full_amount - bonus.used_amount
             for bonus in self.bonuses if bonus.is_accrual
@@ -70,9 +71,11 @@ class User(Base):
         obj_in,
     ):
         if 'birth_date' in obj_in:
-            birth_date=dt.strptime(obj_in.get('birth_date'), '%d.%m.%Y').date()
+            birth_date = dt.strptime(
+                obj_in.get('birth_date'), '%d.%m.%Y'
+            ).date()
         else:
-            birth_date=None
+            birth_date = None
         if 'fio' in obj_in:
             last_name, first_name = [x for x in
                                      obj_in['fio'].split(maxsplit=1)]

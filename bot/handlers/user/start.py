@@ -63,18 +63,17 @@ async def start(message: Message, session: AsyncSession, state: FSMContext):
     state_data = await state.get_data()
     tg_id = message.from_user.id
     await message.delete()
-
+    db_obj = await users_crud.get_by_attribute(
+        attr_name='tg_user_id',
+        attr_value=tg_id,
+        session=session
+    )
     if await check_user_is_none(tg_id=tg_id, session=session):
         await message.answer(
             WELCOME_REG_MESSAGE,
             reply_markup=reg_kb,
         )
         return
-    db_obj = await users_crud.get_by_attribute(
-        attr_name='tg_user_id',
-        attr_value=tg_id,
-        session=session
-    )
     if await check_user_is_admin(
         tg_id=tg_id, session=session
     ):

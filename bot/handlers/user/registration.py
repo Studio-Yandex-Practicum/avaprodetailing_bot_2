@@ -8,6 +8,7 @@ from bot.core.constants import (
     STATE_PHONE_NUMBER, THX_REG, ERROR_MESSAGE,
 )
 from bot.db.crud.users import users_crud
+from bot.db.models import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb
 from bot.states.user_states import RegUser
 from bot.utils.validators import (
@@ -139,8 +140,19 @@ async def registrate_agree(
     data = await state.get_data()
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
-    new_user = await users_crud.create(obj_in=data, session=session)
-    await award_registration_bonus(new_user, session)
+    user = await users_crud.get_by_attribute(
+        attr_name='phone_number',
+        attr_value=data['phone_number'],
+        session=session
+    )
+    if user is None:
+        new_user = await users_crud.create(obj_in=data, session=session)
+        await award_registration_bonus(new_user, session)
+    else:
+        state_data = User.update_data_to_model(db_obj=user, obj_in=data)
+        await users_crud.update(
+            db_obj=user, obj_in=state_data, session=session
+        )
     await callback.bot.edit_message_text(
         THX_REG,
         chat_id=callback.from_user.id,

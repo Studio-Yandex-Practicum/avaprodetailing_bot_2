@@ -90,6 +90,7 @@ async def get_profile(
 
 @router.callback_query(F.data == 'generate_qr_code')
 async def generate_qr_code(callback: CallbackQuery, bot: Bot):
+    await callback.message.delete()
     link = await create_start_link(
         bot, str(callback.from_user.id), encode=True
     )
@@ -100,6 +101,7 @@ async def generate_qr_code(callback: CallbackQuery, bot: Bot):
         return
     await callback.message.answer_photo(
         photo=BufferedInputFile(qrcode, 'qrcode.png'),
+        reply_markup=back_menu_kb
     )
 
 
