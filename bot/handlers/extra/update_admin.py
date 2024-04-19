@@ -221,7 +221,23 @@ async def invite_admin(
 ):
 
     state_data = await state.get_data()
-    await users_crud.create(obj_in=state_data, session=session)
+    admin = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='phone_number',
+        attr_value=state_data.get('phone_number')
+        
+    )
+
+    if admin is None:
+        admin = await users_crud.create(
+            obj_in=state_data, session=session
+        )
+        await award_registration_bonus(admin, session)
+    else:
+        state_data = User.update_data_to_model(db_obj=admin, obj_in=state_data)
+        admin = await users_crud.update(
+            db_obj=admin, obj_in=state_data, session=session
+        )
     await callback.bot.edit_message_text(
         WELCOME_SUPER_ADMIN_MESSAGE,
         reply_markup=super_admin_main_menu,
