@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.business_units import business_units_crud
-from bot.db.crud.car import cars_crud
+from bot.db.crud.cars import cars_crud
 from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.payment_inline import (
@@ -27,6 +27,7 @@ async def register_visit_callback(
         attr_value=state_data['phone_number'],
         session=session
     )
+    await state.update_data(user_id=user.id)
     user_cars = user.cars
     if not user_cars:
         await callback_query.message.bot.edit_message_text(
@@ -52,17 +53,23 @@ async def select_services_callback(
     session: AsyncSession
 ):
     state_data = await state.get_data()
-    await state.update_data(car_id=int(callback_query.data.split('_')[-1]))
-    # TODO: достаем услуги из точки, в которой работает админ по tg_user_id
+    car = await cars_crud.get(
+        obj_id=int(callback_query.data.split('_')[-1]), session=session
+    )
+    await state.update_data(car=car)
     admin = await users_crud.get_by_attribute(
         attr_name='tg_user_id',
         attr_value=callback_query.from_user.id,
         session=session
     )
-    if admin.business_unit is not None:
-        services = admin.business_unit.services
-    else:
-        services = []
+    if admin.business_unit is None:
+        await callback_query.message.bot.edit_message_text(
+            message_id=state_data['msg_id'],
+            chat_id=callback_query.from_user.id,
+            text='Не найден бизнес-юнит у администратора.'
+        )
+        return
+    services = admin.business_unit.services
     await state.update_data(chosen_services=[])
     await callback_query.message.bot.edit_message_text(
         message_id=state_data['msg_id'],
@@ -117,17 +124,3 @@ async def finish_selection_callback(
         message_id=state_data['msg_id']
     )
     await state.set_state(AdminState.payment_amount)
-
-
-@router.message(AdminState.payment_amount)
-async def payment_amount_callback(
-    message: types.Message, state: FSMContext, session: AsyncSession
-):
-    try:
-        payment_amount = int(message.text)
-        if payment_amount <= 0:
-            raise ValueError
-    except ValueError:
-        await message.answer('Введите корректную положительную сумму.')
-        return
-    await state.update_data(payment_amount=payment_amount)

@@ -46,10 +46,11 @@ class User(Base):
         back_populates='user',
         primaryjoin='User.id == Visit.user_id'
     )
-    bonuses: Mapped[set['Bonus']] = relationship(
+    bonuses: Mapped[list['Bonus']] = relationship(
         lazy='selectin',
+        order_by='Bonus.start_date',
         back_populates='user',
-        primaryjoin='User.id == Bonus.user_id'  # FIXME: если не будет админов
+        primaryjoin='User.id == Bonus.user_id'
     )
 
     def __repr__(self) -> str:
@@ -60,7 +61,7 @@ class User(Base):
     def balance(self):
         return sum(
             bonus.full_amount - bonus.used_amount
-            for bonus in self.bonuses
+            for bonus in self.bonuses if bonus.is_accrual
         )
 
     @classmethod
@@ -85,7 +86,7 @@ class User(Base):
                 business_unit_id=obj_in.get('unit_id')
             )
         else:
-            db_obj = cls(phone_number=obj_in['phone_number'], )
+            db_obj = cls(phone_number=obj_in['phone_number'])
         return db_obj
 
     @staticmethod

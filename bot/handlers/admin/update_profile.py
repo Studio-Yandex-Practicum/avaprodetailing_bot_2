@@ -58,9 +58,12 @@ async def update_client_data(
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
-                last_name=user.last_name, first_name=user.first_name,
+                last_name=user.last_name,
+                first_name=user.first_name,
                 birth_date=user.birth_date,
-                phone_number=user.phone_number, note=user.note
+                phone_number=user.phone_number,
+                balance=user.balance,
+                note=user.note
             )
         ),
         chat_id=callback.from_user.id,

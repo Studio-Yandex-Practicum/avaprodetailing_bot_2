@@ -6,6 +6,8 @@ MAX_LENGTH_BIRTH_DATE = 11
 DEFAULT_STRING_SIZE = 120
 LONG_STRING_SIZE = 255
 
+REGISTRATION_BONUS_AMOUNT = 100
+
 DEFAULT_USER_ROLE = 'Пользователь'
 
 WELCOME_MESSAGE = 'Привет'
@@ -36,7 +38,7 @@ CLIENT_BIO = (
     'ФИО {last_name} {first_name}\n'
     'Дата рождения {birth_date}\n'
     'Номер телефона {phone_number}\n'
-    'Баланс <Баланс> бонусов\n'
+    'Баланс {balance} бонусов\n'
     'Коммент {note}'
 )
 REF_CLIENT_INFO = (
@@ -51,4 +53,10 @@ BLOCK_MSG = (
     'по причине {reason_block} введите ДА\n\n'
     'Введите НЕТ при ошибке и переходе к редактированию клиента\n\n'
     'Введите МЕНЮ для перехода в главное меню'
+)
+
+ERROR_MESSAGE = (
+    'Неверный формат ввода\n'
+    '{info_text}\n'
+    'Вы ввели {incorrect}'
 )

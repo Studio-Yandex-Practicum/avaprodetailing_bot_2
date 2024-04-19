@@ -39,7 +39,7 @@ async def car_menu(
         car_message = 'Список авто: \n'
         for car in list(cars):
             car_message += (
-                f"{car.brand}/{car.model} - {car.number}\n"
+                f"{car.brand} {car.model} | {car.number}\n"
             )
 
         await callback.message.answer(

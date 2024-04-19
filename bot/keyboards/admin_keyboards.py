@@ -33,6 +33,17 @@ admin_main_menu = InlineKeyboardMarkup(
     ]
 )
 
+admin_back_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Вернуться в меню',
+                callback_data='admin_main_menu'
+            )
+        ]
+    ]
+)
+
 admin_reg_client = InlineKeyboardMarkup(
     inline_keyboard=[
         [
