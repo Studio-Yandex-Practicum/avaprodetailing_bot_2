@@ -28,6 +28,7 @@ from bot.keyboards.super_admin_keyboards import (OK_add_admin,
 from bot.keyboards.users_keyboards import (add_car_kb, agree_refuse_kb,
                                            back_menu_kb, profile_kb)
 from bot.states.user_states import AdminState, RegUser, SuperAdminState
+from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_fio, validate_phone_number
 
 router = Router(name=__name__)
@@ -121,9 +122,14 @@ async def reg_super_admin_phone(
             message_id=state_data['msg_id'],
             reply_markup=role_for_admin_kb
         )
+        return
     admin = await users_crud.get(session=session, obj_id=state_data.get('admin_id'))
     state_data = User.update_data_to_model(db_obj=admin,obj_in=state_data)
-    admin11 = await users_crud.update(db_obj=admin, obj_in=state_data, session=session)
+    admin11 = await users_crud.update(
+        db_obj=admin,
+        obj_in=state_data,
+        session=session
+    )
     await msg.bot.edit_message_text(
         f'ФИО изменено на {state_data["fio"]}',
         reply_markup=ok_admin_bio(admin11),
@@ -216,7 +222,23 @@ async def invite_admin(
 ):
 
     state_data = await state.get_data()
-    await users_crud.create(obj_in=state_data,session=session)
+    admin = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='phone_number',
+        attr_value=state_data.get('phone_number')
+        
+    )
+
+    if admin is None:
+        admin = await users_crud.create(
+            obj_in=state_data, session=session
+        )
+        await award_registration_bonus(admin, session)
+    else:
+        state_data = User.update_data_to_model(db_obj=admin, obj_in=state_data)
+        admin = await users_crud.update(
+            db_obj=admin, obj_in=state_data, session=session
+        )
     await callback.bot.edit_message_text(
         WELCOME_SUPER_ADMIN_MESSAGE,
         reply_markup=super_admin_main_menu,
