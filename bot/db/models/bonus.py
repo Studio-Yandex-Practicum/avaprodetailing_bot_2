@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.constants import DEFAULT_STRING_SIZE
 from bot.core.enums import BonusType
-from bot.db.models.base import Base
+from bot.db.models import Base
 
 
 class Bonus(Base):
@@ -24,7 +24,9 @@ class Bonus(Base):
     user: Mapped['User'] = relationship(
         foreign_keys=(user_id,), back_populates='bonuses'
     )
-    admin_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey('users.id'))
+    admin_user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey('users.id')
+    )
     admin_user: Mapped[Optional['User']] = relationship(
         foreign_keys=(admin_user_id,),
         back_populates='bonuses',
@@ -36,7 +38,7 @@ class Bonus(Base):
         ForeignKey('bonus_cases.id')
     )
     case: Mapped[Optional['BonusCase']] = relationship()
-    
+
     @classmethod
     def data_to_model(cls, data):
         return cls(

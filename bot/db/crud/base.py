@@ -49,7 +49,7 @@ class CRUDBase(Generic[ModelType]):
     ) -> list[ModelType]:
         db_objs = await session.scalars(select(self.model))
         return cast(list[ModelType], db_objs.all())
-    
+
     async def create(
         self,
         obj_in: dict[str, Any],
@@ -58,6 +58,7 @@ class CRUDBase(Generic[ModelType]):
         db_obj = self.model.data_to_model(obj_in)
         session.add(db_obj)
         await session.commit()
+        await session.refresh(db_obj)
         return db_obj
 
     async def update(
@@ -73,9 +74,9 @@ class CRUDBase(Generic[ModelType]):
                 setattr(db_obj, field, obj_in[field])
         session.add(db_obj)
         await session.commit()
-        return db_obj
-    
+        await session.refresh(db_obj)
 
+        return db_obj
 
     async def remove(
         self,

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db.models import Bonus
 from bot.db.crud.base import CRUDBase
+from bot.db.models import Bonus
 
 
 class BonusCRUD(CRUDBase[Bonus]):

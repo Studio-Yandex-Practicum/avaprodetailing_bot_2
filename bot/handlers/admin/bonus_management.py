@@ -1,59 +1,23 @@
-from aiogram import Router, F, types
+from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import (
-    CallbackQuery, Message,
-)
-from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.types import CallbackQuery, Message
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.db.crud.bonus import bonuses_crud
 from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import admin_back_kb
-from bot.states.user_states import AdminState
 from bot.keyboards.bonus_keyboards import (
-    bonus_admin, spend_approve_cancel_keyboard,
-    bonus_add_choice_keyboard, bonus_approve_cancel_keyboard,
+    bonus_add_choice_keyboard,
+    bonus_admin,
     bonus_approve_amount_keyboard,
+    bonus_approve_cancel_keyboard,
+    spend_approve_cancel_keyboard,
 )
-from bot.db.crud.bonus import bonuses_crud
+from bot.states.user_states import AdminState
 from bot.utils.bonus import spend_bonuses
 
 router = Router(name=__name__)
-
-
-# использовать поле модели start_date и так же одной функцией
-# async def send_bonus_expiry_reminders(session: AsyncSession):
-#     current_time = datetime.now()
-#     for user_id, bonus_award_time in bonus_award_times.items():
-#         if (current_time - bonus_award_time) >= timedelta(days=365):
-#             expiry_reminder_time = bonus_award_time + timedelta(days=365 - 14)
-#             if (current_time - expiry_reminder_time) >= timedelta(days=14):
-#                 message = f"Напоминаем, что через 14 дней истекает срок начисления бонуса."
-#                 await send_reminder_message(user_id, message)
-#
-#
-# # вызывать бота через ключ значение bot: Bot
-# async def send_reminder_message(user_id: int, message: str):
-#     bot = Bot(settings.bot_token.get_secret_value())
-#     await bot.send_message(user_id, message)
-#
-#
-# # использовать одной функцией а не разбивать на две view_bonus_history
-# @router.callback_query(F.data == 'История бонусов')
-# async def view_bonus_history_callback(
-#     callback: CallbackQuery, session: AsyncSession
-# ):
-#     user_id = callback.from_user.id
-#     bonus_history_messages = await view_bonus_history(user_id, session)
-#     for msg in bonus_history_messages:
-#         await callback.message.answer(msg)
-
-
-# async def calculate_max_bonus_spend(
-#     visit_amount: int, user_balance: int
-# ) -> int:
-#     max_percentage = 0.98
-#     max_spend = int(visit_amount * max_percentage)
-#     return min(max_spend, user_balance)
 
 
 @router.message(AdminState.payment_amount)
@@ -211,12 +175,13 @@ async def approve_bonus_callback(
 
 @router.callback_query(F.data == 'spend_bonus')
 async def spend_bonus_callback(
-    callback: CallbackQuery, session: AsyncSession, state: FSMContext
+    callback: CallbackQuery, state: FSMContext
 ):
     state_data = await state.get_data()
     await state.set_state(AdminState.full_amount)
     await callback.bot.edit_message_text(
-        text=f'Введите сумму списания не более {state_data.get("bonus_to_spend")}',
+        text=f'Введите сумму списания не более '
+             f'{state_data.get("bonus_to_spend")}',
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
     )
@@ -260,7 +225,7 @@ async def amount_spend_bonus(
 
 
 @router.callback_query(F.data == 'cancel_spend_bonus')
-async def amount_spend_bonus(
+async def cancel_spend_bonus(
     message: Message, session: AsyncSession, state: FSMContext
 ):
     state_data = await state.get_data()

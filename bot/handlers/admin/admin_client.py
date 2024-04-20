@@ -2,19 +2,15 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
+from bot.db.models.users import User
 
-from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
-from bot.core.constants import (
-    STATE_PHONE_NUMBER,
-    WELCOME_ADMIN_MESSAGE, CLIENT_BIO, REF_CLIENT_INFO,
-    ERROR_MESSAGE,
-)
+from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE, REF_CLIENT_INFO,
+                                STATE_PHONE_NUMBER, WELCOME_ADMIN_MESSAGE)
 from bot.db.crud.users import users_crud
-from bot.keyboards.admin_keyboards import (
-    admin_reg_client,
-    client_profile_for_adm,
-    reg_or_menu_adm,
-)
+from bot.keyboards.admin_keyboards import (admin_reg_client,
+                                           client_profile_for_adm,
+                                           reg_or_menu_adm)
+from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.states.user_states import AdminState
 from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_phone_number
@@ -134,17 +130,28 @@ async def add_new_client(
     session: AsyncSession
 ):
     state_data = await state.get_data()
-    user = await users_crud.create(obj_in=state_data, session=session)
-    # await award_registration_bonus(user=user, session=session)
+    user = await users_crud.get_by_attribute(
+        attr_name='phone_number',
+        attr_value=state_data.get('phone_number'),
+        session=session
+    )
+    if user is None:
+        new_user = await users_crud.create(obj_in=state_data, session=session)
+        bonus = await award_registration_bonus(user=new_user,session=session)
+    else:
+        state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
+        new_user = await users_crud.update(
+            db_obj=user, obj_in=state_data, session=session
+        )
     await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
-                last_name=user.last_name,
-                first_name=user.first_name,
-                birth_date=user.birth_date,
-                phone_number=user.phone_number,
-                balance=user.balance,
-                note=user.note
+                last_name=new_user.last_name,
+                first_name=new_user.first_name,
+                birth_date=new_user.birth_date,
+                phone_number=new_user.phone_number,
+                balance=bonus.full_amount,
+                note=new_user.note if new_user.note is not None else ''
             )
         ),
         chat_id=callback.from_user.id,

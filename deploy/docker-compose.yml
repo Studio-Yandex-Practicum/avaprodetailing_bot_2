@@ -1,0 +1,9 @@
+volumes:
+  pg_data:
+
+services:
+  bot:
+    build: ..
+    restart: always
+    command: "python main.py"
+    env_file: ../.env

@@ -1,17 +1,14 @@
 from datetime import date
 from datetime import datetime as dt
-from typing import Optional, cast
+from typing import Optional
 
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from bot.core.constants import (
-    DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
-    SHORT_STRING_SIZE,
-)
+from bot.core.constants import (DEFAULT_STRING_SIZE, DEFAULT_USER_ROLE,
+                                SHORT_STRING_SIZE)
 from bot.core.enums import UserRole
-from bot.db.models.base import Base
+from bot.db.models import Base
 
 
 class User(Base):
@@ -62,7 +59,7 @@ class User(Base):
         # TODO: поправить relationship для пустых значений
         return sum(
             bonus.full_amount - bonus.used_amount
-            for bonus in self.bonuses if bonus.is_accrual
+            for bonus in self.bonuses if bonus.is_accrual and bonus.is_active
         )
 
     @classmethod
