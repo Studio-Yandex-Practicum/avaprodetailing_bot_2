@@ -178,8 +178,14 @@ async def create_report(
         attr_value=state_data['phone_number']
     )
     visits = await visit_crud.get_multi(session=session)
+    admin = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='tg_user_id',
+        attr_value=callback.from_user.id
+    )
+
     
-    report_info_client_for_admin(user=user,visits=visits, unit=state_data['unit_id'])
+    report_info_client_for_admin(user=user,visits=visits, unit=admin.business_unit_id)
     document = FSInputFile(path='report.pdf')
     await callback.bot.send_document(
         chat_id=callback.from_user.id,

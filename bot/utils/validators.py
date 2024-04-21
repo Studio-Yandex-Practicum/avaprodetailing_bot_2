@@ -13,6 +13,19 @@ def verify_symbols(num):
     return not any(c in special_characters for c in num)
 
 
+async def check_tg_id_for_reg(
+    number: str,
+    session: AsyncSession,
+) -> None:
+    user = await users_crud.get_by_attribute(
+        attr_name='phone_number',
+        attr_value=number,
+        session=session
+    )
+    if user.tg_user_id is not None:
+        return False
+    return True
+
 async def check_user_is_none(
     tg_id: int,
     session: AsyncSession,

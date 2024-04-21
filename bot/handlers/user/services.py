@@ -77,7 +77,7 @@ async def get_all_services_business_unit(
         obj_id=int(callback.data.split('_')[-1]), session=session
     )
     state_data = await state.get_data()
-    msg = f'Услугу "{service.name}" может быть оказана в:\n\n'
+    msg = f'Услуга "{service.name}" может быть оказана в:\n\n'
     for bu in service.business_units:
         msg += f'{bu.name} по адресу {bu.address}\n\n'
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
