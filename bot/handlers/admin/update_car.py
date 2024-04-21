@@ -240,7 +240,6 @@ async def reg_car_start(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
 ):
-    await state.clear()
     await callback.message.delete()
     state_data = await state.get_data()
     user = await users_crud.get_by_attribute(
@@ -318,3 +317,6 @@ async def reg_car_number(
     )
 
     return data
+
+
+# FIXME car_body_type забыл
