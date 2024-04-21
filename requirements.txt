@@ -25,3 +25,7 @@ typing_extensions==4.10.0
 yarl==1.9.4
 Faker==24.8.0
 qrcode==7.4.2
+fpdf==1.7.2
+chardet==5.2.0 
+pillow==10.3.0
+reportlab==4.2.0

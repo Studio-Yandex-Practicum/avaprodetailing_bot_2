@@ -73,3 +73,40 @@ def business_unit_manage_keyboard(is_active: bool):
         ]
     )
     return keyboard
+
+
+def report_business_units_keyboard(units: list[BusinessUnit]):
+    builder = InlineKeyboardBuilder()
+    for unit in units:
+        builder.row(
+            InlineKeyboardButton(
+                text=f'{unit.name}'
+                     f' - {"Активен" if unit.is_active else "Неактивен"}',
+                callback_data=f'report_bis_unit_{unit.id}'
+            )
+        )
+    builder.row(
+        InlineKeyboardButton(
+            text='Выход в меню',
+            callback_data='extra_admin'
+        )
+    )
+    return builder.as_markup()
+
+
+select_type_report = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Клиенты бизнес-юнита',
+                callback_data='clients_unit'
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text='Посещения бизнес-юнита',
+                callback_data='visits_unit_report'
+            )
+        ]
+    ]
+)
