@@ -24,7 +24,7 @@ from bot.utils.validators import (
 router = Router(name=__name__)
 
 
-@router.callback_query(F.data == 'update_profile')
+@router.callback_query(F.data == '')
 async def update_profile_client(
     callback: CallbackQuery,
     state: FSMContext,

@@ -24,6 +24,13 @@ class AdminState(StatesGroup):
     bonus_to_add = State()
     bonus_to_spend = State()
     full_amount = State()
+    brand = State()
+    model = State()
+    number = State()
+    brand_update = State()
+    model_update = State()
+    number_update = State()
+    chosen_car = State()
 
 
 class SuperAdminState(StatesGroup):
