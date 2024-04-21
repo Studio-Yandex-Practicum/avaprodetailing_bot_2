@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import CheckConstraint, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.core.enums import PaymentState
+from bot.core.constants import PAID
 from bot.db.models.base import Base
 
 
@@ -16,12 +16,9 @@ class Visit(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[datetime] = mapped_column(server_default=func.now())
-    summ: Mapped[int] = mapped_column(
-        CheckConstraint("summ >= 0", name='check_summ_positive')
-    )
-    bonus_payment: Mapped[bool] = mapped_column(default=False)
-    payment_type_online: Mapped[bool]
-    payment_state: Mapped[PaymentState]
+    summ: Mapped[int]
+    payment_type_online: Mapped[bool] = mapped_column(default=False)
+    payment_state: Mapped[PaymentState] = mapped_column(default=PAID)
     business_unit_id: Mapped[int] = mapped_column(
         ForeignKey('business_units.id')
     )
@@ -35,9 +32,7 @@ class Visit(Base):
         foreign_keys=(admin_user_id,)
     )
     car_id: Mapped[str] = mapped_column(ForeignKey('cars.id'))
-    service_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey('services.id')
-    )
+    services: Mapped[str]
 
     def __repr__(self):
         return (f'Visit(id={self.id}, summ={self.summ},'
@@ -46,9 +41,11 @@ class Visit(Base):
     @classmethod
     def data_to_model(cls, obj_in):
         db_obj = cls(
-            summ=obj_in['amount'],
+            summ=obj_in['payment_amount'],
             business_unit_id=obj_in['business_unit_id'],
             user_id=obj_in['user_id'],
             admin_user_id=obj_in['admin_user_id'],
+            car_id=obj_in['car'].id,
+            services=obj_in['chosen_services']
         )
         return db_obj
