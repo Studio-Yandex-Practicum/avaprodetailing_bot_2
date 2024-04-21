@@ -6,6 +6,7 @@ from bot.db.crud.services import services_crud
 from bot.db.crud.categories import category_crud
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from bot.keyboards.categories_keyboard import service_category_kb
+from aiogram.fsm.context import FSMContext
 
 router = Router(name=__name__)
 

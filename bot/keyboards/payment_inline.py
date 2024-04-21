@@ -36,7 +36,6 @@ def build_services_keyboard(
                 callback_data=button_callback_data
             )
         )
-    keyboard.adjust(2)
     keyboard.row(
         InlineKeyboardButton(
             text='Завершить выбор',
