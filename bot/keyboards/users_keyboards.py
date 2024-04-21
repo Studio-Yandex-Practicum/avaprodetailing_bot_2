@@ -1,4 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 reg_kb = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -102,3 +103,21 @@ service_category_kb = InlineKeyboardMarkup(
         ],
     ]
 )
+
+def gener_service_kb(data):
+    builder = InlineKeyboardBuilder()
+    for service in data:
+        if service.is_active:
+            builder.row(
+                InlineKeyboardButton(
+                    text=f'{service.name} ',
+                    callback_data=f'services_from_BU_{service.id}'
+                )
+            )
+    builder.row(
+        InlineKeyboardButton(
+            text='Сменить категорию',
+            callback_data='service_catalog',
+        )
+    )
+    return builder.as_markup() 

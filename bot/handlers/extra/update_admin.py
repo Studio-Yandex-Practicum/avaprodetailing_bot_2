@@ -21,6 +21,7 @@ from bot.keyboards.super_admin_keyboards import (
     super_admin_main_menu,
 )
 from bot.states.user_states import SuperAdminState
+from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_fio, validate_phone_number
 
 router = Router(name=__name__)
