@@ -66,9 +66,9 @@ docker build -t avaprodetailing .
 ```
 docker run -p 80:80 avaprodetailing
 ```
-Теперь бот должен быть доступен по адресу.
+Теперь бот должен быть доступен в Telegram по ссылке
 ```
-http://localhost:80
+https://t.me/avaprodetailingbot
 ```
 
 ### Авторы проекта:
