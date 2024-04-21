@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.cars import cars_crud
 from bot.db.crud.users import users_crud
+from bot.db.models.visit import Visit
+from bot.keyboards.bonus_keyboards import bonus_admin
 from bot.keyboards.payment_inline import (
     build_services_keyboard,
     build_user_cars_keyboard,
@@ -122,3 +124,43 @@ async def finish_selection_callback(
         message_id=state_data['msg_id']
     )
     await state.set_state(AdminState.payment_amount)
+
+
+@router.message(AdminState.payment_amount)
+async def manage_bonus_callback(
+    message: types.Message, state: FSMContext, session: AsyncSession
+):
+    if not message.text.isdigit():
+        await message.answer('Введите корректную положительную сумму.')
+        return
+    payment_amount = int(message.text)
+    state_data = await state.get_data()
+    user = await users_crud.get_by_attribute(
+        attr_name='phone_number',
+        attr_value=state_data['phone_number'],
+        session=session
+    )
+    service_names = state_data['chosen_services']
+    visit = Visit(
+        summ=payment_amount,
+        car=state_data('car'),
+        service_names=', '.join(service_names),
+        user_id=user.id,
+        admin_user_id=message.from_user.id,
+    )
+    session.add(visit)
+    await session.commit()
+    await state.update_data(
+        bonus_to_spend=min(user.balance, int(payment_amount * 0.98))
+    )
+    await message.bot.edit_message_text(
+        f"Посещение клиента:\n"
+        f"{state_data['car.brand']} {state_data['car.number']}\n"
+        f"{service_names}\n"
+        f"{payment_amount} рублей\n\n"
+        f"У клиента {user.balance} баллов."
+        f" Может быть списано {state_data['bonus_to_spend']} баллов.",
+        chat_id=message.from_user.id,
+        message_id=state_data['msg_id'],
+        reply_markup=bonus_admin
+    )

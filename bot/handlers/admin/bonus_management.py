@@ -20,38 +20,6 @@ from bot.utils.bonus import spend_bonuses
 router = Router(name=__name__)
 
 
-@router.message(AdminState.payment_amount)
-async def manage_bonus_callback(
-    message: types.Message, state: FSMContext, session: AsyncSession
-):
-    try:
-        await message.delete()
-        payment_amount = int(message.text)
-        if payment_amount <= 0:
-            raise ValueError
-    except ValueError:
-        await message.answer('Введите корректную положительную сумму.')
-        return
-    await state.update_data(payment_amount=payment_amount)
-    state_data = await state.get_data()
-    user = await users_crud.get_by_attribute(
-        attr_name='phone_number',
-        attr_value=state_data['phone_number'],
-        session=session
-    )
-    await state.update_data(
-        bonus_to_spend=min(user.balance, int(payment_amount * 0.98))
-    )
-    state_data = await state.get_data()
-    await message.bot.edit_message_text(
-        f"У клиента {user.balance} баллов."
-        f" Может быть списано {state_data['bonus_to_spend']} баллов.",
-        chat_id=message.from_user.id,
-        message_id=state_data['msg_id'],
-        reply_markup=bonus_admin
-    )
-
-
 @router.callback_query(F.data == 'add_bonus')
 async def add_bonus_callback(
     callback: CallbackQuery, state: FSMContext
