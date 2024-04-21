@@ -12,6 +12,7 @@ from bot.keyboards.admin_keyboards import (admin_reg_client,
                                            reg_or_menu_adm)
 from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.states.user_states import AdminState
+from bot.utils.bonus import award_registration_bonus
 from bot.utils.validators import validate_phone_number
 
 router = Router(name=__name__)
@@ -137,11 +138,8 @@ async def add_new_client(
     if user is None:
         new_user = await users_crud.create(obj_in=state_data, session=session)
         bonus = await award_registration_bonus(user=new_user,session=session)
-        print(new_user)
-        print(state_data)
     else:
         state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
-        print(state_data)
         new_user = await users_crud.update(
             db_obj=user, obj_in=state_data, session=session
         )

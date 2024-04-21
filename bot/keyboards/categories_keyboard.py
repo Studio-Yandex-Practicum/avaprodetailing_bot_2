@@ -35,4 +35,6 @@ def service_category_kb(service):
             ],
         ]
     )
+
     return service_category_kb
+
