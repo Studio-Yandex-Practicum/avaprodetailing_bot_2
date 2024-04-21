@@ -58,19 +58,12 @@ async def process_add_bonus(
     bonus_to_add = state_data['payment_amount'] * int(data) // 100
     await state.update_data(full_amount=bonus_to_add)
     car = state_data['car']
-    services = []
-    for service_id in state_data['chosen_services']:
-        service = await services_crud.get(
-            obj_id=service_id, session=session
-        )
-        services.append(service.name)
-    service_text = ', '.join(services)
     await callback.bot.edit_message_text(
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
         text=('Посещение клиента:\n'
               f'Автомобиль: {car.brand} {car.number}\n'
-              f'Услуги: {service_text}\n'
+              f'Услуги: {state_data["chosen_services"]}\n'
               f'Сумма {state_data["payment_amount"]} рублей\n'
               f'Будет начислено {bonus_to_add} баллов\n'),
         reply_markup=bonus_approve_cancel_keyboard
