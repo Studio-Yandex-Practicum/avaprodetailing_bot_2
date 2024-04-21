@@ -175,7 +175,7 @@ async def car_change_brand_verify(
         await msg.delete()
         return
     else:
-        await state.update_data(new_number=msg.text)
+        await state.update_data(new_brand=msg.text)
         await cars_crud.update(
             state_data['chosen'],
             {"brand": msg.text},
@@ -222,7 +222,7 @@ async def car_change_model_verify(
         await msg.delete()
         return
     else:
-        await state.update_data(new_number=msg.text)
+        await state.update_data(new_model=msg.text)
         await cars_crud.update(
             state_data['chosen'],
             {"model": msg.text},
