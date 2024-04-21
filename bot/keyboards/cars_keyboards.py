@@ -66,6 +66,12 @@ edit_car_kb = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
+                text='Изменить тип кузова',
+                callback_data='edit_bodytype',
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text='Удалить автомобиль из списка',
                 callback_data='delete_car',
             )

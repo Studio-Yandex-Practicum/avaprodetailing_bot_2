@@ -13,6 +13,7 @@ from bot.keyboards.cars_keyboards import (
 )
 from bot.states.car_states import ChooseCar, RegCar
 from bot.utils.validators import verify_symbols
+from bot.core.enums import CarBodyType
 
 router = Router(name=__name__)
 
@@ -217,6 +218,56 @@ async def car_change_brand_verify(
         await msg.delete()
 
 
+@router.callback_query(F.data == 'change_bodytype')
+async def car_change_bodytype(
+    callback: CallbackQuery, state: FSMContext,
+    session: AsyncSession, msg: Message,
+):
+    await callback.message.delete()
+    state_data = await state.get_data()
+    await state.set_state(RegCar.bodytype)
+    choose_car_kb = InlineKeyboardBuilder()
+    sizes = []
+    for body in CarBodyType:
+        body_name = f" {body.value}"
+        choose_car_kb.button(text=body_name,
+                             callback_data=f'edit_body_{body.name}')
+        sizes += [1]
+    choose_car_kb.adjust(*sizes)
+    await msg.bot.edit_message_text(
+        chat_id=msg.from_user.id,
+        message_id=state_data['msg_id'],
+        text='Выберите кузов автомобиля.',
+        reply_markup=choose_car_kb
+    )
+    await msg.delete()
+
+
+@router.callback_query(F.data.startswith("edit_body_"))
+async def car_change_bodytype_confirm(
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession,
+    callback: CallbackQuery,
+):
+    state_data = await state.get_data()
+    await callback.message.delete()
+    body = CarBodyType[callback.data.split('_')[2]]
+    await state.update_data(bodytype=body)
+
+    await cars_crud.update(
+            state_data['chosen'],
+            {"bodytype": body},
+            session=session, )
+    await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text='Тип кузова изменён',
+            reply_markup=edit_car_kb
+        )
+    await msg.delete()
+
+
 @router.callback_query(F.data == 'change_model')
 async def car_change_model(
     callback: CallbackQuery, state: FSMContext,
@@ -315,6 +366,36 @@ async def reg_car_model(
     state_data = await state.get_data()
 
     await state.update_data(model=msg.text)
+    await state.set_state(RegCar.bodytype)
+
+    choose_car_kb = InlineKeyboardBuilder()
+    sizes = []
+    for body in CarBodyType:
+        car_name = f" Авто: {body.value}"
+        choose_car_kb.button(text=car_name, callback_data=f'body_{body.name}')
+        sizes += [1]
+    choose_car_kb.adjust(*sizes)
+
+    await msg.bot.edit_message_text(
+        chat_id=msg.from_user.id,
+        message_id=state_data['msg_id'],
+        text='Выберите кузов автомобиля.',
+        reply_markup=choose_car_kb
+    )
+    await msg.delete()
+
+
+@router.callback_query(F.data.startswith("body_"))
+async def reg_car_bodytype(
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession,
+    callback: CallbackQuery,
+):
+    state_data = await state.get_data()
+    await callback.message.delete()
+    body = CarBodyType[callback.data.split('_')[1]]
+    await state.update_data(bodytype=body)
     await state.set_state(RegCar.number)
 
     await msg.bot.edit_message_text(
@@ -342,6 +423,7 @@ async def reg_car_number(
         text=(f'Вы зарегистрировали автомобиль такими данными:\n'
               f'Брэнд: {data["brand"]}\n'
               f'Модель: {data["model"]}\n'
+              f'Тип кузова: {data["bodytype"]}'
               f'Номер: {data["number"]}'),
         reply_markup=finish_add_car_kb
     )

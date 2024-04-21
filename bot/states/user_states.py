@@ -27,9 +27,11 @@ class AdminState(StatesGroup):
     brand = State()
     model = State()
     number = State()
+    bodytype = State()
     brand_update = State()
     model_update = State()
     number_update = State()
+    new_bodytype = State()
     chosen_car = State()
 
 

@@ -224,6 +224,12 @@ admin_edit_car_kb = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
+                text='Изменить тип кузова',
+                callback_data='admin_edit_bodytype',
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text='Удалить автомобиль из списка',
                 callback_data='admin_delete_car',
             )
