@@ -17,7 +17,7 @@ from bot.keyboards.super_admin_keyboards import (admin_bio_for_super_admin_kb,
                                                  super_admin_main_menu)
 from bot.states.create_msg import CreateMSG
 from bot.states.user_states import AdminState
-from bot.utils.create_pdf_report import pdf_report
+from bot.utils.create_pdf_report import pdf_report, report_info_client_for_admin
 from bot.db.crud.payment_crud import visit_crud
 
 router = Router(name=__name__)
@@ -123,7 +123,7 @@ async def selects_type_report(
     )
     
 
-
+# FIXME
 @router.callback_query(F.data == 'clients_unit')
 async def create_report(
     callback: CallbackQuery,
@@ -143,7 +143,7 @@ async def create_report(
         caption='Ваш отчет'
     )
     
-
+# FIXME
 @router.callback_query(F.data == 'visits_unit_report')
 async def create_report(
     callback: CallbackQuery,
@@ -156,6 +156,30 @@ async def create_report(
     visits = await visit_crud.get_multi(session=session)
     state_data = await state.get_data()
     pdf_report(users=users,visits=visits)
+    document = FSInputFile(path='report.pdf')
+    await callback.bot.send_document(
+        chat_id=callback.from_user.id,
+        document=document,
+        caption='Ваш отчет'
+    )
+
+
+
+@router.callback_query(F.data == 'report_for_adm')
+async def create_report(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession
+):
+    state_data = await state.get_data()
+    user = await users_crud.get_by_attribute(
+        session=session,
+        attr_name='phone_number',
+        attr_value=state_data['phone_number']
+    )
+    visits = await visit_crud.get_multi(session=session)
+    
+    report_info_client_for_admin(user=user,visits=visits, unit=state_data['unit_id'])
     document = FSInputFile(path='report.pdf')
     await callback.bot.send_document(
         chat_id=callback.from_user.id,

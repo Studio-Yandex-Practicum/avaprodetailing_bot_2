@@ -17,7 +17,7 @@ admin_main_menu = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Отчеты',
-                callback_data='admin_reports',
+                callback_data='report_client_for_admin',
             ),
             InlineKeyboardButton(
                 text='Инфо',

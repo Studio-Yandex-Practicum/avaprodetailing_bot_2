@@ -85,4 +85,37 @@ def pdf_report_for_unit(users: User, visits, unit):
             
     c.save()
     
-    
+
+def report_info_client_for_admin(user: User, visits,unit):
+    n=20
+    vis = 0
+    c = canvas.Canvas(f'report.pdf',pagesize=A4, bottomup=0)
+    pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+    c.setLineWidth(2)
+    c.setFont('Arial',size=10)
+    c.drawString(20,n,text=f'ФИО')
+    c.drawString(220,n,text=f'Номер')
+    c.drawString(345,n,text=f'Дата рождения')
+    c.drawString(425,n,text=f'Бонусы')
+    c.line(20,n+5,550,n+5)
+    n+=20
+    c.drawString(20,n,text=f'{user.last_name} {user.first_name}')
+    c.drawString(220,n,text=f'{user.phone_number}')
+    c.drawString(345,n,text=f'{user.birth_date}')
+    c.drawString(425,n,text=f'{user.balance}')
+    c.line(20,n+5,550,n+5)
+    n+=20
+    c.setFont('Arial',size=8)
+    c.drawString(20,n,text=f'Дата посещения')
+    c.drawString(100,n,text=f'Бизнес-юнит')
+    c.drawString(210,n,text=f'ФИО админа')
+    c.drawString(300,n,text=f'Услуги')
+    c.drawString(390,n,text=f'Сумма ')
+    c.drawString(470,n,text=f'Начисление\списание')
+    c.line(20,n+5,550,n+5)
+    for visit in visits:
+        c.drawString(100,n,text=f'{unit.name}')
+        c.line(20,n+5,550,n+5)
+        n+=20
+     
+    c.save()
