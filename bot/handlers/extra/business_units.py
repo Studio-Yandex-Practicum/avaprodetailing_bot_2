@@ -13,11 +13,13 @@ from bot.states.user_states import BusinessUnitState
 
 router = Router(name=__name__)
 
-BUSINESS_UNIT_INFO = ('Информация о бизнес-юните\n'
-                      'Название: {name}\n'
-                      'Описание {note}\n'
-                      'Адрес: {address}\n'
-                      'Статус: {status}')
+BUSINESS_UNIT_INFO = (
+    'Информация о бизнес-юните\n'
+    'Название: {name}\n'
+    'Описание {note}\n'
+    'Адрес: {address}\n'
+    'Статус: {status}'
+)
 
 
 @router.callback_query(F.data == 'business_units')
