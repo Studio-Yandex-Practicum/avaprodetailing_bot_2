@@ -134,10 +134,6 @@ async def registrate_agree(
     session: AsyncSession,
 ):
     data = await state.get_data()
-    await callback.bot.send_sticker(
-        chat_id=callback.from_user.id,
-        sticker='CAACAgIAAxkBAAEE5ApmJWuVg0DS5KY29UTbBOHOKFzqLAAChhQAAmKy8EsG14-Zws0O-TQE'
-        )
     await state.clear()
     data['tg_user_id'] = callback.from_user.id
     user = await users_crud.get_by_attribute(
