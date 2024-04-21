@@ -64,7 +64,7 @@ async def process_add_bonus(
             obj_id=service_id, session=session
         )
         services.append(service.name)
-    service_text = ','.join(services)
+    service_text = ', '.join(services)
     await callback.bot.edit_message_text(
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],

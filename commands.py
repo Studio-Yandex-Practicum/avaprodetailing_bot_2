@@ -13,11 +13,17 @@ fake = Faker('ru_RU')
 
 
 async def fill_base():
+    unit_obj = BusinessUnit(
+        name='KMDetailing',
+        address=fake.address(),
+        note='Описание KMDetailing'
+    )
 
     super_admin_obj = User(
         phone_number='+71234567890',
         role='SUPERADMIN',
-        note='Классный человек суперадмин'
+        note='Классный человек суперадмин',
+        business_unit_id=1
     )
     user_obj = User(
         phone_number='+70987654321',
@@ -35,12 +41,6 @@ async def fill_base():
         number='А001МР97',
         car_body_type='SEDAN',
         user_id=2
-    )
-
-    unit_obj = BusinessUnit(
-        name='KMDetailing',
-        address=fake.address(),
-        note='Описание KMDetailing'
     )
 
     category_1 = ServiceCategory(
@@ -85,9 +85,9 @@ async def fill_base():
     )
 
     add_obj = [
+        unit_obj,
         super_admin_obj, user_obj,
         car_obj,
-        unit_obj,
         bonus_obj,
         category_1, category_2,
         service_1_obj, service_2_obj, service_3_obj, service_4_obj,
