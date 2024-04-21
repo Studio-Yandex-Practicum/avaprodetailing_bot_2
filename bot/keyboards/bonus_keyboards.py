@@ -74,22 +74,6 @@ spend_approve_cancel_keyboard = InlineKeyboardMarkup(
     ]
 )
 
-spend_approve_cancel_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text='Подтвердить',
-                callback_data='approve_spend_bonus'
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text='Отменить',
-                callback_data='cancel_spend_bonus'
-            )
-        ]
-    ]
-)
 
 
 def bonus_approve_amount_keyboard(callback_data):

@@ -19,7 +19,7 @@ super_admin_main_menu = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Отчеты',
-                callback_data='reports',
+                callback_data='reports_for_extra',
             ),
             InlineKeyboardButton(
                 text='Рассылки',

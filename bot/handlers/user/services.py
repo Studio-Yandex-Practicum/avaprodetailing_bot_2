@@ -53,7 +53,7 @@ async def get_all_services(
     category = await category_crud.get(
         obj_id=int(callback.data.split('_')[-1]), session=session
     )
-    services = category.service
+    services = category.services
     await state.update_data(cat_id=category.id)
     await callback.bot.edit_message_text(
         text='Выберите услугу',

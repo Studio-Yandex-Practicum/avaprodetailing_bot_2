@@ -7,9 +7,9 @@ from bot.core.constants import WELCOME_SUPER_ADMIN_MESSAGE
 from bot.core.enums import UserRole
 from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.users import users_crud
-from bot.keyboards.business_units_keyboards import (
-    build_business_units_keyboard, report_business_units_keyboard,
-    select_type_report)
+#from bot.keyboards.business_units_keyboards import (
+#    build_business_units_keyboard, report_business_units_keyboard,
+#    select_type_report)
 from bot.keyboards.super_admin_keyboards import (admin_bio_for_super_admin_kb,
                                                  gener_list_admins,
                                                  send_mailing_kb,
@@ -66,14 +66,16 @@ async def send_mailing(
     session: AsyncSession
 ):
     state_data = await state.get_data()
-    users = await users_crud.get_multi(session=session)
+    users = await users_crud.get_multi_with_tg_user_id(
+        session=session
+    )
+    print(users)
     
     for user in users:
-        if user.role is UserRole.USER and user.tg_user_id is not None:
-            await msg.bot.send_message(
-                chat_id=user.tg_user_id,
-                text=state_data.get('text')
-            )
+        await msg.bot.send_message(
+            chat_id=user.tg_user_id,
+            text=state_data.get('text')
+        )
     await msg.bot.edit_message_text(
         text='Рассылка отправлена',
         chat_id=msg.from_user.id,
