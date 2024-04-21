@@ -27,7 +27,6 @@ async def decode_qr(
     if await check_user_is_admin(
         tg_id=message.from_user.id, session=session
     ) and command.args is not None:
-        await message.delete()
         payload = decode_payload(command.args)
         if not payload.isdigit():
             await message.answer('Произошла ошибка при сканировании.')
@@ -46,6 +45,7 @@ async def decode_qr(
             ),
             reply_markup=client_profile_for_adm
         )
+        await message.delete()
         await state.update_data(
             phone_number=user.phone_number, msg_id=msg.message_id
         )

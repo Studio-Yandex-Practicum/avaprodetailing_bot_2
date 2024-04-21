@@ -207,7 +207,7 @@ async def process_selected_business_unit(
         db_obj=admin, obj_in=state_data, session=session
     )
     await callback.bot.edit_message_text(
-        f'Бизнес-юнит изменен на {state_data["unit_id"]}',
+        f'Бизнес-юнит изменен на {admin11.business_unit}',
         reply_markup=ok_admin_bio(admin11),
         chat_id=callback.from_user.id,
         message_id=state_data['msg_id'],
