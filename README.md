@@ -58,13 +58,10 @@ python main.py
 ```
 
 # Деплой на сервер ???????????
-Постройте Docker-образ:
+Запустите docker-compose.yml:
 ```
-docker build -t avaprodetailing .
-```
-Запустите контейнер:
-```
-docker run -p 80:80 avaprodetailing
+cd deploy
+docker compose up --build -d
 ```
 Теперь бот должен быть доступен в Telegram по ссылке
 ```

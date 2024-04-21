@@ -36,7 +36,6 @@ class Service(Base):
     business_units: Mapped[List['BusinessUnit']] = relationship(
         lazy='selectin', secondary='service_unit', back_populates='services'
     )
-    
 
 class ServiceCategory(Base):
 
