@@ -3,15 +3,19 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (ERROR_MESSAGE, STATE_BIRTH_DATE, STATE_FIO,
-                                STATE_PHONE_NUMBER, THX_REG)
+from bot.core.constants import (
+    ERROR_MESSAGE, STATE_BIRTH_DATE, STATE_FIO,
+    STATE_PHONE_NUMBER, THX_REG,
+)
 from bot.db.crud.users import users_crud
 from bot.db.models import User
 from bot.keyboards.users_keyboards import add_car_kb, agree_refuse_kb, reg_kb
 from bot.states.user_states import RegUser
 from bot.utils.bonus import award_registration_bonus
-from bot.utils.validators import (validate_birth_date, validate_fio,
-                                  validate_phone_number, check_tg_id_for_reg)
+from bot.utils.validators import (
+    check_tg_id_for_reg, validate_birth_date,
+    validate_fio, validate_phone_number,
+)
 
 router = Router(name=__name__)
 
@@ -145,14 +149,17 @@ async def registrate_agree(
         new_user = await users_crud.create(obj_in=data, session=session)
         await award_registration_bonus(new_user, session)
     else:
-        if await check_tg_id_for_reg(number=data['phone_number'],session=session) is True:
+        if await check_tg_id_for_reg(
+            number=data['phone_number'], session=session
+        ) is True:
             state_data = User.update_data_to_model(db_obj=user, obj_in=data)
             await users_crud.update(
                 db_obj=user, obj_in=state_data, session=session
             )
         else:
             await callback.bot.edit_message_text(
-                'Номер уже есть в базе, нажмите кнопку ниже или обратитесь к администратору',
+                'Номер уже есть в базе, нажмите кнопку'
+                ' ниже или обратитесь к администратору',
                 chat_id=callback.from_user.id,
                 message_id=data['msg_id'],
                 reply_markup=reg_kb,

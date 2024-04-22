@@ -2,14 +2,18 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.models.users import User
 
-from bot.core.constants import (CLIENT_BIO, ERROR_MESSAGE, REF_CLIENT_INFO,
-                                STATE_PHONE_NUMBER, WELCOME_ADMIN_MESSAGE)
+from bot.core.constants import (
+    CLIENT_BIO, ERROR_MESSAGE, REF_CLIENT_INFO,
+    STATE_PHONE_NUMBER, WELCOME_ADMIN_MESSAGE,
+)
 from bot.db.crud.users import users_crud
-from bot.keyboards.admin_keyboards import (admin_reg_client,
-                                           client_profile_for_adm,
-                                           reg_or_menu_adm)
+from bot.db.models.users import User
+from bot.keyboards.admin_keyboards import (
+    admin_reg_client,
+    client_profile_for_adm,
+    reg_or_menu_adm,
+)
 from bot.keyboards.super_admin_keyboards import gener_admin_keyboard
 from bot.states.user_states import AdminState
 from bot.utils.bonus import award_registration_bonus
@@ -137,7 +141,7 @@ async def add_new_client(
     )
     if user is None:
         new_user = await users_crud.create(obj_in=state_data, session=session)
-        bonus = await award_registration_bonus(user=new_user,session=session)
+        bonus = await award_registration_bonus(user=new_user, session=session)
     else:
         state_data = User.update_data_to_model(db_obj=user, obj_in=state_data)
         new_user = await users_crud.update(

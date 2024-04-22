@@ -1,12 +1,14 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import (CallbackQuery, InlineKeyboardButton,
-                           InlineKeyboardMarkup)
-from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.crud.services import services_crud
-from bot.db.crud.categories import category_crud
+from aiogram.types import (
+    CallbackQuery, InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.db.crud.categories import category_crud
+from bot.db.crud.services import services_crud
 from bot.keyboards.users_keyboards import gener_service_kb
 
 router = Router(name=__name__)
@@ -31,7 +33,7 @@ async def get_all_category(
             )
     keyboard.row(
         InlineKeyboardButton(
-            text=f'Выход в меню',
+            text='Выход в меню',
             callback_data='menu'
         )
     )
@@ -60,8 +62,6 @@ async def get_all_services(
         message_id=state_data.get('msg_id'),
         reply_markup=gener_service_kb(services)
     )
-    
-          
 
 
 @router.callback_query(F.data.startswith('services_from_BU_'))
@@ -77,12 +77,14 @@ async def get_all_services_business_unit(
     msg = f'Услуга "{service.name}" может быть оказана в:\n\n'
     for bu in service.business_units:
         msg += f'{bu.name} по адресу {bu.address}\n\n'
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
-        text='Вернуться к списку услуг',
-        callback_data=f'categories_from_service_{state_data["cat_id"]}'
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(
+            text='Вернуться к списку услуг',
+            callback_data=f'categories_from_service_{state_data["cat_id"]}'
         )
-        ]])
-    
+        ]]
+    )
+
     await callback.bot.edit_message_text(
         text=msg,
         chat_id=callback.from_user.id,

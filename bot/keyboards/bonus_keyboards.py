@@ -75,7 +75,6 @@ spend_approve_cancel_keyboard = InlineKeyboardMarkup(
 )
 
 
-
 def bonus_approve_amount_keyboard(callback_data):
     return InlineKeyboardMarkup(
         inline_keyboard=[

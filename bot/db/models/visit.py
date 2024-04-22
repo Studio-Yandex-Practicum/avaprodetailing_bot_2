@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy import CheckConstraint, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from bot.core.enums import PaymentState
 from bot.core.constants import PAID
+from bot.core.enums import PaymentState
 from bot.db.models.base import Base
 
 

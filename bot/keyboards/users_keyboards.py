@@ -6,7 +6,6 @@ reg_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Зарегистрироваться',
-                # web_app=WebAppInfo(url='')
                 callback_data='Registration',
             ),
         ],
@@ -104,6 +103,7 @@ service_category_kb = InlineKeyboardMarkup(
     ]
 )
 
+
 def gener_service_kb(data):
     builder = InlineKeyboardBuilder()
     for service in data:
@@ -120,4 +120,4 @@ def gener_service_kb(data):
             callback_data='service_catalog',
         )
     )
-    return builder.as_markup() 
+    return builder.as_markup()

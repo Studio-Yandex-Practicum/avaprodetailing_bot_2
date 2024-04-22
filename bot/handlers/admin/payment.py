@@ -3,14 +3,12 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.cars import cars_crud
-from bot.db.crud.visit_crud import visit_crud
 from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
+from bot.db.crud.visit_crud import visit_crud
 from bot.keyboards.bonus_keyboards import bonus_admin
-from bot.keyboards.payment_inline import (
-    build_services_keyboard,
-    build_user_cars_keyboard,
-)
+from bot.keyboards.payment_inline import (build_services_keyboard,
+                                          build_user_cars_keyboard)
 from bot.states.user_states import AdminState
 
 router = Router(name=__name__)

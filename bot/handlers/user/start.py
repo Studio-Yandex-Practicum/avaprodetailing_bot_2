@@ -5,18 +5,14 @@ from aiogram.types import Message
 from aiogram.utils.payload import decode_payload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (
-    CLIENT_BIO, PROFILE_MESSAGE_WITH_INLINE,
-    WELCOME_ADMIN_MESSAGE, WELCOME_REG_MESSAGE,
-    WELCOME_SUPER_ADMIN_MESSAGE,
-)
+from bot.core.constants import (CLIENT_BIO, PROFILE_MESSAGE_WITH_INLINE,
+                                WELCOME_ADMIN_MESSAGE, WELCOME_REG_MESSAGE,
+                                WELCOME_SUPER_ADMIN_MESSAGE)
 from bot.core.enums import UserRole
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import client_profile_for_adm
-from bot.keyboards.super_admin_keyboards import (
-    gener_admin_keyboard,
-    super_admin_main_menu,
-)
+from bot.keyboards.super_admin_keyboards import (gener_admin_keyboard,
+                                                 super_admin_main_menu)
 from bot.keyboards.users_keyboards import profile_kb, reg_kb
 from bot.utils.validators import check_user_is_admin, check_user_is_none
 

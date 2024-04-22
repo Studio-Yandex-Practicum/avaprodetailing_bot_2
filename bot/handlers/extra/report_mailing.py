@@ -1,27 +1,16 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message, FSInputFile
+from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import WELCOME_SUPER_ADMIN_MESSAGE
-from bot.core.enums import UserRole
-from bot.db.crud.business_units import business_units_crud
 from bot.db.crud.users import users_crud
-#from bot.keyboards.business_units_keyboards import (
-#    build_business_units_keyboard, report_business_units_keyboard,
-#    select_type_report)
-from bot.keyboards.super_admin_keyboards import (admin_bio_for_super_admin_kb,
-                                                 gener_list_admins,
-                                                 send_mailing_kb,
-                                                 super_admin_back_kb,
-                                                 super_admin_main_menu)
+from bot.keyboards.super_admin_keyboards import (
+    send_mailing_kb,
+    super_admin_back_kb,
+)
 from bot.states.create_msg import CreateMSG
-from bot.states.user_states import AdminState
-#from bot.utils.create_pdf_report import pdf_report
-from bot.db.crud.visit_crud import visit_crud
 
 router = Router(name=__name__)
-
 
 
 @router.callback_query(F.data == 'mailing')
@@ -44,7 +33,7 @@ async def update_state_mail(
     state: FSMContext,
     session: AsyncSession
 ):
-    
+
     await state.update_data(text=msg.text)
     await msg.delete()
     state_data = await state.get_data()
@@ -70,7 +59,7 @@ async def send_mailing(
         session=session
     )
     print(users)
-    
+
     for user in users:
         await msg.bot.send_message(
             chat_id=user.tg_user_id,

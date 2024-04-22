@@ -8,9 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import PROFILE_MESSAGE_WITH_INLINE
 from bot.db.crud.users import users_crud
-from bot.keyboards.users_keyboards import (
-    back_menu_kb, profile_kb,
-)
+from bot.keyboards.users_keyboards import back_menu_kb, profile_kb
 from bot.utils.qr_code import generate_qrcode
 
 router = Router(name=__name__)

@@ -37,6 +37,7 @@ class Service(Base):
         lazy='selectin', secondary='service_unit', back_populates='services'
     )
 
+
 class ServiceCategory(Base):
 
     __tablename__ = 'service_categories'

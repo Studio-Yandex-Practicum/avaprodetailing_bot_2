@@ -204,7 +204,6 @@ super_admin_back_kb = InlineKeyboardMarkup(
     ]
 )
 
-
 send_mailing_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [

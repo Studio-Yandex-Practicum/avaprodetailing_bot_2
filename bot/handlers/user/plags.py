@@ -1,17 +1,5 @@
-from datetime import datetime
-from aiogram.fsm.context import FSMContext
-
-from aiogram import Bot, F, Router
-from aiogram.enums import ParseMode
-from aiogram.types import BufferedInputFile, CallbackQuery
-from aiogram.utils.deep_linking import create_start_link
-from sqlalchemy.ext.asyncio import AsyncSession
-from bot.core.constants import PROFILE_MESSAGE_WITH_INLINE
-from bot.db.crud.users import users_crud
-from bot.keyboards.users_keyboards import (
-    back_menu_kb, profile_kb,
-)
-from bot.utils.qr_code import generate_qrcode
+from aiogram import F, Router
+from aiogram.types import CallbackQuery
 
 router = Router(name=__name__)
 
@@ -26,8 +14,6 @@ not_implemented = [
 @router.callback_query(F.data.in_(iterable=not_implemented))
 async def plugs(
     callback: CallbackQuery,
-    session: AsyncSession,
-    state: FSMContext
 ):
     await callback.bot.send_sticker(
         chat_id=callback.from_user.id,
@@ -36,5 +22,5 @@ async def plugs(
     )
     await callback.message.answer(
         text=('Мы не успели это сделать, не бейте нас😭'
-              f'\nИ нажмите кнопку /start')
+              '\nИ нажмите кнопку /start')
     )
