@@ -116,7 +116,7 @@ update_profile_kb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text='Изменить данные по автомобилям',
-                callback_data='TODO',
+                callback_data='update_car_data',
             ),
         ],
         [
@@ -177,4 +177,98 @@ adddd_data = InlineKeyboardMarkup(
             ),
         ],
     ]
+)
+
+
+
+
+
+
+finish_add_car_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Добавить ещё один автомобиль',
+                callback_data='add_car',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Вернуться в меню',
+                callback_data='update_car_data',
+            )
+        ],
+    ],
+)
+
+
+admin_edit_car_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Изменить марку',
+                callback_data='admin_change_brand',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Изменить модель',
+                callback_data='admin_change_model',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Изменить гос.номер',
+                callback_data='admin_change_number',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Изменить тип кузова',
+                callback_data='admin_edit_bodytype',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Удалить автомобиль из списка',
+                callback_data='admin_delete_car',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Вернуться к списку автомобилей',
+                callback_data='update_car_data',
+            )
+        ]
+    ],
+)
+
+
+admin_car_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Вернуться в меню',
+                callback_data='update_car_data',
+            )
+        ],
+    ],
+)
+
+
+admin_verify_delete_car_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text='Удалить автомобиль из списка',
+                callback_data='admin_confirmed_delete',
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text='Вернуться к списку автомобилей',
+                callback_data='update_car_data',
+            )
+        ],
+    ],
 )

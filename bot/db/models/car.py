@@ -18,6 +18,7 @@ class Car(Base):
     number: Mapped[Optional[str]] = mapped_column(
         String(SHORT_STRING_SIZE)
     )
+    #region: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     car_body_type: Mapped[Optional[CarBodyType]]
 
