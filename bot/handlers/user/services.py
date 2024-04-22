@@ -1,11 +1,11 @@
 from aiogram import F, Router
+from aiogram.fsm.context import FSMContext
 from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup)
 from sqlalchemy.ext.asyncio import AsyncSession
 from bot.db.crud.services import services_crud
 from bot.db.crud.categories import category_crud
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from bot.keyboards.categories_keyboard import service_category_kb
 
 from bot.keyboards.users_keyboards import gener_service_kb
 

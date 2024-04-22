@@ -18,7 +18,7 @@ from bot.keyboards.super_admin_keyboards import (admin_bio_for_super_admin_kb,
 from bot.states.create_msg import CreateMSG
 from bot.states.user_states import AdminState
 #from bot.utils.create_pdf_report import pdf_report
-from bot.db.crud.payment_crud import visit_crud
+from bot.db.crud.visit_crud import visit_crud
 
 router = Router(name=__name__)
 

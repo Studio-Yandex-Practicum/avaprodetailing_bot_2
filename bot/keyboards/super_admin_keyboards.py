@@ -13,7 +13,7 @@ super_admin_main_menu = InlineKeyboardMarkup(
             ),
             InlineKeyboardButton(
                 text='Каталог услуг',
-                callback_data='service_catalog',
+                callback_data='admin_service_catalog',
             ),
         ],
         [

@@ -42,7 +42,7 @@ business_unit_edit_keyboard = InlineKeyboardMarkup(
             ),
             InlineKeyboardButton(
                 text='Список услуг',
-                callback_data='change_unit_status'
+                callback_data='change_unit_services'
             ),
         ],
         [
