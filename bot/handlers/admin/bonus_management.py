@@ -21,7 +21,7 @@ router = Router(name=__name__)
 
 @router.message(AdminState.payment_amount)
 async def manage_bonus_callback(
-    message: types.Message, state: FSMContext, session: AsyncSession
+    message: Message, state: FSMContext, session: AsyncSession
 ):
     try:
         await message.delete()

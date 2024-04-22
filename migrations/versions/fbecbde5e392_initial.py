@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 5159674ecee4
+Revision ID: fbecbde5e392
 Revises: 
-Create Date: 2024-04-22 03:26:45.265936
+Create Date: 2024-04-22 03:42:49.783742
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5159674ecee4'
+revision: str = 'fbecbde5e392'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -88,8 +88,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('car_body_type', sa.Enum('SEDAN', 'COUPE', 'HATCHBACK', 'LIFTBACK', 'FASTBACK', 'STATION_WAGON', 'CROSSOVER', 'OFFROAD', 'PICKUP', 'VAN', 'MINIVAN', 'COMPACT_VAN', 'MICROVAN', 'CONVERTIBLE', 'ROADSTER', 'TARGA', 'LANDAU', 'LIMOUSINE', name='carbodytype'), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('number')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('service_unit',
     sa.Column('business_unit_id', sa.Integer(), nullable=False),

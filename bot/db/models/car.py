@@ -16,7 +16,7 @@ class Car(Base):
     brand: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
     model: Mapped[str] = mapped_column(String(SHORT_STRING_SIZE))
     number: Mapped[Optional[str]] = mapped_column(
-        String(SHORT_STRING_SIZE), unique=True
+        String(SHORT_STRING_SIZE)
     )
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     car_body_type: Mapped[Optional[CarBodyType]]
