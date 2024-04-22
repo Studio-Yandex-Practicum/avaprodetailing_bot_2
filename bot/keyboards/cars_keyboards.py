@@ -1,6 +1,4 @@
-from aiogram.types import (
-    InlineKeyboardButton, InlineKeyboardMarkup,
-)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 car_kb = InlineKeyboardMarkup(
     inline_keyboard=[

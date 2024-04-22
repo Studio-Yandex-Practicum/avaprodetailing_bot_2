@@ -4,9 +4,7 @@ from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.core.constants import (
-    ERROR_MESSAGE,
-    STATE_FIO,
-    STATE_PHONE_NUMBER,
+    ERROR_MESSAGE, STATE_FIO, STATE_PHONE_NUMBER,
     WELCOME_SUPER_ADMIN_MESSAGE,
 )
 from bot.core.enums import UserRole
@@ -30,7 +28,6 @@ router = Router(name=__name__)
 @router.callback_query(F.data == 'reg_new_admin')
 async def reg_new_admin(
     callback: CallbackQuery,
-    session: AsyncSession,
     state: FSMContext
 ):
     state_data = await state.get_data()
@@ -226,7 +223,7 @@ async def invite_admin(
         session=session,
         attr_name='phone_number',
         attr_value=state_data.get('phone_number')
-        
+
     )
 
     if admin is None:

@@ -16,7 +16,7 @@ async def award_registration_bonus(user: User, session: AsyncSession):
             session=session
         )
         return bonus
-        
+
 
 async def spend_bonuses(active_bonuses: list[Bonus], bonus_amount: int):
     modified_bonuses = []

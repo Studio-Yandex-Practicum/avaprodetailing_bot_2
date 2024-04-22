@@ -4,7 +4,7 @@ from faker import Faker
 
 from bot.core.config import settings
 from bot.db.connector import setup_get_pool
-from bot.db.models import Car, Bonus
+from bot.db.models import Bonus, Car
 from bot.db.models.business_unit import BusinessUnit
 from bot.db.models.services import Service, ServiceCategory, ServiceUnit
 from bot.db.models.users import User

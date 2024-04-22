@@ -3,23 +3,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.core.constants import (
-    BLOCK_MSG, CLIENT_BIO,
-    WELCOME_ADMIN_MESSAGE,
-)
+from bot.core.constants import BLOCK_MSG, CLIENT_BIO, WELCOME_ADMIN_MESSAGE
 from bot.db.crud.users import users_crud
 from bot.db.models.users import User
-from bot.keyboards.admin_keyboards import (
-    add_update_data, admin_main_menu,
-    client_profile_for_adm,
-    update_client_kb,
-    update_profile_kb,
-)
+from bot.keyboards.admin_keyboards import (add_update_data, admin_main_menu,
+                                           client_profile_for_adm,
+                                           update_client_kb, update_profile_kb)
 from bot.states.user_states import AdminState
-from bot.utils.validators import (
-    validate_birth_date, validate_fio,
-    validate_phone_number,
-)
+from bot.utils.validators import (validate_birth_date, validate_fio,
+                                  validate_phone_number)
 
 router = Router(name=__name__)
 
@@ -134,9 +126,12 @@ async def update_client_data_state(
     msg = await callback.bot.edit_message_text(
         text=(
             CLIENT_BIO.format(
-                last_name=user.last_name, first_name=user.first_name,
+                last_name=user.last_name,
+                first_name=user.first_name,
                 birth_date=user.birth_date,
-                phone_number=user.phone_number, note=user.note
+                phone_number=user.phone_number,
+                balance=user.balance,
+                note=user.note
             )
         ),
         chat_id=callback.from_user.id,
