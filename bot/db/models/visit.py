@@ -22,6 +22,9 @@ class Visit(Base):
     business_unit_id: Mapped[int] = mapped_column(
         ForeignKey('business_units.id')
     )
+    business_unit: Mapped['BusinessUnit'] = relationship(
+        foreign_keys=(business_unit_id,), lazy='selectin'
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     user: Mapped['User'] = relationship(
         back_populates='visits',
@@ -29,7 +32,7 @@ class Visit(Base):
     )
     admin_user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     admin_user: Mapped['User'] = relationship(
-        foreign_keys=(admin_user_id,)
+        foreign_keys=(admin_user_id,), lazy='selectin'
     )
     car_id: Mapped[str] = mapped_column(ForeignKey('cars.id'))
     services: Mapped[str]

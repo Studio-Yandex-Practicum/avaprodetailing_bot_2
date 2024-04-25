@@ -4,6 +4,7 @@ from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.bonus import bonuses_crud
+from bot.db.crud.services import services_crud
 from bot.db.crud.users import users_crud
 from bot.keyboards.admin_keyboards import admin_back_kb
 from bot.keyboards.bonus_keyboards import (
@@ -90,11 +91,8 @@ async def process_add_bonus(
     await state.update_data(full_amount=bonus_to_add)
     car = state_data['car']
     services = []
-    for service_id in state_data['chosen_services']:
-        service = await services_crud.get(
-            obj_id=service_id, session=session
-        )
-        services.append(service.name)
+    for service in state_data['chosen_services']:
+        services.append(service)
     service_text = ','.join(services)
     await callback.bot.edit_message_text(
         chat_id=callback.from_user.id,
