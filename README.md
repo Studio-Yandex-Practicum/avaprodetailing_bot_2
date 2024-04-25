@@ -57,7 +57,7 @@ alembic upgrade head
 python main.py
 ```
 
-# Деплой на сервер ???????????
+# Деплой на сервер
 Запустите docker-compose.yml:
 ```
 cd deploy

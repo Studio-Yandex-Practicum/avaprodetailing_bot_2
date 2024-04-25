@@ -6,18 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bot.db.crud.business_units import business_units_crud
 from bot.keyboards.business_units_keyboards import (
     build_business_units_keyboard, business_unit_edit_keyboard,
-    business_unit_manage_keyboard,
-)
+    business_unit_manage_keyboard)
 from bot.keyboards.super_admin_keyboards import super_admin_back_kb
 from bot.states.user_states import BusinessUnitState
 
 router = Router(name=__name__)
 
-BUSINESS_UNIT_INFO = ('Информация о бизнес-юните\n'
-                      'Название: {name}\n'
-                      'Описание {note}\n'
-                      'Адрес: {address}\n'
-                      'Статус: {status}')
+BUSINESS_UNIT_INFO = (
+    'Информация о бизнес-юните\n'
+    'Название: {name}\n'
+    'Описание {note}\n'
+    'Адрес: {address}\n'
+    'Статус: {status}'
+)
 
 
 @router.callback_query(F.data == 'business_units')

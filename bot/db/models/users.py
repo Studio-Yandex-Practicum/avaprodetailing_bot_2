@@ -56,7 +56,6 @@ class User(Base):
 
     @property
     def balance(self):
-        # TODO: поправить relationship для пустых значений
         return sum(
             bonus.full_amount - bonus.used_amount
             for bonus in self.bonuses if bonus.is_accrual and bonus.is_active

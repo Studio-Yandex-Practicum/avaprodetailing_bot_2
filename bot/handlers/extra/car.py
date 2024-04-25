@@ -6,11 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.cars import cars_crud
 from bot.db.crud.users import users_crud
-from bot.keyboards.cars_keyboards import (
-    add_car_kb, car_kb, edit_car_kb,
-    finish_add_car_kb,
-    verify_delete_car_kb,
-)
+from bot.keyboards.cars_keyboards import (add_car_kb, car_kb, edit_car_kb,
+                                          finish_add_car_kb,
+                                          verify_delete_car_kb)
 from bot.states.car_states import ChooseCar, RegCar
 from bot.utils.validators import verify_symbols
 

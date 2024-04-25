@@ -93,3 +93,7 @@ async def start(message: Message, session: AsyncSession, state: FSMContext):
             PROFILE_MESSAGE_WITH_INLINE,
             reply_markup=profile_kb
         )
+    else:
+        await message.answer(
+            'Вы были заблокированы.\nОбратитесь к администратору',
+        )

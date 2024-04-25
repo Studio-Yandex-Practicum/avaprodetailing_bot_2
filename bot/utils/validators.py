@@ -73,3 +73,17 @@ async def validate_birth_date(msg: str):
 async def validate_phone_number(phone_number: str):
     pattern = r'^\+\d{6,20}$'
     return re.match(pattern, phone_number) is not None
+
+
+async def check_tg_id_for_reg(
+    number: str,
+    session: AsyncSession,
+) -> None:
+    user = await users_crud.get_by_attribute(
+        attr_name='phone_number',
+        attr_value=number,
+        session=session
+    )
+    if user.tg_user_id is not None:
+        return False
+    return True

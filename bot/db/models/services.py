@@ -36,7 +36,6 @@ class Service(Base):
     business_units: Mapped[List['BusinessUnit']] = relationship(
         lazy='selectin', secondary='service_unit', back_populates='services'
     )
-    name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
 
 
 class ServiceCategory(Base):
@@ -47,6 +46,7 @@ class ServiceCategory(Base):
 
     is_active: Mapped[bool] = mapped_column(default=True)
     name: Mapped[str] = mapped_column(String(DEFAULT_STRING_SIZE))
+    services: Mapped[list['Service']] = relationship(lazy="selectin")
 
     def __repr__(self) -> str:
         return (f'Category(id={self.id},'

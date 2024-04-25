@@ -1,11 +1,14 @@
 from aiogram import F, Router
-from aiogram.types import (CallbackQuery, InlineKeyboardButton,
-                           InlineKeyboardMarkup)
-from sqlalchemy.ext.asyncio import AsyncSession
-from bot.db.crud.services import services_crud
-from bot.db.crud.categories import category_crud
+from aiogram.types import (
+    CallbackQuery, InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from bot.keyboards.categories_keyboard import service_category_kb
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.db.crud.categories import category_crud
+from bot.db.crud.services import services_crud
+from bot.keyboards.users_keyboards import gener_service_kb
 from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.users_keyboards import gener_service_kb
@@ -32,7 +35,7 @@ async def get_all_category(
             )
     keyboard.row(
         InlineKeyboardButton(
-            text=f'Выход в меню',
+            text='Выход в меню',
             callback_data='menu'
         )
     )
@@ -53,9 +56,7 @@ async def get_all_services(
     category = await category_crud.get(
         obj_id=int(callback.data.split('_')[-1]), session=session
     )
-    services = await services_crud.get_multi_by_attr(
-        session=session, attr_name='category_id', attr_value=category.id
-    )
+    services = category.services
     await state.update_data(cat_id=category.id)
     await callback.bot.edit_message_text(
         text='Выберите услугу',
@@ -63,8 +64,6 @@ async def get_all_services(
         message_id=state_data.get('msg_id'),
         reply_markup=gener_service_kb(services)
     )
-    
-          
 
 
 @router.callback_query(F.data.startswith('services_from_BU_'))
@@ -80,11 +79,13 @@ async def get_all_services_business_unit(
     msg = f'Услуга "{service.name}" может быть оказана в:\n\n'
     for bu in service.business_units:
         msg += f'{bu.name} по адресу {bu.address}\n\n'
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
-        text='Вернуться к списку услуг',
-        callback_data=f'categories_from_service_{state_data["cat_id"]}'
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(
+            text='Вернуться к списку услуг',
+            callback_data=f'categories_from_service_{state_data["cat_id"]}'
         )
-        ]])
+        ]]
+    )
     
     await callback.bot.edit_message_text(
         text=msg,
