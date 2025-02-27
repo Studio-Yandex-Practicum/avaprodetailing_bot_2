@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from . import admin_client, bonus_management, info, payment, update_profile
+from . import admin_client, bonus_management, info, payment, update_profile, update_car
 
 admin_router = Router(name=__name__)
 admin_router.include_routers(
@@ -8,5 +8,6 @@ admin_router.include_routers(
     admin_client.router,
     update_profile.router,
     bonus_management.router,
-    info.router
+    info.router,
+    update_car.router
 )

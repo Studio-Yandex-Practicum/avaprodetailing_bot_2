@@ -6,6 +6,7 @@ class RegCar(StatesGroup):
     model = State()
     number = State()
     user_id = State()
+    bodytype = State()
 
 
 class ChooseCar(StatesGroup):
@@ -13,3 +14,4 @@ class ChooseCar(StatesGroup):
     new_brand = State()
     new_model = State()
     new_number = State()
+    new_bodytype = State()

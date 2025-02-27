@@ -6,68 +6,41 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.crud.cars import cars_crud
 from bot.db.crud.users import users_crud
-from bot.keyboards.cars_keyboards import (add_car_kb, car_kb, edit_car_kb,
-                                          finish_add_car_kb,
-                                          verify_delete_car_kb)
-from bot.states.car_states import ChooseCar, RegCar
+from bot.keyboards.admin_keyboards import (
+    admin_car_kb, admin_edit_car_kb,
+    finish_add_car_kb,
+    admin_verify_delete_car_kb,
+)
+from bot.states.user_states import AdminState
 from bot.utils.validators import verify_symbols
 from bot.core.enums import CarBodyType
 
 router = Router(name=__name__)
 
 
-@router.callback_query(F.data == 'car_menu')
-async def car_menu(
+@router.callback_query(F.data == 'update_car_data')
+async def admin_choose_car(
     callback: CallbackQuery,
     session: AsyncSession,
+    state: FSMContext,
 ):
 
     await callback.message.delete()
-    tg_id = callback.from_user.id
+    state_data = await state.get_data()
     user = await users_crud.get_by_attribute(
-        attr_name='tg_user_id',
-        attr_value=tg_id,
+        attr_name='phone_number',
+        attr_value=state_data['phone_number'],
         session=session
     )
     cars = user.cars
-    if not cars:
-        await callback.message.answer(
-            "Внесите информацию по автомобилю",
-            reply_markup=add_car_kb
-        )
-    else:
-        car_message = 'Список авто: \n'
-        for car in list(cars):
-            car_message += (
-                f"{car.brand} {car.model} | {car.number}\n"
-            )
-
-        await callback.message.answer(
-            car_message,
-            reply_markup=car_kb
-        )
-
-
-@router.callback_query(F.data == 'choose_car')
-async def choose_car(
-    callback: CallbackQuery,
-    session: AsyncSession,
-):
-
-    await callback.message.delete()
-    tg_id = callback.from_user.id
-    user = await users_crud.get_by_attribute(
-        attr_name='tg_user_id',
-        attr_value=tg_id,
-        session=session
-    )
-    cars = user.cars
-    car_message = 'Выберите автомобиль'
+    car_message = 'Выберите автомобиль клиента'
     choose_car_kb = InlineKeyboardBuilder()
-    sizes = []
+    choose_car_kb.button(text="Добавить автомобиль",
+                         callback_data="admin_add_car")
+    sizes = [1]
     for car in cars:
         car_name = f" Авто: {car.brand}/{car.model} - {car.number}"
-        choose_car_kb.button(text=car_name, callback_data=f'car_{car.id}')
+        choose_car_kb.button(text=car_name, callback_data=f'admincar_{car.id}')
         sizes += [1]
     choose_car_kb.adjust(*sizes)
     await callback.message.answer(
@@ -76,7 +49,7 @@ async def choose_car(
     )
 
 
-@router.callback_query(F.data.startswith("car_"))
+@router.callback_query(F.data.startswith("admincar_"))
 async def edit_car(
     callback: CallbackQuery,
     state: FSMContext,
@@ -85,17 +58,17 @@ async def edit_car(
     await callback.message.delete()
     car_id = int(callback.data.split('_')[1])
     car = await cars_crud.get(obj_id=car_id, session=session)
-    await state.set_state(ChooseCar.chosen)
+    await state.set_state(AdminState.chosen_car)
     await state.update_data(chosen=car)
     await callback.message.answer(
         (
             "Выберите действие для\n"
             f"{car.brand}/{car.model} - {car.number}"),
-        reply_markup=edit_car_kb
+        reply_markup=admin_edit_car_kb
     )
 
 
-@router.callback_query(F.data == 'delete_car')
+@router.callback_query(F.data == 'admin_delete_car')
 async def car_delete_verify(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
@@ -103,11 +76,11 @@ async def car_delete_verify(
     await callback.message.delete()
     await callback.message.answer(
         'Вы действительно хотите удалить автомобиль из списка?',
-        reply_markup=verify_delete_car_kb
+        reply_markup=admin_verify_delete_car_kb
     )
 
 
-@router.callback_query(F.data == 'confirmed_delete')
+@router.callback_query(F.data == 'admin_confirmed_delete')
 async def car_delete(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
@@ -118,18 +91,18 @@ async def car_delete(
     await state.clear()
     await callback.message.answer(
         'Автомобиль удалён',
-        reply_markup=car_kb
+        reply_markup=admin_car_kb
     )
 
 
-@router.callback_query(F.data == 'change_number')
+@router.callback_query(F.data == 'admin_change_number')
 async def car_change_number(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
 ):
     await callback.message.delete()
 
-    await state.set_state(ChooseCar.new_number)
+    await state.set_state(AdminState.number_update)
     msg = await callback.message.answer(
         'Введите гос. номер автомобиля.'
     )
@@ -139,7 +112,7 @@ async def car_change_number(
     await callback.answer()
 
 
-@router.message(ChooseCar.new_number)
+@router.message(AdminState.number_update)
 async def car_change_number_verify(
     msg: Message,
     state: FSMContext,
@@ -164,19 +137,19 @@ async def car_change_number_verify(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
             text='Номер автомобиля изменён',
-            reply_markup=edit_car_kb
+            reply_markup=admin_edit_car_kb
         )
         await msg.delete()
 
 
-@router.callback_query(F.data == 'change_brand')
+@router.callback_query(F.data == 'admin_change_brand')
 async def car_change_brand(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
 ):
     await callback.message.delete()
 
-    await state.set_state(ChooseCar.new_brand)
+    await state.set_state(AdminState.brand_update)
     msg = await callback.message.answer(
         'Введите брэнд автомобиля.'
     )
@@ -186,7 +159,7 @@ async def car_change_brand(
     await callback.answer()
 
 
-@router.message(ChooseCar.new_brand)
+@router.message(AdminState.brand_update)
 async def car_change_brand_verify(
     msg: Message,
     state: FSMContext,
@@ -202,7 +175,7 @@ async def car_change_brand_verify(
         await msg.delete()
         return
     else:
-        await state.update_data(new_number=msg.text)
+        await state.update_data(new_brand=msg.text)
         await cars_crud.update(
             state_data['chosen'],
             {"brand": msg.text},
@@ -211,69 +184,19 @@ async def car_change_brand_verify(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
             text='Брэнд автомобиля изменён',
-            reply_markup=edit_car_kb
+            reply_markup=admin_edit_car_kb
         )
         await msg.delete()
 
 
-@router.callback_query(F.data == 'change_bodytype')
-async def car_change_bodytype(
-    callback: CallbackQuery, state: FSMContext,
-    session: AsyncSession, msg: Message,
-):
-    await callback.message.delete()
-    state_data = await state.get_data()
-    await state.set_state(RegCar.bodytype)
-    choose_car_kb = InlineKeyboardBuilder()
-    sizes = []
-    for body in CarBodyType:
-        body_name = f" {body.value}"
-        choose_car_kb.button(text=body_name,
-                             callback_data=f'edit_body_{body.name}')
-        sizes += [1]
-    choose_car_kb.adjust(*sizes)
-    await msg.bot.edit_message_text(
-        chat_id=msg.from_user.id,
-        message_id=state_data['msg_id'],
-        text='Выберите кузов автомобиля.',
-        reply_markup=choose_car_kb
-    )
-    await msg.delete()
-
-
-@router.callback_query(F.data.startswith("edit_body_"))
-async def car_change_bodytype_confirm(
-    msg: Message,
-    state: FSMContext,
-    session: AsyncSession,
-    callback: CallbackQuery,
-):
-    state_data = await state.get_data()
-    await callback.message.delete()
-    body = CarBodyType[callback.data.split('_')[2]]
-    await state.update_data(bodytype=body)
-
-    await cars_crud.update(
-            state_data['chosen'],
-            {"bodytype": body},
-            session=session, )
-    await msg.bot.edit_message_text(
-            chat_id=msg.from_user.id,
-            message_id=state_data['msg_id'],
-            text='Тип кузова изменён',
-            reply_markup=edit_car_kb
-        )
-    await msg.delete()
-
-
-@router.callback_query(F.data == 'change_model')
+@router.callback_query(F.data == 'admin_change_model')
 async def car_change_model(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
 ):
     await callback.message.delete()
 
-    await state.set_state(ChooseCar.new_model)
+    await state.set_state(AdminState.model_update)
     msg = await callback.message.answer(
         'Введите модель автомобиля.'
     )
@@ -283,7 +206,7 @@ async def car_change_model(
     await callback.answer()
 
 
-@router.message(ChooseCar.new_model)
+@router.message(AdminState.model_update)
 async def car_change_model_verify(
     msg: Message,
     state: FSMContext,
@@ -299,7 +222,7 @@ async def car_change_model_verify(
         await msg.delete()
         return
     else:
-        await state.update_data(new_number=msg.text)
+        await state.update_data(new_model=msg.text)
         await cars_crud.update(
             state_data['chosen'],
             {"model": msg.text},
@@ -308,27 +231,26 @@ async def car_change_model_verify(
             chat_id=msg.from_user.id,
             message_id=state_data['msg_id'],
             text='Модель автомобиля изменена',
-            reply_markup=edit_car_kb
+            reply_markup=admin_edit_car_kb
         )
         await msg.delete()
 
 
-@router.callback_query(F.data == 'add_car')
+@router.callback_query(F.data == 'admin_add_car')
 async def reg_car_start(
     callback: CallbackQuery, state: FSMContext,
     session: AsyncSession
 ):
-    await state.clear()
     await callback.message.delete()
-    tg_id = callback.from_user.id
+    state_data = await state.get_data()
     user = await users_crud.get_by_attribute(
-        attr_name='tg_user_id',
-        attr_value=tg_id,
+        attr_name='phone_number',
+        attr_value=state_data['phone_number'],
         session=session
     )
     await state.update_data(user_id=user.id)
 
-    await state.set_state(RegCar.brand)
+    await state.set_state(AdminState.brand)
     msg = await callback.message.answer(
         'Введите брэнд автомобиля.'
     )
@@ -338,7 +260,7 @@ async def reg_car_start(
     await callback.answer()
 
 
-@router.message(RegCar.brand)
+@router.message(AdminState.brand)
 async def reg_car_brand(
     msg: Message,
     state: FSMContext,
@@ -351,11 +273,11 @@ async def reg_car_brand(
         text='Введите модель автомобиля.'
     )
     await state.update_data(brand=msg.text)
-    await state.set_state(RegCar.model)
+    await state.set_state(AdminState.model)
     await msg.delete()
 
 
-@router.message(RegCar.model)
+@router.message(AdminState.model)
 async def reg_car_model(
     msg: Message,
     state: FSMContext,
@@ -364,13 +286,14 @@ async def reg_car_model(
     state_data = await state.get_data()
 
     await state.update_data(model=msg.text)
-    await state.set_state(RegCar.bodytype)
+    await state.set_state(AdminState.bodytype)
 
     choose_car_kb = InlineKeyboardBuilder()
     sizes = []
     for body in CarBodyType:
         car_name = f" Авто: {body.value}"
-        choose_car_kb.button(text=car_name, callback_data=f'body_{body.name}')
+        choose_car_kb.button(text=car_name,
+                             callback_data=f'admin_body_{body.name}')
         sizes += [1]
     choose_car_kb.adjust(*sizes)
 
@@ -383,7 +306,7 @@ async def reg_car_model(
     await msg.delete()
 
 
-@router.callback_query(F.data.startswith("body_"))
+@router.callback_query(F.data.startswith("admin_body_"))
 async def reg_car_bodytype(
     msg: Message,
     state: FSMContext,
@@ -392,9 +315,9 @@ async def reg_car_bodytype(
 ):
     state_data = await state.get_data()
     await callback.message.delete()
-    body = CarBodyType[callback.data.split('_')[1]]
+    body = CarBodyType[callback.data.split('_')[2]]
     await state.update_data(bodytype=body)
-    await state.set_state(RegCar.number)
+    await state.set_state(AdminState.number)
 
     await msg.bot.edit_message_text(
         chat_id=msg.from_user.id,
@@ -404,7 +327,7 @@ async def reg_car_bodytype(
     await msg.delete()
 
 
-@router.message(RegCar.number)
+@router.message(AdminState.number)
 async def reg_car_number(
     msg: Message,
     state: FSMContext,
@@ -427,3 +350,54 @@ async def reg_car_number(
     )
 
     return data
+
+
+# FIXME car_body_type забыл
+@router.callback_query(F.data == 'admin_change_bodytype')
+async def car_change_bodytype(
+    callback: CallbackQuery, state: FSMContext,
+    session: AsyncSession, msg: Message,
+):
+    await callback.message.delete()
+    state_data = await state.get_data()
+    await state.set_state(AdminState.bodytype)
+    choose_car_kb = InlineKeyboardBuilder()
+    sizes = []
+    for body in CarBodyType:
+        body_name = f" {body.value}"
+        choose_car_kb.button(text=body_name,
+                             callback_data=f'admin_edit_body_{body.name}')
+        sizes += [1]
+    choose_car_kb.adjust(*sizes)
+    await msg.bot.edit_message_text(
+        chat_id=msg.from_user.id,
+        message_id=state_data['msg_id'],
+        text='Выберите кузов автомобиля.',
+        reply_markup=choose_car_kb
+    )
+    await msg.delete()
+
+
+@router.callback_query(F.data.startswith("admin_edit_body_"))
+async def car_change_bodytype_confirm(
+    msg: Message,
+    state: FSMContext,
+    session: AsyncSession,
+    callback: CallbackQuery,
+):
+    state_data = await state.get_data()
+    await callback.message.delete()
+    body = CarBodyType[callback.data.split('_')[3]]
+    await state.update_data(bodytype=body)
+
+    await cars_crud.update(
+            state_data['chosen'],
+            {"bodytype": body},
+            session=session, )
+    await msg.bot.edit_message_text(
+            chat_id=msg.from_user.id,
+            message_id=state_data['msg_id'],
+            text='Тип кузова изменён',
+            reply_markup=admin_edit_car_kb
+        )
+    await msg.delete()
