@@ -5,7 +5,8 @@ router = Router(name=__name__)
 
 not_implemented = [
     'report_client_for_admin', 'get_bonus',
-    'report_for_adm', 'TODO',
+    #'report_for_adm', 
+    'TODO',
     'reports_for_extra', 'admin_reports',
     'admin_service_catalog', 'change_unit_services'
 ]

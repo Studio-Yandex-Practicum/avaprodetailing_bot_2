@@ -145,6 +145,7 @@ async def registrate_agree(
         attr_value=data['phone_number'],
         session=session
     )
+    
     if user is None:
         new_user = await users_crud.create(obj_in=data, session=session)
         await award_registration_bonus(new_user, session)
